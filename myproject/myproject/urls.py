@@ -1,36 +1,31 @@
-"""
-URL configuration for myproject project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
+# myproject/urls.py
 from django.urls import path
+from django.views.generic import RedirectView
 from tour import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.tours, name='tours'),
-    path('login/', views.login, name='login'),
-    path('register/', views.register, name='register'),
-    path('booking/', views.booking, name='booking'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('audit-log/', views.audit_log, name='audit_log'),
-    path('my-tickets/', views.my_tickets, name='my_tickets'),
-    path('logout/', views.logout_view, name='logout'),
-    path('manage/', views.manage_tables, name='manage_tables'),
-    path('manage/<str:table>/', views.crud_list, name='crud_list'),
-    path('manage/<str:table>/create/', views.crud_create, name='crud_create'),
-    path('manage/<str:table>/edit/<int:id>/', views.crud_edit, name='crud_edit'),
-    path('manage/<str:table>/delete/<int:id>/', views.crud_delete, name='crud_delete'),
+    # Public
+    path('',            views.tours,           name='tours'),
+    path('tours/',      views.tours,           name='tours_alias'),  # alias for /tours/
+    path('login/',      views.login_view,       name='login'),
+    path('register/',   views.register_view,    name='register'),
+    path('logout/',     views.logout_view,      name='logout'),
+
+    # Customer
+    path('booking/',    views.booking_view,     name='booking'),
+    path('my-tickets/', views.my_tickets_view,  name='my_tickets'),
+
+    # Staff
+    path('dashboard/',  views.dashboard_view,   name='dashboard'),
+    path('audit-log/',  views.audit_log_view,   name='audit_log'),
+
+    # Admin CRUD
+    path('manage/',                              views.manage_tables_view, name='manage_tables'),
+    path('manage/<str:table>/',                  views.crud_list,          name='crud_list'),
+    path('manage/<str:table>/create/',           views.crud_create,        name='crud_create'),
+    path('manage/<str:table>/edit/<int:id>/',    views.crud_edit,          name='crud_edit'),
+    path('manage/<str:table>/delete/<int:id>/',  views.crud_delete,        name='crud_delete'),
+
+    # Misc
+    path('forgot-password/', RedirectView.as_view(url='/login/'), name='forgot_password'),
 ]
