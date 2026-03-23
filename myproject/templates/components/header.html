@@ -1,0 +1,27 @@
+<header class="flex justify-between items-center w-full px-8 py-4 bg-white border-b border-slate-100 sticky top-0 z-40">
+    <div class="flex items-center gap-2">
+        <span class="text-lg font-medium text-slate-600 headline">{{ header_title|default:"Staff Portal" }}</span>
+        {% if header_subtitle %}
+        <span class="text-slate-300">/</span>
+        <span class="text-emerald-700 font-bold">{{ header_subtitle }}</span>
+        {% endif %}
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="relative group">
+            <span class="material-symbols-outlined text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 text-sm"
+                data-icon="search">search</span>
+            <input id="searchInput"
+                class="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-emerald-600 w-64 transition-all"
+                placeholder="ค้นหา / Search..." type="text" />
+        </div>
+        <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
+            <div class="text-right hidden sm:block">
+                <p class="text-sm font-bold text-slate-800">สวัสดี {{ request.session.user_name|default:'ผู้ใช้งาน' }}
+                </p>
+                <p class="text-xs text-slate-500 uppercase">Role: {{ request.session.user_role|default:'Staff' }}</p>
+            </div>
+            <img class="w-10 h-10 rounded-full border-2 border-slate-200 object-cover" data-alt="Staff profile photo"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1wv0AVyms9z-1Q-kvl4eq1IYzJTG_dqswzh0fMtb9asSA3D8cbmBeV6EyYKtZqk8rU_n8pBoGWdaPqaaJKL94j4hNPPhubphx5RUtEtmO3Qs3rVVe34mpNkwhM3CN3bNXt5V13KahptCQdw8hbe5KqDMX39MvdA9a9orjoIpGa8bUxgYA10hoHBnbqpD5tOgpGkH6LEDZm_xR0Y1QiBhFLwQSr0XFKLon7pLVxxk-LdenWVf9VSgI6IpIx2gLOL5eLiN2gO-GS4rP" />
+        </div>
+    </div>
+</header>

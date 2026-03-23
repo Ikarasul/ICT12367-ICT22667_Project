@@ -1,197 +1,41 @@
-<!-- ═══════════════════════════════════════
-     SIDEBAR — สำหรับหน้า Staff/Admin
-     include: {% include 'components/sidebar.html' %}
-     ═══════════════════════════════════════ -->
-<aside class="sidebar" id="sidebar">
-
-  <!-- Logo -->
-  <div class="sidebar-logo">
-    <a href="/" class="sidebar-brand">TourCompanyDB</a>
-    <p class="sidebar-role">{{ request.session.user_role|default:"Staff" }}</p>
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#1E2433] w-64 shadow-2xl z-[60]">
+  <div class="p-6">
+    <a href="/dashboard/"
+      class="block text-xl font-bold text-white headline hover:text-emerald-400 transition-colors">TourCompanyDB</a>
+    <p class="text-slate-400 text-xs mt-1 uppercase tracking-wider">Staff Portal</p>
   </div>
-
-  <!-- Nav Items -->
-  <nav class="sidebar-nav">
-
-    <a href="/dashboard/" class="sidebar-item {% block sb_dashboard %}{% endblock %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-      </svg>
-      <span data-th="แผงควบคุม" data-en="Dashboard">แผงควบคุม</span>
+  <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto no-scrollbar">
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'dashboard' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
+      href="/dashboard/">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-medium">Dashboard</span>
     </a>
-
-    <a href="/" class="sidebar-item {% block sb_tours %}{% endblock %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-      </svg>
-      <span data-th="ทัวร์ทั้งหมด" data-en="All Tours">ทัวร์ทั้งหมด</span>
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'tours' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
+      href="/tours/">
+      <span class="material-symbols-outlined">explore</span>
+      <span class="font-medium">ทัวร์ / Tours</span>
     </a>
-
-    <a href="/my-tickets/" class="sidebar-item {% block sb_tickets %}{% endblock %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
-      </svg>
-      <span data-th="ตั๋วทั้งหมด" data-en="All Tickets">ตั๋วทั้งหมด</span>
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'tickets' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
+      href="/my-tickets/">
+      <span class="material-symbols-outlined">confirmation_number</span>
+      <span class="font-medium">ตั๋วทั้งหมด / My Tickets</span>
     </a>
-
-    {% if request.session.user_role == 'Admin' %}
-    <div class="sidebar-section-label">Admin</div>
-
-    <a href="/manage/" class="sidebar-item {% block sb_manage %}{% endblock %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <ellipse cx="12" cy="5" rx="9" ry="3"/>
-        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-      </svg>
-      <span data-th="จัดการฐานข้อมูล" data-en="Database">จัดการฐานข้อมูล</span>
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'manage' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
+      href="/manage/">
+      <span class="material-symbols-outlined">database</span>
+      <span class="font-medium">จัดการฐานข้อมูล / Database</span>
     </a>
-
-    <a href="/audit-log/" class="sidebar-item {% block sb_audit %}{% endblock %}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-      </svg>
-      <span data-th="Audit Log" data-en="Audit Log">Audit Log</span>
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'audit' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
+      href="/audit-log/">
+      <span class="material-symbols-outlined">history_edu</span>
+      <span class="font-medium">บันทึกการตรวจสอบ / Audit</span>
     </a>
-    {% endif %}
-
   </nav>
-
-  <!-- Bottom: User Info + Logout -->
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-avatar">{{ request.session.user_name|first|upper }}</div>
-      <div>
-        <p class="sidebar-username">{{ request.session.user_name }}</p>
-        <p class="sidebar-userrole">{{ request.session.user_role }}</p>
-      </div>
-    </div>
-    <a href="/logout/" class="sidebar-logout" title="ออกจากระบบ">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-        <polyline points="16 17 21 12 16 7"/>
-        <line x1="21" y1="12" x2="9" y2="12"/>
-      </svg>
+  <div class="p-4 border-t border-slate-700/50 space-y-1">
+    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all"
+      href="/logout/">
+      <span class="material-symbols-outlined">logout</span>
+      <span class="font-medium">ออกจากระบบ / Logout</span>
     </a>
   </div>
-
 </aside>
-
-<!-- Mobile Toggle Button -->
-<button class="sidebar-toggle" onclick="toggleSidebar()" title="เมนู">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-    fill="none" stroke="currentColor" stroke-width="2">
-    <line x1="3" y1="6" x2="21" y2="6"/>
-    <line x1="3" y1="12" x2="21" y2="12"/>
-    <line x1="3" y1="18" x2="21" y2="18"/>
-  </svg>
-</button>
-
-<style>
-.sidebar {
-  position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
-  background: #1e2433; color: white;
-  display: flex; flex-direction: column;
-  z-index: 50; transition: transform 0.25s ease;
-}
-.sidebar-logo {
-  padding: 1.5rem 1.25rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.sidebar-brand {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-weight: 800; font-size: 1rem;
-  color: #86efac; text-decoration: none;
-  letter-spacing: -0.02em;
-}
-.sidebar-role {
-  font-size: 0.7rem; color: rgba(255,255,255,0.4);
-  margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em;
-}
-.sidebar-nav {
-  flex: 1; padding: 1rem 0.75rem;
-  display: flex; flex-direction: column; gap: 2px;
-  overflow-y: auto;
-}
-.sidebar-section-label {
-  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.3); text-transform: uppercase;
-  padding: 0.75rem 0.75rem 0.25rem;
-}
-.sidebar-item {
-  display: flex; align-items: center; gap: 0.75rem;
-  padding: 0.65rem 0.75rem; border-radius: 10px;
-  font-size: 0.875rem; font-weight: 500;
-  color: rgba(255,255,255,0.6); text-decoration: none;
-  transition: all 0.15s;
-}
-.sidebar-item:hover {
-  background: rgba(255,255,255,0.08);
-  color: white; transform: translateX(3px);
-}
-.sidebar-item.active {
-  background: rgba(134,239,172,0.15);
-  color: #86efac; font-weight: 700;
-}
-.sidebar-footer {
-  padding: 1rem 1.25rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
-}
-.sidebar-user { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
-.sidebar-avatar {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: linear-gradient(135deg, #154212, #2d5a27);
-  color: #86efac; font-weight: 800; font-size: 0.875rem;
-  display: flex; align-items: center; justify-content: center; shrink: 0;
-}
-.sidebar-username {
-  font-size: 0.8rem; font-weight: 600; color: white;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.sidebar-userrole { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
-.sidebar-logout {
-  padding: 0.5rem; border-radius: 8px; color: rgba(255,255,255,0.4);
-  transition: all 0.15s; shrink: 0;
-}
-.sidebar-logout:hover { color: #f87171; background: rgba(248,113,113,0.1); }
-
-/* Mobile Toggle */
-.sidebar-toggle {
-  display: none; position: fixed; top: 1rem; left: 1rem; z-index: 60;
-  width: 40px; height: 40px; border-radius: 10px;
-  background: white; border: none; cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-  align-items: center; justify-content: center; color: #374151;
-}
-@media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-toggle { display: flex; }
-}
-</style>
-
-<script>
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-/* Language toggle for sidebar labels */
-let sidebarLang = 'th';
-function toggleSidebarLang() {
-  sidebarLang = sidebarLang === 'th' ? 'en' : 'th';
-  document.querySelectorAll('[data-th][data-en]').forEach(el => {
-    el.textContent = sidebarLang === 'th' ? el.dataset.th : el.dataset.en;
-  });
-}
-</script>

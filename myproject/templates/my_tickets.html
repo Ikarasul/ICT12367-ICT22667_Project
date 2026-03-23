@@ -1,266 +1,144 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Tickets - TourCompanyDB{% endblock %}
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>My Tickets - TourCompanyDB</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "on-background": "#1b1c1a",
-                "inverse-surface": "#2f312e",
-                "on-secondary-fixed-variant": "#005313",
-                "on-tertiary-container": "#f7b900",
-                "surface-variant": "#e3e2df",
-                "background": "#faf9f5",
-                "surface-bright": "#faf9f5",
-                "inverse-on-surface": "#f2f1ed",
-                "surface-container-high": "#e9e8e4",
-                "tertiary": "#4b3600",
-                "on-tertiary": "#ffffff",
-                "on-error-container": "#93000a",
-                "on-primary": "#ffffff",
-                "surface-container-highest": "#e3e2df",
-                "on-surface": "#1b1c1a",
-                "surface": "#faf9f5",
-                "surface-container": "#efeeea",
-                "inverse-primary": "#a1d494",
-                "tertiary-container": "#684c00",
-                "on-tertiary-fixed": "#261a00",
-                "secondary-container": "#91f78e",
-                "primary-fixed-dim": "#a1d494",
-                "on-secondary-fixed": "#002204",
-                "surface-container-low": "#f4f4f0",
-                "on-tertiary-fixed-variant": "#5c4300",
-                "on-error": "#ffffff",
-                "primary-fixed": "#bcf0ae",
-                "secondary-fixed": "#94f990",
-                "tertiary-fixed-dim": "#fbbc00",
-                "secondary-fixed-dim": "#78dc77",
-                "on-secondary-container": "#00731e",
-                "on-secondary": "#ffffff",
-                "outline-variant": "#c2c9bb",
-                "on-primary-fixed": "#002201",
-                "secondary": "#006e1c",
-                "primary": "#154212",
-                "on-primary-fixed-variant": "#23501e",
-                "primary-container": "#2d5a27",
-                "error": "#ba1a1a",
-                "outline": "#72796e",
-                "surface-container-lowest": "#ffffff",
-                "tertiary-fixed": "#ffdfa0",
-                "error-container": "#ffdad6",
-                "surface-tint": "#3b6934",
-                "surface-dim": "#dbdad6",
-                "on-primary-container": "#9dd090",
-                "on-surface-variant": "#42493e"
-              },
-              fontFamily: {
-                "headline": ["Plus Jakarta Sans"],
-                "body": ["Manrope"],
-                "label": ["Manrope"],
-                "mono": ["JetBrains Mono"]
-              },
-              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
-            },
-          },
-        }
-    </script>
+{% block extra_head %}
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body { font-family: 'Manrope', sans-serif; }
-        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
-        .thai-text { font-size: 1.1em; }
-    </style>
-</head>
-<!-- User: {{ request.session.user_name }} | Role: {{ request.session.user_role }} -->
-<body class="bg-surface text-on-surface min-h-screen pb-24 md:pb-0">
-<!-- TopNavBar -->
-{% include 'components/navbar.html' %}
-<main class="max-w-7xl mx-auto px-6 py-12">
-<!-- Header Section -->
-<header class="mb-12">
-<span class="text-primary font-bold tracking-widest text-xs uppercase block mb-2">Customer Portal</span>
-<h1 class="text-4xl md:text-5xl font-extrabold text-primary mb-4">ตั๋วของฉัน / My Tickets</h1>
-<p class="text-on-surface-variant max-w-2xl leading-relaxed">
-                จัดการการจองและดูรายละเอียดการเดินทางของคุณทั้งหมดในที่เดียว <br/>
-                Manage your bookings and view all your travel itineraries in one place.
-            </p>
-</header>
+  .ticket-card{background:#fff;border-radius:1.25rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);transition:transform .3s,box-shadow .3s;border:1px solid #f0fdf4;display:flex;flex-direction:column}
+  .ticket-card:hover{transform:translateY(-3px);box-shadow:0 4px 6px rgba(0,0,0,.04),0 16px 40px rgba(5,150,105,.1)}
+  .status-stripe{height:5px;width:100%}
+  .btn-green{background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-family:'Outfit',sans-serif;font-weight:700;border-radius:.75rem;padding:.65rem 1.25rem;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(5,150,105,.25);font-size:.875rem;display:block;text-align:center}
+  .btn-green:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(5,150,105,.35)}
+  .btn-outline-green{border:2px solid #059669;color:#059669;font-family:'Outfit',sans-serif;font-weight:700;border-radius:.75rem;padding:.65rem 1.25rem;background:transparent;cursor:pointer;transition:all .2s;font-size:.875rem;display:block;text-align:center}
+  .btn-outline-green:hover{background:#059669;color:#fff}
+</style>
+{% endblock %}
+
+{% block content %}
+<main style="max-width:80rem;margin:0 auto;padding:3rem 1.5rem">
+<div class="fade-up" style="margin-bottom:2.5rem">
+  <span style="font-size:.75rem;font-weight:700;color:#059669;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.5rem">✔️ Customer Portal</span>
+  <h1 style="font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;color:#059669;margin-bottom:.75rem">ตั๋วของฉัน / My Tickets</h1>
+  <p style="color:#6b7280;max-width:40rem;line-height:1.7">จัดการการจองและดูรายละเอียดการเดินทางทั้งหมดในที่เดียว / Manage your bookings and view all your travel itineraries in one place.</p>
+</div>
 <!-- Bento Grid Layout for Tickets -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 <!-- Filter Sidebar (Hidden on mobile) -->
-<aside class="hidden lg:block lg:col-span-3 space-y-6">
-<div class="bg-surface-container-low rounded-2xl p-6">
-<h3 class="font-bold text-primary mb-4 text-lg">ตัวกรอง / Filters</h3>
-<div class="space-y-4">
-<label class="flex items-center space-x-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-primary-container group-hover:bg-primary-fixed transition-colors"></div>
-<span class="text-sm font-medium">ทั้งหมด / All</span>
-</label>
-<label class="flex items-center space-x-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-outline-variant group-hover:bg-secondary-container transition-colors"></div>
-<span class="text-sm font-medium">ยืนยันแล้ว / Confirmed</span>
-</label>
-<label class="flex items-center space-x-3 cursor-pointer group">
-<div class="w-5 h-5 rounded border-2 border-outline-variant group-hover:bg-tertiary-fixed transition-colors"></div>
-<span class="text-sm font-medium">รอดำเนินการ / Pending</span>
-</label>
+<aside class="hidden lg:block lg:col-span-3 space-y-5">
+<div style="background:#f0fdf4;border-radius:1.25rem;padding:1.5rem;border:1px solid #d1fae5">
+<h3 style="font-family:'Outfit',sans-serif;font-weight:700;color:#059669;margin-bottom:1rem;font-size:1rem">ตัวกรอง / Filters</h3>
+<div style="display:flex;flex-direction:column;gap:.875rem">
+  <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+    <input type="checkbox" checked style="accent-color:#059669;width:1rem;height:1rem"/>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">ทั้งหมด / All</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+    <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">ยืนยันแล้ว / Confirmed</span>
+    <span style="background:#d1fae5;color:#065f46;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">✓</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+    <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">รอดำเนินการ / Pending</span>
+    <span style="background:#fef3c7;color:#92400e;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">⏳</span>
+  </label>
+  <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
+    <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">ยกเลิก / Cancelled</span>
+    <span style="background:#fee2e2;color:#991b1b;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">✗</span>
+  </label>
 </div>
 </div>
-<div class="bg-primary-container text-white rounded-2xl p-6 relative overflow-hidden">
-<div class="relative z-10">
-<h4 class="font-bold mb-2">ต้องการความช่วยเหลือ?</h4>
-<p class="text-sm opacity-80 mb-4">Need help with your booking?</p>
-<button class="bg-surface text-primary px-4 py-2 rounded-xl text-sm font-bold w-full hover:scale-95 transition-transform duration-200">
-                            ติดต่อเรา / Contact Us
-                        </button>
+<div style="background:linear-gradient(135deg,#059669,#10b981);border-radius:1.25rem;padding:1.5rem;position:relative;overflow:hidden;color:#fff">
+<div style="position:relative;z-index:1">
+<h4 style="font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:.375rem">ต้องการความช่วยเหลือ?</h4>
+<p style="font-size:.875rem;color:rgba(255,255,255,.8);margin-bottom:1rem">Need help with your booking?</p>
+<button style="background:#fff;color:#059669;border:none;width:100%;border-radius:.75rem;padding:.625rem 1rem;font-family:'Outfit',sans-serif;font-weight:700;cursor:pointer;font-size:.875rem;transition:all .2s">
+ติดต่อเรา / Contact Us
+</button>
 </div>
-<div class="absolute -bottom-4 -right-4 opacity-10">
-<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
-</div>
+<span class="material-symbols-outlined" style="position:absolute;bottom:-1rem;right:-1rem;font-size:6rem;opacity:.15;font-variation-settings:'FILL' 1">support_agent</span>
 </div>
 </aside>
 <!-- Tickets Canvas -->
 <div class="lg:col-span-9 space-y-6">
-<!-- Ticket Card 1: Confirmed -->
-<div class="group relative bg-surface-container-lowest rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(27,28,26,0.06)] flex flex-col md:flex-row">
-<!-- Status Stripe -->
-<div class="w-full md:w-3 bg-secondary"></div>
-<div class="p-8 flex-grow grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-<div class="md:col-span-2">
-<div class="flex items-center space-x-3 mb-2">
-<span class="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">#BK-99284</span>
-<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
-<span class="material-symbols-outlined text-[14px] mr-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Confirmed
-                                </span>
+
+{% for t in tickets %}
+<!-- Ticket t.5=Status: Confirmed, Pending Payment, Cancelled -->
+<div class="group relative bg-surface-container-lowest rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(27,28,26,0.06)] flex flex-col md:flex-row {% if t.5 == 'Cancelled' %}opacity-75 grayscale-[0.5] hover:grayscale-0{% endif %}">
+  
+  <!-- Status Stripe -->
+  <div class="w-full md:w-3 {% if t.5 == 'Confirmed' %}bg-secondary{% elif t.5 == 'Cancelled' %}bg-error{% else %}bg-tertiary-fixed-dim{% endif %}"></div>
+  
+  <div class="p-8 flex-grow grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+    <div class="md:col-span-2">
+      <div class="flex items-center space-x-3 mb-2">
+        <span class="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">#BK-{{ t.0 }}</span>
+        
+        {% if t.5 == 'Confirmed' %}
+        <span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
+          <span class="material-symbols-outlined text-[14px] mr-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          {{ t.5 }}
+        </span>
+        {% elif t.5 == 'Cancelled' %}
+        <span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
+          <span class="material-symbols-outlined text-[14px] mr-1">cancel</span>
+          {{ t.5 }}
+        </span>
+        {% else %}
+        <span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
+          <span class="material-symbols-outlined text-[14px] mr-1">schedule</span>
+          {{ t.5 }}
+        </span>
+        {% endif %}
+      </div>
+      <h2 class="text-2xl font-bold text-primary">{{ t.2 }}</h2>
+      <p class="text-on-surface-variant font-medium text-sm mt-1">Passenger: {{ t.1 }}</p>
+    </div>
+    
+    <div class="space-y-1">
+      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Destination</p>
+      <div class="flex items-center text-on-surface">
+        <span class="material-symbols-outlined text-primary mr-2">location_on</span>
+        <span class="font-bold">{{ t.3 }}</span>
+      </div>
+    </div>
+    
+    <div class="space-y-1">
+      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Departure</p>
+      <div class="flex items-center text-on-surface">
+        <span class="material-symbols-outlined text-primary mr-2">calendar_today</span>
+        <span class="font-bold">{{ t.4|date:"d M Y" }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-surface-container-low p-8 border-l border-outline-variant/10 md:w-64 flex flex-col justify-center items-center text-center">
+    <p class="text-[10px] text-outline font-bold uppercase mb-1">Total Price</p>
+    <p class="text-2xl font-extrabold {% if t.5 == 'Cancelled' %}text-slate-400 line-through{% else %}text-primary{% endif %} mb-4">฿ {{ t.7 }}</p>
+    <div class="flex items-center text-xs text-on-surface-variant mb-4">
+      <span class="material-symbols-outlined text-sm mr-1">person</span>
+      {{ t.6 }} Passengers
+    </div>
+    {% if t.5 == 'Confirmed' %}
+      <button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm hover:scale-95 transition-all">ดูตั๋ว / View Ticket</button>
+    {% elif t.5 == 'Cancelled' %}
+      <button class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl font-bold text-sm cursor-not-allowed">ยกเลิกแล้ว / Cancelled</button>
+    {% else %}
+      <button class="w-full border-2 border-primary text-primary py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all">ชำระเงิน / Pay Now</button>
+    {% endif %}
+  </div>
+
 </div>
-<h2 class="text-2xl font-bold text-primary">ล่องเรือยอร์ชส่วนตัวที่เกาะสมุย</h2>
-<p class="text-on-surface-variant font-medium">Koh Samui Private Yacht Escape</p>
+{% empty %}
+<div class="col-span-1 md:col-span-12 py-12 text-center text-on-surface-variant">
+  <span class="material-symbols-outlined text-6xl opacity-20 mb-4">confirmation_number</span>
+  <h3 class="text-xl font-bold text-primary">ยังไม่มีตั๋ว / No Tickets Yet</h3>
+  <p class="mt-2 text-sm">คุณยังไม่มีประวัติการจองทัวร์</p>
+  <a href="/" class="inline-block mt-6 bg-primary-container text-white px-6 py-2 rounded-xl font-bold text-sm hover:scale-95 transition-all">ดูทัวร์และโปรโมชั่น</a>
 </div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Destination / จุดหมายปลายทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">location_on</span>
-<span class="font-bold">Koh Samui, Thailand</span>
-</div>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Departure / วันเดินทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">calendar_today</span>
-<span class="font-bold">12 Oct 2024</span>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-low p-8 border-l border-outline-variant/10 md:w-64 flex flex-col justify-center items-center text-center">
-<p class="text-[10px] text-outline font-bold uppercase mb-1">Total Price / ราคาสุทธิ</p>
-<p class="text-2xl font-extrabold text-primary mb-4">฿ 24,500</p>
-<div class="flex items-center text-xs text-on-surface-variant mb-4">
-<span class="material-symbols-outlined text-sm mr-1">person</span>
-                            2 Passengers
-                        </div>
-<button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm hover:scale-95 transition-all">
-                            ดูตั๋ว / View Ticket
-                        </button>
-</div>
-</div>
-<!-- Ticket Card 2: Pending -->
-<div class="group relative bg-surface-container-lowest rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_20px_40px_rgba(27,28,26,0.06)] flex flex-col md:flex-row">
-<!-- Status Stripe -->
-<div class="w-full md:w-3 bg-tertiary-fixed-dim"></div>
-<div class="p-8 flex-grow grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-<div class="md:col-span-2">
-<div class="flex items-center space-x-3 mb-2">
-<span class="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">#BK-10452</span>
-<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
-<span class="material-symbols-outlined text-[14px] mr-1">schedule</span>
-                                    Pending Payment
-                                </span>
-</div>
-<h2 class="text-2xl font-bold text-primary">เดินป่าอุทยานแห่งชาติเขาใหญ่</h2>
-<p class="text-on-surface-variant font-medium">Khao Yai National Park Trekking</p>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Destination / จุดหมายปลายทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">location_on</span>
-<span class="font-bold">Khao Yai, Thailand</span>
-</div>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Departure / วันเดินทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">calendar_today</span>
-<span class="font-bold">25 Nov 2024</span>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-low p-8 border-l border-outline-variant/10 md:w-64 flex flex-col justify-center items-center text-center">
-<p class="text-[10px] text-outline font-bold uppercase mb-1">Total Price / ราคาสุทธิ</p>
-<p class="text-2xl font-extrabold text-primary mb-4">฿ 4,200</p>
-<div class="flex items-center text-xs text-on-surface-variant mb-4">
-<span class="material-symbols-outlined text-sm mr-1">person</span>
-                            1 Passenger
-                        </div>
-<button class="w-full border-2 border-primary text-primary py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all">
-                            ชำระเงิน / Pay Now
-                        </button>
-</div>
-</div>
-<!-- Ticket Card 3: Cancelled -->
-<div class="group relative bg-surface-container-lowest rounded-2xl overflow-hidden opacity-75 grayscale-[0.5] transition-all duration-300 hover:scale-[1.01] hover:grayscale-0 flex flex-col md:flex-row">
-<!-- Status Stripe -->
-<div class="w-full md:w-3 bg-error"></div>
-<div class="p-8 flex-grow grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
-<div class="md:col-span-2">
-<div class="flex items-center space-x-3 mb-2">
-<span class="font-mono text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded">#BK-08412</span>
-<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center">
-<span class="material-symbols-outlined text-[14px] mr-1">cancel</span>
-                                    Cancelled
-                                </span>
-</div>
-<h2 class="text-2xl font-bold text-primary">ทัวร์วัฒนธรรมอยุธยาเต็มวัน</h2>
-<p class="text-on-surface-variant font-medium">Ayutthaya Full-Day Cultural Tour</p>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Destination / จุดหมายปลายทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">location_on</span>
-<span class="font-bold">Ayutthaya, Thailand</span>
-</div>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Departure / วันเดินทาง</p>
-<div class="flex items-center text-on-surface">
-<span class="material-symbols-outlined text-primary mr-2">calendar_today</span>
-<span class="font-bold">05 Sep 2024</span>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-low p-8 border-l border-outline-variant/10 md:w-64 flex flex-col justify-center items-center text-center">
-<p class="text-[10px] text-outline font-bold uppercase mb-1">Total Price / ราคาสุทธิ</p>
-<p class="text-2xl font-extrabold text-slate-400 line-through mb-4">฿ 1,800</p>
-<div class="flex items-center text-xs text-on-surface-variant mb-4">
-<span class="material-symbols-outlined text-sm mr-1">person</span>
-                            2 Passengers
-                        </div>
-<button class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl font-bold text-sm cursor-not-allowed">
-                            ยกเลิกแล้ว / Refunded
-                        </button>
-</div>
-</div>
+{% endfor %}
+
 </div>
 </div>
 </main>
@@ -275,29 +153,4 @@
 <span class="font-['Manrope'] text-[10px] font-bold uppercase">ตั๋ว / Tickets</span>
 </a>
 </nav>
-<!-- DJANGO TICKET LOOP:
-
-{% for t in tickets %}
-<!-- Ticket: t.0=BookingID t.1=Customer t.2=PackageName t.3=Destination t.4=DepartureDate t.5=Status t.6=Passengers t.7=TotalPrice -->
-<div class="ticket-card {% if t.5 == 'Confirmed' %}status-confirmed{% elif t.5 == 'Cancelled' %}status-cancelled{% else %}status-pending{% endif %}">
-  <div class="ticket-id">#{{ t.0 }}</div>
-  <div class="ticket-tour">{{ t.2 }}</div>
-  <div class="ticket-dest">{{ t.3 }}</div>
-  <div class="ticket-date">{{ t.4 }}</div>
-  <div class="ticket-pax">{{ t.6 }} คน</div>
-  <div class="ticket-price">฿{{ t.7 }}</div>
-  <div class="ticket-status">
-    {% if t.5 == 'Confirmed' %}✅ ยืนยันแล้ว
-    {% elif t.5 == 'Cancelled' %}❌ ยกเลิก
-    {% else %}⏳ {{ t.5 }}{% endif %}
-  </div>
-</div>
-{% empty %}
-<div class="empty-state">
-  <p>ยังไม่มีตั๋ว / No tickets yet</p>
-  <a href="/">ดูทัวร์ / Browse Tours</a>
-</div>
-{% endfor %}
-
--->
-</body></html>
+{% endblock %}

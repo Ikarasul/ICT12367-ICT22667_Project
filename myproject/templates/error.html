@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Error | TourCompanyDB{% endblock %}
+
+{% block topnav %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white rounded-2xl shadow-xl p-12 max-w-md w-full text-center border border-gray-100">
+    <div class="text-red-500 mb-4 flex justify-center">
+      <span class="material-symbols-outlined" style="font-size: 5rem; font-variation-settings: 'FILL' 1;">cloud_off</span>
+    </div>
+    <h1 class="text-2xl font-bold font-display text-gray-800 mb-2">{{ title|default:"System Error" }}</h1>
+    <p class="text-gray-500 mb-8 leading-relaxed text-sm">{{ message|default:"เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล กรุณาลองใหม่อีกครั้ง" }}</p>
+    <button onclick="window.history.back()" class="bg-green-800 text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-all w-full text-center">
+      ย้อนกลับ / Go Back
+    </button>
+  </div>
+</div>
+{% endblock %}

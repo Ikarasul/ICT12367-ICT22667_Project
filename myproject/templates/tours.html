@@ -1,446 +1,166 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ทัวร์ / Tours - TourCompanyDB{% endblock %}
 
-<html class="light" lang="th"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>ทัวร์ / Tours - TourCompanyDB</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+{% block extra_head %}
 <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body {
-            font-family: 'Manrope', sans-serif;
-        }
-        h1, h2, h3, h4, .headline-font {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            letter-spacing: -0.02em;
-        }
-        .thai-text {
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
-        /* Custom scrollbar for subtle look */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #FAF9F5;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #E3E2DF;
-            border-radius: 10px;
-        }
-    </style>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "on-background": "#1b1c1a",
-                "inverse-surface": "#2f312e",
-                "on-secondary-fixed-variant": "#005313",
-                "on-tertiary-container": "#f7b900",
-                "surface-variant": "#e3e2df",
-                "background": "#faf9f5",
-                "surface-bright": "#faf9f5",
-                "inverse-on-surface": "#f2f1ed",
-                "surface-container-high": "#e9e8e4",
-                "tertiary": "#4b3600",
-                "on-tertiary": "#ffffff",
-                "on-error-container": "#93000a",
-                "on-primary": "#ffffff",
-                "surface-container-highest": "#e3e2df",
-                "on-surface": "#1b1c1a",
-                "surface": "#faf9f5",
-                "surface-container": "#efeeea",
-                "inverse-primary": "#a1d494",
-                "tertiary-container": "#684c00",
-                "on-tertiary-fixed": "#261a00",
-                "secondary-container": "#91f78e",
-                "primary-fixed-dim": "#a1d494",
-                "on-secondary-fixed": "#002204",
-                "surface-container-low": "#f4f4f0",
-                "on-tertiary-fixed-variant": "#5c4300",
-                "on-error": "#ffffff",
-                "primary-fixed": "#bcf0ae",
-                "secondary-fixed": "#94f990",
-                "tertiary-fixed-dim": "#fbbc00",
-                "secondary-fixed-dim": "#78dc77",
-                "on-secondary-container": "#00731e",
-                "on-secondary": "#ffffff",
-                "outline-variant": "#c2c9bb",
-                "on-primary-fixed": "#002201",
-                "secondary": "#006e1c",
-                "primary": "#154212",
-                "on-primary-fixed-variant": "#23501e",
-                "primary-container": "#2d5a27",
-                "error": "#ba1a1a",
-                "outline": "#72796e",
-                "surface-container-lowest": "#ffffff",
-                "tertiary-fixed": "#ffdfa0",
-                "error-container": "#ffdad6",
-                "surface-tint": "#3b6934",
-                "surface-dim": "#dbdad6",
-                "on-primary-container": "#9dd090",
-                "on-surface-variant": "#42493e"
-              },
-              fontFamily: {
-                "headline": ["Plus Jakarta Sans"],
-                "body": ["Manrope"],
-                "label": ["Manrope"]
-              },
-              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
-            },
-          },
-        }
-    </script>
-</head>
-<body class="bg-surface text-on-surface antialiased min-h-screen pb-24">
-<!-- TopNavBar -->
-{% include 'components/navbar.html' %}
-<main class="max-w-7xl mx-auto px-6 py-8 md:py-12">
-<!-- Hero Search & Filter Section -->
-<section class="mb-12">
-<h1 class="display-lg text-4xl md:text-5xl font-bold text-primary mb-6">
-<span class="thai-text block mb-1">ค้นหาทัวร์ที่คุณต้องการ</span>
-                Find Your Perfect Journey
-            </h1>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-<!-- Search Bar -->
-<div class="lg:col-span-8">
-<label class="block text-sm font-bold text-on-surface-variant mb-2 ml-1">
-<span class="thai-text">กรองตามชื่อทัวร์หรือปลายทาง</span> / Search by tour name or destination
-                    </label>
-<div class="relative group">
-<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
-<input id="tour-search" class="w-full pl-12 pr-4 py-4 bg-surface-container-highest border-none rounded-2xl focus:ring-2 focus:ring-primary transition-all" placeholder="Japan Sakura, Alps, Bangkok City..." type="text"/>
-</div>
-</div>
-<!-- Filter Buttons -->
-<div class="lg:col-span-4">
-<div class="flex flex-wrap gap-2">
-<button class="filter-btn active px-5 py-3 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-md transition-all" data-filter="all">
-<span class="thai-text" data-th="ทั้งหมด" data-en="All">ทั้งหมด / All</span>
-                        </button>
-<button class="filter-btn px-5 py-3 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-bold text-sm transition-all" data-filter="available">
-<span class="thai-text" data-th="พร้อมจอง" data-en="Available">พร้อมจอง / Available</span>
-                        </button>
-<button class="filter-btn px-5 py-3 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-bold text-sm transition-all" data-filter="asia">
-<span class="thai-text" data-th="เอเชีย" data-en="Asia">เอเชีย / Asia</span>
-                        </button>
-<button class="filter-btn px-5 py-3 rounded-xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high font-bold text-sm transition-all" data-filter="europe">
-<span class="thai-text" data-th="ยุโรป" data-en="Europe">ยุโรป / Europe</span>
-                        </button>
-</div>
-</div>
-</div>
-</section>
-<!-- Tour Grid (Bento Style & Editorial Cards) -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<!-- Card 1: Available (Green Seats) -->
-<div class="tour-card group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(27,28,26,0.06)] hover:scale-[1.02] transition-all duration-300" data-name="Sakura Blossom" data-dest="Kyoto, Japan asia" data-seats="12">
-<div class="relative h-64 overflow-hidden">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Golden temples in Kyoto Japan during autumn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcaNK7DZ_BEdXvaZsVKl0enX6s_8_0xzWdym8D4l_cqz02fYDlO3PR4w4Qh4V_mqsxq7rqRQBmbPoQ8c3EwwKFKYbb-XKf6hTL9twLoBYsAc8THDO0DqxAJZlTO_2VeQCwKuoLCuwzVfVdcfD7PLLAUwEZieyigN_FccrM2tkM4BkF6UNQbxbNtKgEVaN2Qx1B1cjZK418J-6BolkW3TG69abVzmO4uHlPoTa96xVv-iPSHpPDHQBeaiRdlMtjXpZFbY5uZN1vYrlG"/>
-<div class="absolute top-4 left-4 flex gap-2">
-<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">เอเชีย / Asia</span>
-</div>
-</div>
-<div class="p-8">
-<div class="flex items-center gap-1 text-primary text-sm font-bold mb-2">
-<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-<span>Kyoto, Japan</span>
-</div>
-<h3 class="headline-sm text-xl font-bold mb-4 text-on-surface">Sakura Blossom &amp; Heritage Tour</h3>
-<div class="space-y-3 mb-6">
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
-<span>15 Apr - 22 Apr 2024</span>
-</div>
-</div>
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="person">person</span>
-<span>Guide: Somchai Jaidee</span>
-</div>
-</div>
-<div class="flex items-center justify-between pt-2">
-<span class="text-sm font-bold text-on-surface-variant">Seats Remaining</span>
-<span class="text-secondary font-bold px-3 py-1 bg-secondary-container/30 rounded-full">12 Available</span>
-</div>
-</div>
-<a class="block w-full text-center bg-inverse-surface text-inverse-on-surface py-4 rounded-xl font-bold hover:opacity-90 transition-opacity active:scale-95 duration-200" href="/login/">
-                        Login เพื่อจอง / Login to Book
-                    </a>
-</div>
-</div>
-<!-- Card 2: Limited Seats (Red Seats) -->
-<div class="tour-card group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(27,28,26,0.06)] hover:scale-[1.02] transition-all duration-300" data-name="London Eye" data-dest="London, UK europe" data-seats="3">
-<div class="relative h-64 overflow-hidden">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="London Big Ben and Parliament at sunset" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwIXSP1zscb9sY6DwDFu8b9YhXo20Dg_bsVvgTiynlAnoCQ0IRLYP_2k8gUcb5j247cYbFRSdcCYgyS35jTYixvJNfeHy3Cb-5d6nCPgFuFxD_qhortLnKMi4uqrjAcPQRtrLIHl3EXw9H5suHu0ryc4vw0Jfn_eVd7siAU3gB8tFwLSoEuXJDMiht4662VljRwjUkVGRYQGqIpUdgFH2SIJe6SvosAoieL-44AzBr8SKSRs4vWLYXOwJa3c83Off11piq8eLA-nAM"/>
-<div class="absolute top-4 left-4 flex gap-2">
-<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-xs font-bold">ยุโรป / Europe</span>
-</div>
-</div>
-<div class="p-8">
-<div class="flex items-center gap-1 text-primary text-sm font-bold mb-2">
-<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-<span>London, UK</span>
-</div>
-<h3 class="headline-sm text-xl font-bold mb-4 text-on-surface">London Eye &amp; Thames River Cruise</h3>
-<div class="space-y-3 mb-6">
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
-<span>02 May - 10 May 2024</span>
-</div>
-</div>
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="person">person</span>
-<span>Guide: Jane Smith</span>
-</div>
-</div>
-<div class="flex items-center justify-between pt-2">
-<span class="text-sm font-bold text-on-surface-variant">Seats Remaining</span>
-<span class="text-error font-bold px-3 py-1 bg-error-container/30 rounded-full animate-pulse">3 Left!</span>
-</div>
-</div>
-<button class="block w-full text-center bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 duration-200">
-                        จองตอนนี้ / Book Now
-                    </button>
-</div>
-</div>
-<!-- Card 3: Full (Grey Badge) -->
-<div class="tour-card group bg-surface-container-low opacity-90 rounded-2xl overflow-hidden shadow-none grayscale-[0.5] transition-all duration-300" data-name="Mystic India" data-dest="Agra, India asia" data-seats="0">
-<div class="relative h-64 overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Taj Mahal in Agra India under clear sky" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPmGGe48Ythna4kFcwQKk6KUPGm-LqlCEaoYFXZLMFbiFwzrnmd1EMlB5w75lmOQ3tI-grS-_BbiGiCTaMYQwWwSmGKh8472YoydTJnVmRv628aM6HwekTCA8fmuzHJRQmjb0ciMx5BDs-QUbowLL7SL9BZcPkYgX85N3oSgPvXHJOKslX5t7LQSsqh_C0kXSJNXnOWRKMQVG8mWLHakkOsSZQX8NXCzsF2_fAQoMjBkZxZNsv3w2hW3z_mXBZ-0cAqHaiKGmDMOZc"/>
-<div class="absolute inset-0 bg-on-surface/40 flex items-center justify-center">
-<span class="bg-surface text-on-surface px-6 py-2 rounded-full font-bold uppercase tracking-widest text-sm shadow-xl">เต็มแล้ว / Full</span>
-</div>
-</div>
-<div class="p-8">
-<div class="flex items-center gap-1 text-slate-500 text-sm font-bold mb-2">
-<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-<span>Agra, India</span>
-</div>
-<h3 class="headline-sm text-xl font-bold mb-4 text-slate-400">Mystic India: Taj Mahal Express</h3>
-<div class="space-y-3 mb-6">
-<div class="flex items-center justify-between text-sm text-slate-400">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
-<span>12 Jun - 18 Jun 2024</span>
-</div>
-</div>
-<div class="flex items-center justify-between pt-2">
-<span class="text-sm font-bold text-slate-400">Seats Remaining</span>
-<span class="text-slate-400 font-bold px-3 py-1 bg-slate-200 rounded-full">0 Available</span>
-</div>
-</div>
-<button class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-bold cursor-not-allowed" disabled="">
-                        เต็มแล้ว / Full
-                    </button>
-</div>
-</div>
-<!-- Card 4: Another Asia Tour -->
-<div class="tour-card group bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(27,28,26,0.06)] hover:scale-[1.02] transition-all duration-300" data-name="Bali Zen" data-dest="Bali, Indonesia asia" data-seats="25">
-<div class="relative h-64 overflow-hidden">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="Beach with palm trees in Bali Indonesia" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDER8I-Flpo4dRBwXZl4WtNxmJyAPxciKcrQ-JD2U1Uuc56AaG2eYlvxLhYlmIYB19aHIjh3UVRDj-9RVI4UJTU-KvXc9DJIG_TxpQ4vPgYtBWEVrsoGSksMdw1zKnyoZTPkGL_bP5h8BEo4lRmmI8SeSPsvqyRur8_o54ssDfpEnANhWTEm4A_zUx0qQltojgrchmAdJ-hhSWlrTcLoB3qErT6NJQCk63ANZjrxa1UlAy__l6C7KaLdMa7LhPSMRRZNX0Xb6C--19E"/>
-<div class="absolute top-4 left-4 flex gap-2">
-<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">เอเชีย / Asia</span>
-</div>
-</div>
-<div class="p-8">
-<div class="flex items-center gap-1 text-primary text-sm font-bold mb-2">
-<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
-<span>Bali, Indonesia</span>
-</div>
-<h3 class="headline-sm text-xl font-bold mb-4 text-on-surface">Bali Zen &amp; Tropical Paradise</h3>
-<div class="space-y-3 mb-6">
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="calendar_month">calendar_month</span>
-<span>20 Jul - 27 Jul 2024</span>
-</div>
-</div>
-<div class="flex items-center justify-between text-sm">
-<div class="flex items-center gap-2 text-on-surface-variant">
-<span class="material-symbols-outlined text-lg" data-icon="person">person</span>
-<span>Guide: Wichai Sang</span>
-</div>
-</div>
-<div class="flex items-center justify-between pt-2">
-<span class="text-sm font-bold text-on-surface-variant">Seats Remaining</span>
-<span class="text-secondary font-bold px-3 py-1 bg-secondary-container/30 rounded-full">25 Available</span>
-</div>
-</div>
-<button class="block w-full text-center bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 duration-200">
-                        จองตอนนี้ / Book Now
-                    </button>
-</div>
-</div>
-</div>
-<!-- Featured Section (Bento Grid Style) -->
-<section class="mt-24">
-<h2 class="headline-sm text-2xl font-bold text-primary mb-8">
-<span class="thai-text">ทัวร์แนะนำประจำเดือน</span> / Recommended This Month
-            </h2>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
-<div class="lg:col-span-8 relative rounded-2xl overflow-hidden group">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" data-alt="Stunning cliffs of Phi Phi Islands Thailand" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz2YIkurKMMxeJNH1N8Nnqz9TBEm9pGJR4CYGrBbCpT-4q1sltfmxlS5jPZfu9pkbiMhVoHDPyRnc0qFgeAKnaq-jLGC2E66KbgiF-jiNP-DvmKxpj3cCKfqpr-ihhWdJHJ1SH3ivPu0fncQzymQ_Xw4OsYARSKPUT1e9xv8OZjCfffYzoncGN7PfNmgiAXiGD6bvVxiPV-0t3lOMchvmggUul93_v7AvkRbOnSVTWsoal39b-HRvaKXD6jkT56fhOq8nJcFHqBr9C"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-10">
-<span class="bg-tertiary-fixed text-on-tertiary-fixed px-4 py-1 rounded-full text-xs font-bold w-fit mb-4">EXCLUSIVE</span>
-<h3 class="text-3xl font-bold text-white mb-2">Andaman Hidden Gems Cruise</h3>
-<p class="text-white/80 max-w-md">Experience the untouched beauty of Thailand's southern islands with our private luxury catamaran.</p>
-</div>
-</div>
-<div class="lg:col-span-4 bg-[#154212] rounded-2xl p-8 flex flex-col justify-between text-white">
-<div>
-<span class="material-symbols-outlined text-4xl mb-6" data-icon="auto_awesome">auto_awesome</span>
-<h4 class="text-2xl font-bold mb-4">Custom Group Packages</h4>
-<p class="text-emerald-100/70 leading-relaxed">Planning a corporate retreat or a large family reunion? Let our specialists craft a unique itinerary just for you.</p>
-</div>
-<button class="flex items-center gap-2 font-bold text-emerald-300 hover:text-white transition-colors group">
-                        Contact Specialists
-                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
-</button>
-</div>
-</div>
-</section>
-</main>
-<!-- BottomNavBar -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#FAF9F5]/80 dark:bg-slate-900/80 backdrop-blur-md shadow-[0_-10px_30px_rgba(27,28,26,0.04)] rounded-t-2xl">
-<a class="flex flex-col items-center justify-center bg-[#2D5A27] text-white rounded-2xl px-6 py-2 scale-95 duration-200" href="/">
-<span class="material-symbols-outlined" data-icon="explore">explore</span>
-<span class="font-['Manrope'] text-[10px] font-bold uppercase mt-1">ทัวร์ / Tours</span>
-</a>
-<a class="flex flex-col items-center justify-center text-slate-500 opacity-80 active:scale-95 duration-200" href="/my-tickets/">
-<span class="material-symbols-outlined" data-icon="Confirmation_Number">confirmation_number</span>
-<span class="font-['Manrope'] text-[10px] font-bold uppercase mt-1">ตั๋ว / Tickets</span>
-</a>
-</nav>
-<!-- Footer for Desktop -->
-<footer class="hidden md:block py-12 bg-surface-container-low mt-24">
-<div class="max-w-7xl mx-auto px-8 grid grid-cols-4 gap-12">
-<div class="col-span-1">
-<div class="text-2xl font-bold text-primary headline-font mb-4">TourCompanyDB</div>
-<p class="text-on-surface-variant text-sm leading-relaxed">Elevating travel experiences with curated journeys across the globe since 2010.</p>
-</div>
-<div>
-<h5 class="font-bold text-on-surface mb-4">Destinations</h5>
-<ul class="space-y-2 text-sm text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">Asia Pacific</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Europe</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Americas</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Africa &amp; Middle East</a></li>
-</ul>
-</div>
-<div>
-<h5 class="font-bold text-on-surface mb-4">Resources</h5>
-<ul class="space-y-2 text-sm text-on-surface-variant">
-<li><a class="hover:text-primary transition-colors" href="#">Travel Insurance</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Visa Information</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Booking Guide</a></li>
-<li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
-</ul>
-</div>
-<div>
-<h5 class="font-bold text-on-surface mb-4">Subscribe</h5>
-<div class="flex">
-<input class="bg-surface border-none rounded-l-xl px-4 py-2 w-full focus:ring-1 focus:ring-primary" placeholder="Email" type="email"/>
-<button class="bg-primary text-white px-4 py-2 rounded-r-xl">
-<span class="material-symbols-outlined" data-icon="send">send</span>
-</button>
-</div>
-</div>
-</div>
-<div class="max-w-7xl mx-auto px-8 pt-12 mt-12 border-t border-outline-variant opacity-20 flex justify-between text-xs text-on-surface-variant">
-<span>© 2024 TourCompanyDB. All rights reserved.</span>
-<div class="flex gap-4">
-<a href="#">Privacy Policy</a>
-<a href="#">Cookies</a>
-</div>
-</div>
-</footer>
+    .text-gradient {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding-left: 1rem;
+        transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .search-wrap:focus-within {
+        border-color: #059669;
+        box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+    }
+    .search-wrap input {
+        border: none;
+        outline: none;
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: transparent;
+        font-size: 0.875rem;
+    }
+    .search-wrap .icon { color: #9ca3af; }
 
-<!-- ═══ DJANGO TOUR LOOP (วางแทน static cards) ═══
-{% for t in tours %}
-<div class="tour-card" 
-     data-name="{{ t.1|lower }}" 
-     data-dest="{{ t.2|lower }}" 
-     data-seats="{{ t.6 }}">
-  <div class="tour-image-area">
-    {% if t.6 == 0 %}
-    <div class="tour-overlay-full"><span>เต็มแล้ว / Full</span></div>
-    {% elif t.6 <= 5 %}
-    <span class="tour-badge-urgent">เหลือ {{ t.6 }} ที่!</span>
-    {% endif %}
-    <span class="tour-dest-badge">{{ t.2 }}</span>
+    .pill {
+        padding: 0.5rem 1.25rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background: #f3f4f6;
+        color: #4b5563;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .pill.active {
+        background: #059669;
+        color: white;
+    }
+    .pill:hover:not(.active) {
+        background: #e5e7eb;
+    }
+
+    .text-text-muted { color: #6b7280; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="max-w-7xl mx-auto px-6 pt-14 pb-10">
+  <div class="fade-up">
+    <span class="badge badge-green mb-5">✈️ &nbsp;ค้นหาทัวร์ที่ใช่สำหรับคุณ</span>
+    <h1 class="font-display text-5xl md:text-6xl font-900 leading-tight mb-3">
+      <span class="text-gradient">Find Your</span><br/>Perfect Journey
+    </h1>
+    <p class="text-text-muted text-lg max-w-xl mb-8">ทัวร์คุณภาพสูงจากทีมผู้เชี่ยวชาญ คัดสรรเส้นทางที่ดีที่สุดเพื่อประสบการณ์อันน่าจดจำ</p>
   </div>
-  <div class="tour-info">
-    <h3>{{ t.1 }}</h3>
-    <p class="tour-destination">📍 {{ t.2 }}</p>
-    <div class="tour-details-grid">
-      <div><span class="detail-label">ออกเดินทาง</span><span class="detail-value">{{ t.3 }}</span></div>
-      <div><span class="detail-label">วันกลับ</span><span class="detail-value">{{ t.4 }}</span></div>
-      <div><span class="detail-label">ที่นั่งว่าง</span>
-        <span class="detail-value {% if t.6 == 0 %}text-red-600{% elif t.6 <= 5 %}text-orange-500{% else %}text-green-600{% endif %}">{{ t.6 }} ที่</span>
-      </div>
-      <div><span class="detail-label">ไกด์</span><span class="detail-value">{{ t.9|default:"-" }}</span></div>
+
+  <!-- Search + Filter -->
+  <div class="fade-up delay-1 flex flex-col md:flex-row gap-4 items-start md:items-center">
+    <div class="search-wrap flex-1 max-w-lg">
+      <span class="material-symbols-outlined icon">search</span>
+      <input id="tour-search" type="text" placeholder="ค้นหาทัวร์ เช่น Japan, Bali, Europe..." />
     </div>
-    {% if t.6 == 0 %}
-    <button disabled class="btn-tour-full">เต็มแล้ว</button>
-    {% elif is_logged_in %}
-    <a href="/booking/?schedule_id={{ t.0 }}" class="btn-tour-book">
-      🛒 จองตอนนี้ / Book Now
-    </a>
-    {% else %}
-    <a href="/login/" class="btn-tour-login">
-      🔐 Login เพื่อจอง / Login to Book
-    </a>
-    {% endif %}
+    <div class="flex flex-wrap gap-2">
+      <button class="pill active" data-filter="all">ทั้งหมด</button>
+      <button class="pill" data-filter="available">พร้อมจอง</button>
+      <button class="pill" data-filter="asia">เอเชีย</button>
+      <button class="pill" data-filter="europe">ยุโรป</button>
+    </div>
   </div>
-</div>
-{% empty %}
-<div class="tours-empty">
-  <p>ไม่มีทัวร์ที่พร้อมใช้งาน / No tours available</p>
-</div>
-{% endfor %}
-<div id="no-results" class="hidden tours-empty">ไม่พบทัวร์ที่ตรงกับการค้นหา</div>
-═══ END LOOP ═══ -->
+</section>
 
+<!-- TOUR GRID -->
+<main class="max-w-7xl mx-auto px-6 pb-20">
+  <div id="tour-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+    {% for t in tours %}
+    <div class="tour-card fade-up {% if t.6 == 0 %}opacity-60 grayscale{% endif %}" data-name="{{ t.1|lower }}" data-dest="{{ t.2|lower }}" data-seats="{{ t.6 }}">
+      <div class="relative h-56 overflow-hidden bg-gray-100">
+        <!-- Stable Placeholder Image based on destination -->
+        <img class="w-full h-full object-cover" src="https://loremflickr.com/600/400/{{ t.2|urlencode }},travel/all" alt="{{ t.2 }}"/>
+        
+        <div class="absolute top-3 left-3"><span class="badge badge-green">{{ t.2 }}</span></div>
+        <div class="absolute top-3 right-3">
+          {% if t.6 == 0 %}
+            <span class="badge badge-gray px-4 py-2 shadow-sm text-sm">เต็มแล้ว / Full</span>
+          {% elif t.6 > 0 and t.6 <= 5 %}
+            <span class="badge badge-red animate-pulse shadow-sm">เหลือ {{ t.6 }} ที่!</span>
+          {% else %}
+            <span class="badge badge-green shadow-sm">{{ t.6 }} ที่นั่ง</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center gap-1 text-primary text-sm font-medium mb-2">
+          <span class="material-symbols-outlined text-base">location_on</span> {{ t.2 }}
+        </div>
+        <h3 class="font-display text-xl font-700 mb-3 text-text line-clamp-2" title="{{ t.1 }}">{{ t.1 }}</h3>
+        <div class="flex items-center justify-between text-text-muted text-sm mb-4">
+          <div class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">calendar_month</span> {{ t.3|date:"d M" }} – {{ t.4|date:"d M y" }}
+          </div>
+          <div class="font-bold text-primary text-lg">฿ {{ t.7 }}</div>
+        </div>
+        
+        <div class="mb-5 bg-surface-container-lowest border border-border rounded-xl p-3">
+          <div class="flex justify-between text-xs font-medium mb-1.5">
+            <span class="text-text-muted">จำนวนที่นั่งว่าง</span>
+            <span class="{% if t.6 == 0 %}text-text-muted{% elif t.6 <= 5 %}text-red-500{% else %}text-primary{% endif %} font-700">{{ t.6 }} / {{ t.5 }}</span>
+          </div>
+          <div class="seats-bar bg-surface-container"><div class="seats-fill {% if t.6 <= 5 %}bg-error{% endif %}" style="width:{% widthratio t.6 t.5 100 %}%"></div></div>
+        </div>
+        
+        {% if t.6 == 0 %}
+          <div class="btn-disabled text-sm text-center w-full py-3">เต็มแล้ว / Fully Booked</div>
+        {% elif request.session.user_id %}
+          <a href="/booking/?schedule_id={{ t.0 }}" class="btn-primary text-sm block text-center py-3 w-full shadow-sm hover:shadow-md">จองเลย / Book Now</a>
+        {% else %}
+          <a href="/login/" class="btn-primary !bg-surface !text-primary border-2 border-primary text-sm block text-center py-3 w-full hover:bg-primary-light transition-colors">Login เพื่อจอง / Login to Book</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-span-1 md:col-span-3 text-center py-20">
+      <span class="material-symbols-outlined text-6xl text-border mb-4">search_off</span>
+      <p class="text-text-muted font-medium text-lg">ยังไม่มีรายการทัวร์ในขณะนี้</p>
+      <p class="text-text-light text-sm mt-1">กรุณากลับมาตรวจสอบใหม่ภายหลัง</p>
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <!-- Empty state client-side filter -->
+  <div id="no-results" class="hidden text-center py-20">
+    <span class="material-symbols-outlined text-5xl text-text-light mb-3">search_off</span>
+    <p class="text-text-muted mt-3 font-medium">ไม่พบทัวร์ที่ตรงกับการค้นหา</p>
+  </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-function applyFilters(){
-  const kw=(document.getElementById('tour-search')?.value||'').toLowerCase();
-  const active=document.querySelector('.filter-btn.active')?.dataset.filter||'all';
-  let vis=0;
-  document.querySelectorAll('.tour-card').forEach(card=>{
-    const name=(card.dataset.name||'').toLowerCase();
-    const dest=(card.dataset.dest||'').toLowerCase();
-    const seats=parseInt(card.dataset.seats||'0');
-    const ms=!kw||name.includes(kw)||dest.includes(kw);
-    const mf=active==='all'||(active==='available'&&seats>0)||dest.includes(active);
-    card.style.display=(ms&&mf)?'':'none';
-    if(ms&&mf)vis++;
-  });
-  document.getElementById('no-results')?.classList.toggle('hidden',vis>0);
-}
-document.querySelectorAll('.filter-btn').forEach(b=>{
+document.querySelectorAll('.pill').forEach(b=>{
   b.addEventListener('click',()=>{
-    document.querySelectorAll('.filter-btn').forEach(x=>{
-      x.classList.remove('active', 'bg-primary', 'text-on-primary');
-      x.classList.add('bg-surface-container-low', 'text-on-surface-variant');
-    });
-    b.classList.add('active', 'bg-primary', 'text-on-primary');
-    b.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+    document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
     applyFilters();
   });
 });
 document.getElementById('tour-search')?.addEventListener('input',applyFilters);
 </script>
-</body></html>
+{% endblock %}
