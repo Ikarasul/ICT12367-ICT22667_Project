@@ -1,0 +1,50 @@
+<header class="sticky top-0 z-40 bg-[#FAF9F5] dark:bg-slate-900 border-none">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold text-[#154212] dark:text-emerald-500 headline-font">TourCompanyDB</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-[#154212] font-bold border-b-2 border-[#154212] pb-1 hover:text-[#2D5A27] transition-colors" href="/">ทัวร์ / Tours</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#2D5A27] transition-colors" href="/my-tickets/">ตั๋ว / Tickets</a>
+</nav>
+<div class="flex items-center space-x-6">
+<div class="hidden md:flex space-x-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+</button>
+<div class="relative">
+<button id="profile-btn" class="btn-icon text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+</button>
+<div id="profileMenu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 p-2 z-50">
+    <a href="/login/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">Login</a>
+    <a href="/dashboard/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">Dashboard</a>
+    <a href="/manage/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">Manage</a>
+    <a href="/logout/" class="block px-4 py-2 text-sm text-error font-bold hover:bg-error/10 rounded-lg">Logout</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<style>
+.dropdown-menu { display: none; }
+.dropdown-menu.show { display: block; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const profileBtn = document.getElementById('profile-btn');
+  const profileMenu = document.getElementById('profileMenu');
+  
+  if (profileBtn && profileMenu) {
+    profileBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      profileMenu.classList.toggle('show');
+    });
+    document.addEventListener('click', function() {
+      profileMenu.classList.remove('show');
+    });
+    profileMenu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  }
+});
+</script>

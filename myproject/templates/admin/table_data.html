@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TourCompanyDB - Database Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-background": "#1b1c1a",
+              "inverse-surface": "#2f312e",
+              "on-secondary-fixed-variant": "#005313",
+              "on-tertiary-container": "#f7b900",
+              "surface-variant": "#e3e2df",
+              "background": "#faf9f5",
+              "surface-bright": "#faf9f5",
+              "inverse-on-surface": "#f2f1ed",
+              "surface-container-high": "#e9e8e4",
+              "tertiary": "#4b3600",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e3e2df",
+              "on-surface": "#1b1c1a",
+              "surface": "#faf9f5",
+              "surface-container": "#efeeea",
+              "inverse-primary": "#a1d494",
+              "tertiary-container": "#684c00",
+              "on-tertiary-fixed": "#261a00",
+              "secondary-container": "#91f78e",
+              "primary-fixed-dim": "#a1d494",
+              "on-secondary-fixed": "#002204",
+              "surface-container-low": "#f4f4f0",
+              "on-tertiary-fixed-variant": "#5c4300",
+              "on-error": "#ffffff",
+              "primary-fixed": "#bcf0ae",
+              "secondary-fixed": "#94f990",
+              "tertiary-fixed-dim": "#fbbc00",
+              "secondary-fixed-dim": "#78dc77",
+              "on-secondary-container": "#00731e",
+              "on-secondary": "#ffffff",
+              "outline-variant": "#c2c9bb",
+              "on-primary-fixed": "#002201",
+              "secondary": "#006e1c",
+              "primary": "#154212",
+              "on-primary-fixed-variant": "#23501e",
+              "primary-container": "#2d5a27",
+              "error": "#ba1a1a",
+              "outline": "#72796e",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed": "#ffdfa0",
+              "error-container": "#ffdad6",
+              "surface-tint": "#3b6934",
+              "surface-dim": "#dbdad6",
+              "on-primary-container": "#9dd090",
+              "on-surface-variant": "#42493e"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ghost-border { border-color: rgba(194, 201, 187, 0.15); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar (Authority: Shared Components JSON & Design System) -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#1E2433] w-64 shadow-2xl z-50">
+<div class="p-6">
+<h1 class="text-xl font-bold text-white font-headline">TourCompanyDB</h1>
+<p class="text-xs text-slate-400 font-label uppercase tracking-widest mt-1">Staff Portal</p>
+</div>
+<nav class="flex-1 mt-4 space-y-1">
+<a class="flex items-center text-slate-400 hover:text-white mx-2 px-4 py-3 transition-all scale-[0.98] group" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="dashboard">dashboard</span>
+<span class="font-label text-sm">Dashboard</span>
+</a>
+<a class="flex items-center text-slate-400 hover:text-white mx-2 px-4 py-3 transition-all scale-[0.98] group" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label text-sm">My Tickets</span>
+</a>
+<!-- Active State: Database Management -->
+<a class="flex items-center bg-emerald-600 text-white rounded-xl mx-2 px-4 py-3 transition-all scale-[0.98] shadow-lg shadow-emerald-900/20" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="database">database</span>
+<span class="font-label text-sm">Database Management</span>
+</a>
+</nav>
+<div class="p-4 bg-[#252D3D] mt-auto">
+<div class="flex items-center px-2 py-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-xs mr-3">
+<img class="w-full h-full rounded-full object-cover" data-alt="Staff profile photo portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi6c34qqb0NuCe4sP57jVjk-4_Z4oAiMqwABbzj7xn40GaSQDDAO1KfNln-w60OT-m2uyXlUnvT23owCMpN0NB1Hj48dE26pojMyX865M96tKKGrcclY3EFUa7kBDiPZs6othHlJcZzClkwhnGq-qITi-DMLIShO46xbPrq-wJY_wIgN16TiEbWaPlM9-8YtZGrV30ZQLRd7jMicPKNmkiOMnz1Dw6acELXq-iZl3FmTFYugzJmCy7G1YTJBet0tL42ZkeJhFUMGnd"/>
+</div>
+<div>
+<p class="text-white text-xs font-bold">Admin User</p>
+<p class="text-[10px] text-slate-400">System Administrator</p>
+</div>
+</div>
+<a class="flex items-center text-slate-400 hover:text-white px-4 py-2 text-sm transition-all" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="settings">settings</span>
+<span class="font-label">Settings</span>
+</a>
+<a class="flex items-center text-slate-400 hover:text-white px-4 py-2 text-sm transition-all" href="#">
+<span class="material-symbols-outlined mr-3 text-sm" data-icon="logout">logout</span>
+<span class="font-label">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="pl-64 min-h-screen">
+<!-- TopNavBar (Dashboard Variant) -->
+<header class="flex justify-between items-center w-full pl-8 pr-8 py-4 bg-white border-b border-slate-100 sticky top-0 z-40">
+<div class="flex items-center gap-2 overflow-hidden">
+<nav aria-label="Breadcrumb" class="flex text-sm text-slate-400 font-medium">
+<ol class="flex items-center space-x-2">
+<li><span class="hover:text-secondary cursor-pointer">ฐานข้อมูล / Database</span></li>
+<li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
+<li><span class="text-secondary font-bold">{{ table_name|default:"Tours_Master" }}</span></li>
+</ol>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-xl text-sm focus:ring-2 focus:ring-secondary w-64 transition-all" placeholder="Search records..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:bg-surface-container rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-8 max-w-[1600px] mx-auto">
+<!-- Action Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="text-3xl font-bold font-headline text-primary mb-1">{{ table_name|default:"Tours_Master" }}</h2>
+<p class="text-slate-500 text-sm">Manage entries, prices, and availability for the selected data entity.</p>
+</div>
+<a class="inline-flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all" href="/manage/{{ table_name|default:'tours' }}/create/">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+<span>เพิ่มรายการ / Add Record</span>
+</a>
+</div>
+<!-- Data Table Container (Editorial Style) -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">
+<input class="rounded text-secondary focus:ring-secondary border-slate-300" type="checkbox"/>
+</th>
+<!-- Mocked Column Headers -->
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">ID</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">ชื่อรายการ / Name</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">หมวดหมู่ / Category</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-center">ราคา / Price</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">สถานะ / Status</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-right">การจัดการ / Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50">
+<!-- Django Loop Mockup: Item 1 -->
+<tr class="group hover:bg-secondary/5 transition-colors">
+<td class="px-6 py-4">
+<input class="rounded text-secondary focus:ring-secondary border-slate-300" type="checkbox"/>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-400">#TR-8821</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg" data-alt="Tropical island bay with clear water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgacjZPddyEp_mgiBwh_DvS7NOPdL1g8jAMtUxgl1YBKQZ5r4JjAu5JjRNYAqhP267h3vfJwpwIGOjl1BqDhVI_arWbFak9D4pIi1eULlhzeaRmy0HaWmlQ4poJUplzuI0rPWi6_TccI7H1KFD66ouIj_uH6RgjgemRshkTbWn0aUEeK1wXTnRhiKolJt0qR0OfWtG7DizD5oDh8KxIL3jWkrgQUmoDyHuRUV81p_gAk1GKpiCZAmxlCx64jPJb7r-RVgYaIkRdVXd"/>
+</div>
+<div>
+<p class="font-bold text-sm text-primary">หมู่เกาะพีพี (สปีดโบ๊ท)</p>
+<p class="text-xs text-slate-500">Phi Phi Islands Discovery</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-surface-container text-slate-600 text-[10px] font-bold uppercase">Island Tour</span>
+</td>
+<td class="px-6 py-4 text-center">
+<p class="font-bold text-sm text-on-background">฿2,400</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">
+<span class="w-1 h-1 rounded-full bg-secondary mr-1.5"></span>
+                                        ACTIVE
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+<a class="p-2 text-slate-400 hover:text-secondary hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all" href="/manage/{{ table_name }}/edit/{{ row.0 }}/" title="Edit Record">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</a>
+<button class="p-2 text-slate-400 hover:text-error hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all" title="Delete Record">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Mockup: Item 2 -->
+<tr class="group hover:bg-secondary/5 transition-colors">
+<td class="px-6 py-4">
+<input class="rounded text-secondary focus:ring-secondary border-slate-300" type="checkbox"/>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-400">#TR-8822</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg" data-alt="Traditional Thai temple golden architecture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvVnPWMKHxbAhhf2O8c4acqGJs_TiGKF8TJHLeQOGk1tH5nALDbLDFVd0JRxTAmYCBgpdtt8X-zia7DEiJh0ikFfct2sujYnMiBoZlaxvqGmiZpTFWsP8zs3nIyPY_sOHZN51pRtX4rnJZos5G59JCAN4OwPsQdoDYYTduDAtPE_KSt6Q9PGpMLIWi6iZA6HNCh15rsLM7ixAeepmnkE_3ZUfzD-XMwgjZKPxibxePA_lgWyHsdgL2aRgdh5vfNoHMGpHmNZ7GLu4z"/>
+</div>
+<div>
+<p class="font-bold text-sm text-primary">เที่ยววัดอรุณฯ และพระบรมมหาราชวัง</p>
+<p class="text-xs text-slate-500">Royal Grand Palace Cultural</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-surface-container text-slate-600 text-[10px] font-bold uppercase">Culture</span>
+</td>
+<td class="px-6 py-4 text-center">
+<p class="font-bold text-sm text-on-background">฿1,800</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">
+<span class="w-1 h-1 rounded-full bg-secondary mr-1.5"></span>
+                                        ACTIVE
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+<a class="p-2 text-slate-400 hover:text-secondary hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</a>
+<button class="p-2 text-slate-400 hover:text-error hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Mockup: Item 3 -->
+<tr class="group hover:bg-secondary/5 transition-colors">
+<td class="px-6 py-4">
+<input class="rounded text-secondary focus:ring-secondary border-slate-300" type="checkbox"/>
+</td>
+<td class="px-6 py-4 font-mono text-xs text-slate-400">#TR-8823</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg" data-alt="Dense green jungle landscape" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwwszFcZdVBSLwEsAy93GM08nxhb5frgTKaPOb3VM_RUM__oIRMR68PVVEojgIxBZD42q4ygxEyroSVZqoAZ4y3gjIF57z6B93ygymvgH-Z5y0Xk_nAfQE6I1pTTo4IpZbFshCqMsUJr2q0bjWo7WgsbcU5T6cV2dAFqzWNET7iRA9Q1PG27GHztdaPrAlLGODTYz0G6Fmpq9EcCeT1bobqkYqavSkXAlEeivOsVbTgP8dxyAYwRot-tHhJ4UAiw_O5MDTGtRbRXwn"/>
+</div>
+<div>
+<p class="font-bold text-sm text-primary">เดินป่าอุทยานแห่งชาติเขาใหญ่</p>
+<p class="text-xs text-slate-500">Khao Yai Nature Trekking</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-surface-container text-slate-600 text-[10px] font-bold uppercase">Adventure</span>
+</td>
+<td class="px-6 py-4 text-center">
+<p class="font-bold text-sm text-on-background">฿3,200</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="w-1 h-1 rounded-full bg-tertiary mr-1.5"></span>
+                                        DRAFT
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+<a class="p-2 text-slate-400 hover:text-secondary hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</a>
+<button class="p-2 text-slate-400 hover:text-error hover:bg-white rounded-lg shadow-sm border border-transparent hover:border-slate-100 transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination -->
+<div class="px-6 py-4 bg-surface-container-low flex items-center justify-between border-t ghost-border">
+<p class="text-xs text-slate-500 font-label">แสดง 1 ถึง 3 จากทั้งหมด 48 รายการ / Showing 1 to 3 of 48 records</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-secondary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-slate-500 hover:bg-white transition-colors text-xs">2</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-slate-500 hover:bg-white transition-colors text-xs">3</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400 hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CSRF Token Placeholder for Form Submissions -->
+<div class="hidden">{% csrf_token %}</div>
+</div>
+<!-- System Stats Bar (Bottom Anchor) -->
+<footer class="mt-auto py-6 px-8 flex justify-between items-center text-[10px] text-slate-400 font-label uppercase tracking-widest bg-surface-container-low">
+<div class="flex gap-6">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Database Connected</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> API Latency: 42ms</span>
+</div>
+<div>
+                © 2024 TourCompanyDB Management Console
+            </div>
+</footer>
+</main>
+<!-- DJANGO TABLE:
+{{ table_name }}
+{% for col in columns %}<th>{{ col }}</th>{% endfor %}
+{% for row in rows %}
+<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}
+  <td>
+    <a href="/manage/{{ table_name }}/edit/{{ row.0 }}/">✏️</a>
+    <a href="/manage/{{ table_name }}/delete/{{ row.0 }}/" onclick="return confirm('ยืนยันการลบ?')">🗑️</a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="99">ไม่พบข้อมูล</td></tr>
+{% endfor %}
+-->
+</body></html>

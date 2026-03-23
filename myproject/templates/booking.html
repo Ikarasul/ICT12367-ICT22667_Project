@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TourCompanyDB - Booking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#1b1c1a",
+                        "inverse-surface": "#2f312e",
+                        "on-secondary-fixed-variant": "#005313",
+                        "on-tertiary-container": "#f7b900",
+                        "surface-variant": "#e3e2df",
+                        "background": "#faf9f5",
+                        "surface-bright": "#faf9f5",
+                        "inverse-on-surface": "#f2f1ed",
+                        "surface-container-high": "#e9e8e4",
+                        "tertiary": "#4b3600",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e3e2df",
+                        "on-surface": "#1b1c1a",
+                        "surface": "#faf9f5",
+                        "surface-container": "#efeeea",
+                        "inverse-primary": "#a1d494",
+                        "tertiary-container": "#684c00",
+                        "on-tertiary-fixed": "#261a00",
+                        "secondary-container": "#91f78e",
+                        "primary-fixed-dim": "#a1d494",
+                        "on-secondary-fixed": "#002204",
+                        "surface-container-low": "#f4f4f0",
+                        "on-tertiary-fixed-variant": "#5c4300",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#bcf0ae",
+                        "secondary-fixed": "#94f990",
+                        "tertiary-fixed-dim": "#fbbc00",
+                        "secondary-fixed-dim": "#78dc77",
+                        "on-secondary-container": "#00731e",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c2c9bb",
+                        "on-primary-fixed": "#002201",
+                        "secondary": "#006e1c",
+                        "primary": "#154212",
+                        "on-primary-fixed-variant": "#23501e",
+                        "primary-container": "#2d5a27",
+                        "error": "#ba1a1a",
+                        "outline": "#72796e",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffdfa0",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#3b6934",
+                        "surface-dim": "#dbdad6",
+                        "on-primary-container": "#9dd090",
+                        "on-surface-variant": "#42493e"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bg-gradient-primary { background: linear-gradient(135deg, #154212 0%, #2D5A27 100%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar (Shared Component Mapping) -->
+<header class="bg-[#FAF9F5] sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold text-[#154212]">TourCompanyDB</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-[#154212] font-bold border-b-2 border-[#154212] pb-1 hover:text-[#2D5A27] transition-colors" href="#">ทัวร์ / Tours</a>
+<a class="text-slate-600 hover:text-[#2D5A27] transition-colors" href="#">ตั๋ว / Tickets</a>
+</nav>
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">language</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
+</div>
+<button class="hidden lg:block bg-primary text-on-primary px-6 py-2 rounded-xl font-bold hover:scale-95 duration-200">
+                    เข้าสู่ระบบ / Login
+                </button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-12 md:py-20">
+<!-- Editorial Header Section -->
+<div class="mb-12">
+<nav class="flex items-center gap-2 text-label-md text-outline font-bold uppercase mb-4 tracking-wider">
+<span>ทัวร์ / Tours</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary">รายละเอียดการจอง / Booking Details</span>
+</nav>
+<h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">จองทริปของคุณ / Book Your Journey</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">เตรียมพร้อมสัมผัสประสบการณ์สุดพิเศษที่คัดสรรมาเพื่อคุณโดยเฉพาะ</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- Left Side: Form Section -->
+<div class="lg:col-span-7">
+<form action="/booking/" class="space-y-8" method="POST">
+<!-- CSRF TOKEN PLACEHOLDER -->
+<div class="hidden">{% csrf_token %}</div>
+<input name="schedule_id" type="hidden" value="{{ schedule_id }}"/>
+<section class="bg-surface-container-low rounded-2xl p-8 transition-all hover:bg-surface-container">
+<h2 class="text-2xl font-bold text-primary mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined">group</span>
+                            จำนวนผู้เดินทาง / Travelers
+                        </h2>
+<div class="space-y-10">
+<!-- Adults -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-xl font-semibold">ผู้ใหญ่ / Adults</h3>
+<p class="text-on-surface-variant text-sm">อายุ 12 ปีขึ้นไป / Age 12+</p>
+</div>
+<div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface hover:bg-surface-container-high transition-colors text-primary border border-outline-variant/30" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="w-12 text-center bg-transparent border-none font-bold text-xl focus:ring-0 p-0" min="1" name="num_adults" type="number" value="1"/>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Children -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-xl font-semibold">เด็ก / Children</h3>
+<p class="text-on-surface-variant text-sm">อายุ 2-11 ปี / Age 2-11</p>
+</div>
+<div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface hover:bg-surface-container-high transition-colors text-primary border border-outline-variant/30" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="w-12 text-center bg-transparent border-none font-bold text-xl focus:ring-0 p-0" min="0" name="num_children" type="number" value="0"/>
+<button class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-container-low rounded-2xl p-8">
+<h2 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
+<span class="material-symbols-outlined">contact_support</span>
+                            ข้อมูลติดต่อ / Contact Information
+                        </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">ชื่อ-นามสกุล / Full Name</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="Your Name" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">อีเมล / Email</label>
+<input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="your@email.com" type="email"/>
+</div>
+</div>
+</section>
+<div class="block lg:hidden pt-4">
+<button class="w-full bg-gradient-primary text-on-primary py-5 rounded-2xl text-xl font-bold shadow-xl hover:scale-[0.98] duration-200" type="submit">
+                            ยืนยันการจอง · ฿5,900 / Confirm Booking · ฿5,900
+                        </button>
+</div>
+</form>
+</div>
+<!-- Right Side: Summary Card -->
+<aside class="lg:col-span-5 sticky top-32">
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(27,28,26,0.06)] border border-outline-variant/15">
+<div class="h-48 relative">
+<img class="w-full h-full object-cover" data-alt="Tropical island bay with turquoise water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcvuciNWmw3B8oWBI6fz0oPZ6DB8Rkaw4YmSj1MNntFwMEP6V51E6Dza14nyKL-6ouEpePqdnOlxu3nan0g8KCvvlMjQryTlF9YIT00PyFVjqFieRGY_SxpjfSjWR8NH108Yp5GsCvwuucHx0NAMiPzEbvZbJ-JAoxe0aWcA5pClaCGEGmGcaYiioamkkSxVPtii69cNJ7rCZw_sLIwLZUU0Kz9cL16nJ9vTpIracz5PmCyRfu5L8DuT_VaaX7Aq622OMHztZY4WHL"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+<h2 class="text-white text-2xl font-bold">{{ tour_name }}</h2>
+</div>
+</div>
+<div class="p-8 space-y-6">
+<div class="space-y-4">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div>
+<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">Destination</p>
+<p class="text-lg font-semibold">{{ destination }}</p>
+</div>
+</div>
+<div class="flex items-center gap-8 pl-14 relative">
+<div class="absolute left-5 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-primary-fixed"></div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">Departure</p>
+<p class="font-medium">{{ departure_date }}</p>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase">Return</p>
+<p class="font-medium">{{ return_date }}</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant text-sm">person</span>
+</div>
+<div>
+<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">Tour Guide</p>
+<p class="text-lg font-semibold">{{ guide_name }}</p>
+</div>
+</div>
+</div>
+<div class="h-px bg-outline-variant opacity-20"></div>
+<div class="space-y-3">
+<div class="flex justify-between text-on-surface-variant">
+<span>ผู้ใหญ่ / Adult (x1)</span>
+<span>฿{{ tour_price }}</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>เด็ก / Child (x0)</span>
+<span>฿0</span>
+</div>
+<div class="flex justify-between text-primary font-bold text-2xl pt-4">
+<span>ยอดรวม / Total</span>
+<span>฿{{ tour_price }}</span>
+</div>
+</div>
+<div class="bg-tertiary-fixed/30 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary">info</span>
+<p class="text-xs text-tertiary font-bold uppercase">ที่ว่างเหลือเพียง / Only {{ available_seats }} seats left</p>
+</div>
+<button class="hidden lg:block w-full bg-gradient-primary text-on-primary py-5 rounded-2xl text-lg font-bold shadow-lg hover:scale-102 hover:shadow-xl transition-all duration-300">
+                            ยืนยันการจอง · ฿{{ tour_price }} / Confirm Booking
+                        </button>
+</div>
+</div>
+<div class="mt-8 flex items-center justify-center gap-4 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-secondary">verified_user</span>
+<span>Secure Checkout • SSL Encrypted</span>
+</div>
+</aside>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#FAF9F5]/80 backdrop-blur-md shadow-[0_-10px_30px_rgba(27,28,26,0.04)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center bg-[#2D5A27] text-white rounded-2xl px-6 py-2" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-['Manrope'] text-[10px] font-bold uppercase">ทัวร์ / TOURS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-['Manrope'] text-[10px] font-bold uppercase">ตั๋ว / TICKETS</span>
+</a>
+</nav>
+<!-- Footer for Desktop -->
+<footer class="hidden md:block py-20 bg-surface-container-low mt-20">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-4 gap-12">
+<div class="col-span-2">
+<div class="text-2xl font-bold text-primary mb-6">TourCompanyDB</div>
+<p class="text-on-surface-variant max-w-sm">เราคัดสรรทริปที่ดีที่สุดเพื่อให้คุณได้รับประสบการณ์การเดินทางที่น่าประทับใจที่สุดในชีวิต</p>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold uppercase tracking-wider text-primary">Explore</h4>
+<ul class="space-y-2 text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Domestic Tours</a></li>
+<li><a class="hover:text-primary" href="#">International Tickets</a></li>
+<li><a class="hover:text-primary" href="#">Special Offers</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h4 class="font-bold uppercase tracking-wider text-primary">Support</h4>
+<ul class="space-y-2 text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Help Center</a></li>
+<li><a class="hover:text-primary" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+</div>
+</footer>
+
+<script>
+const ADULT_PRICE = parseFloat("{{ tour_price|default:'0' }}".replace(/,/g,'')) || 0;
+const CHILD_PRICE = Math.round(ADULT_PRICE * 0.5);
+function fmt(n){ return n.toLocaleString('th-TH'); }
+function adjustGuest(field, delta){
+  const el = document.getElementById(field);
+  el.value = Math.max(parseInt(el.min)||0, (parseInt(el.value)||0)+delta);
+  calcTotal();
+}
+function calcTotal(){
+  const a = Math.max(1, parseInt(document.getElementById('num_adults')?.value)||1);
+  const k = Math.max(0, parseInt(document.getElementById('num_children')?.value)||0);
+  const total = a*ADULT_PRICE + k*CHILD_PRICE;
+  document.querySelectorAll('.total-display').forEach(el=>el.textContent=fmt(total));
+  document.querySelectorAll('.adult-sub').forEach(el=>el.textContent=fmt(a*ADULT_PRICE));
+  document.querySelectorAll('.child-sub').forEach(el=>el.textContent=fmt(k*CHILD_PRICE));
+  document.querySelectorAll('.lbl-adults').forEach(el=>el.textContent=a);
+  document.querySelectorAll('.lbl-children').forEach(el=>el.textContent=k);
+}
+document.addEventListener('DOMContentLoaded', calcTotal);
+</script>
+</body></html>
