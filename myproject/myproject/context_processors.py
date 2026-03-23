@@ -1,0 +1,156 @@
+def custom_translations(request):
+    lang = request.session.get('django_language', 'th')
+    
+    # Custom translation dictionary
+    words = {
+        # Common / Navbar
+        'tours': 'ทัวร์ / Tours' if lang == 'th' else 'Tours',
+        'tickets': 'ตั๋ว / Tickets' if lang == 'th' else 'Tickets',
+        'login': 'เข้าสู่ระบบ / Login' if lang == 'th' else 'Login',
+        'register': 'สมัครสมาชิก / Register' if lang == 'th' else 'Register',
+        'my_tickets': 'ตั๋วของฉัน / My Tickets' if lang == 'th' else 'My Tickets',
+        'logout': 'ออกจากระบบ / Logout' if lang == 'th' else 'Logout',
+        'dashboard': 'แดชบอร์ด / Dashboard' if lang == 'th' else 'Dashboard',
+        'manage': 'จัดการระบบ / Manage' if lang == 'th' else 'Manage',
+        
+        # Staff Sidebar Menu
+        'menu_dashboard':  'แดชบอร์ด' if lang == 'th' else 'Dashboard',
+        'menu_tours':      'ทัวร์ทั้งหมด' if lang == 'th' else 'All Tours',
+        'menu_bookings':   'รายการจอง' if lang == 'th' else 'Bookings',
+        'menu_manage':     'จัดการข้อมูล' if lang == 'th' else 'Manage Data',
+        'menu_audit':      'บันทึกการใช้งาน' if lang == 'th' else 'Audit Log',
+        'menu_settings':   'ตั้งค่า' if lang == 'th' else 'Settings',
+        'view_all':        'ดูทั้งหมด' if lang == 'th' else 'View All',
+        'staff_portal':    'ระบบพนักงาน' if lang == 'th' else 'Staff Portal',
+        
+        # Tours Page
+        'find_your_tour': '✈️ ค้นหาทัวร์ที่ใช่สำหรับคุณ' if lang == 'th' else '✈️ Find your perfect tour',
+        'perfect_journey_1': 'ค้นหา' if lang == 'th' else 'Find Your',
+        'perfect_journey_2': 'การเดินทางที่สมบูรณ์แบบ' if lang == 'th' else 'Perfect Journey',
+        'tour_desc': 'ทัวร์คุณภาพสูงจากทีมผู้เชี่ยวชาญ คัดสรรเส้นทางที่ดีที่สุดเพื่อประสบการณ์อันน่าจดจำ' if lang == 'th' else 'High quality tours from experts. Carefully selected routes for unforgettable experiences.',
+        'search_placeholder': 'ค้นหาทัวร์ เช่น Japan, Bali, Europe...' if lang == 'th' else 'Search tours e.g. Japan, Bali, Europe...',
+        'all': 'ทั้งหมด' if lang == 'th' else 'All',
+        'available': 'พร้อมจอง' if lang == 'th' else 'Available',
+        'asia': 'เอเชีย' if lang == 'th' else 'Asia',
+        'europe': 'ยุโรป' if lang == 'th' else 'Europe',
+        'fully_booked': 'เต็มแล้ว / Fully Booked' if lang == 'th' else 'Fully Booked',
+        'seats_left': 'เหลือแค่ไม่กี่ที่!' if lang == 'th' else 'Only a few seats left!',
+        'seats': 'ที่นั่ง' if lang == 'th' else 'seats',
+        'available_seats_label': 'จำนวนที่นั่งว่าง' if lang == 'th' else 'Available Seats',
+        'book_now': 'จองเลย / Book Now' if lang == 'th' else 'Book Now',
+        'login_to_book': 'Login เพื่อจอง / Login to Book' if lang == 'th' else 'Login to Book',
+        'no_tours': 'ยังไม่มีรายการทัวร์ในขณะนี้' if lang == 'th' else 'No tours available at the moment',
+        'check_later': 'กรุณากลับมาตรวจสอบใหม่ภายหลัง' if lang == 'th' else 'Please check back later',
+        'no_matching_tours': 'ไม่พบทัวร์ที่ตรงกับการค้นหา' if lang == 'th' else 'No tours match your search',
+        
+        # Login Page
+        'welcome': 'ยินดีต้อนรับ' if lang == 'th' else 'Welcome',
+        'login_desc': 'เข้าสู่ระบบเพื่อจัดการการเดินทางของคุณ' if lang == 'th' else 'Sign in to manage your journeys',
+        'email': 'อีเมล / Email' if lang == 'th' else 'Email',
+        'password': 'รหัสผ่าน / Password' if lang == 'th' else 'Password',
+        'forgot_pwd': 'ลืมรหัสผ่าน?' if lang == 'th' else 'Forgot Password?',
+        'remember_me': 'จดจำฉัน / Remember me' if lang == 'th' else 'Remember me',
+        'sign_in': 'เข้าสู่ระบบ / Sign In' if lang == 'th' else 'Sign In',
+        'no_account': 'ยังไม่มีบัญชี? / Don\'t have an account?' if lang == 'th' else 'Don\'t have an account?',
+        'discover_new': 'ค้นพบประสบการณใหม่ๆ' if lang == 'th' else 'Discover New Experiences',
+        'hero_desc': 'สัมผัสความงามของธรรมชาติด้วยแพ็คเกจทัวร์คุณภาพสูงที่คัดสรรมาเพื่อคุณโดยเฉพาะ' if lang == 'th' else 'Experience the beauty of nature with high quality tour packages specially selected for you.',
+        
+        # Register Page
+        'create_account': 'สร้างบัญชีผู้ใช้ / Create Account' if lang == 'th' else 'Create Account',
+        'register_desc': 'กรุณากรอกข้อมูลส่วนตัวเพื่อลงทะเบียน' if lang == 'th' else 'Please fill in your personal details to register',
+        'fullname': 'ชื่อ-นามสกุล / Full Name' if lang == 'th' else 'Full Name',
+        'phone': 'เบอร์โทร / Phone' if lang == 'th' else 'Phone',
+        'passport': 'เลขพาสปอร์ต / Passport No.' if lang == 'th' else 'Passport No.',
+        'dob': 'วันเกิด / Date of Birth' if lang == 'th' else 'Date of Birth',
+        'nationality': 'สัญชาติ / Nationality' if lang == 'th' else 'Nationality',
+        'address': 'ที่อยู่ / Address' if lang == 'th' else 'Address',
+        'min_8_chars': 'อย่างน้อย 8 ตัวอักษร / Min 8 chars' if lang == 'th' else 'Min 8 chars',
+        'i_accept': 'ฉันยอมรับ' if lang == 'th' else 'I accept the',
+        'terms': 'เงื่อนไขและข้อกำหนด / Terms of Service' if lang == 'th' else 'Terms of Service',
+        'have_account': 'มีบัญชีผู้ใช้อยู่แล้ว?' if lang == 'th' else 'Already have an account?',
+        
+        # My Tickets Page
+        'manage_bookings': 'จัดการการจองและดูรายละเอียดการเดินทางทั้งหมดในที่เดียว' if lang == 'th' else 'Manage your bookings and view all your travel itineraries in one place',
+        'filters': 'ตัวกรอง / Filters' if lang == 'th' else 'Filters',
+        'confirmed': 'ยืนยันแล้ว / Confirmed' if lang == 'th' else 'Confirmed',
+        'pending': 'รอดำเนินการ / Pending' if lang == 'th' else 'Pending',
+        'cancelled': 'ยกเลิก / Cancelled' if lang == 'th' else 'Cancelled',
+        'need_help': 'ต้องการความช่วยเหลือ?' if lang == 'th' else 'Need help?',
+        'contact_us': 'ติดต่อเรา / Contact Us' if lang == 'th' else 'Contact Us',
+        'no_tickets_yet': 'ยังไม่มีตั๋ว / No Tickets Yet' if lang == 'th' else 'No Tickets Yet',
+        'no_booking_history': 'คุณยังไม่มีประวัติการจองทัวร์' if lang == 'th' else 'You have no booking history',
+        'view_tours_promos': 'ดูทัวร์และโปรโมชั่น' if lang == 'th' else 'View Tours & Promos',
+        'view_ticket': 'ดูตั๋ว / View Ticket' if lang == 'th' else 'View Ticket',
+        'pay_now': 'ชำระเงิน / Pay Now' if lang == 'th' else 'Pay Now',
+        'total_price': 'Total Price' if lang == 'th' else 'Total Price',
+        'passengers': 'Passengers' if lang == 'th' else 'Passengers',
+        'destination': 'Destination' if lang == 'th' else 'Destination',
+        'departure': 'Departure' if lang == 'th' else 'Departure',
+        
+        # Dashboard
+        'total_bookings': 'การจองทั้งหมด / Total Bookings' if lang == 'th' else 'Total Bookings',
+        'active_schedules': 'ตารางเดินรถ / Active Schedules' if lang == 'th' else 'Active Schedules',
+        'revenue_packages': 'รายได้ / Revenue Packages' if lang == 'th' else 'Revenue Packages',
+        'upcoming_tours': 'ทัวร์เร็วๆ นี้ / Upcoming Tours' if lang == 'th' else 'Upcoming Tours',
+        
+        # Booking Page
+        'booking_details': 'รายละเอียดการจอง' if lang == 'th' else 'Booking Details',
+        'book_your_journey': 'จองทริปของคุณ' if lang == 'th' else 'Book Your Journey',
+        'booking_desc': 'เตรียมพร้อมสัมผัสประสบการณ์สุดพิเศษที่คัดสรรมาเพื่อคุณโดยเฉพาะ' if lang == 'th' else 'Get ready to experience an exclusive journey curated just for you.',
+        'travelers': 'จำนวนผู้เดินทาง / Travelers' if lang == 'th' else 'Travelers',
+        'adults': 'ผู้ใหญ่ / Adults' if lang == 'th' else 'Adults',
+        'children': 'เด็ก / Children' if lang == 'th' else 'Children',
+        'contact_info': 'ข้อมูลติดต่อ / Contact Information' if lang == 'th' else 'Contact Information',
+        'confirm_booking': 'ยืนยันการจอง / Confirm Booking' if lang == 'th' else 'Confirm Booking',
+        'tour_guide': 'มัคคุเทศก์ / Tour Guide' if lang == 'th' else 'Tour Guide',
+        'total': 'ยอดรวม / Total' if lang == 'th' else 'Total',
+        
+        # Admin / CRUD Pages
+        'system_tables': 'ตารางข้อมูลทั้งหมด / System Tables' if lang == 'th' else 'System Tables',
+        'manage_data': 'จัดการข้อมูล / Manage Data' if lang == 'th' else 'Manage Data',
+        'database': 'ฐานข้อมูล / Database' if lang == 'th' else 'Database',
+        'add_edit': 'เพิ่ม/แก้ไข / Add/Edit' if lang == 'th' else 'Add/Edit',
+        'add_record_btn': 'เพิ่มรายการ / Add Record' if lang == 'th' else 'Add Record',
+        'edit_record': 'แก้ไขข้อมูล / Edit Record' if lang == 'th' else 'Edit Record',
+        'fill_data_desc': 'กรุณากรอกข้อมูลในช่องด้านล่างให้ครบถ้วน / Please complete all required fields below.' if lang == 'th' else 'Please complete all required fields below.',
+        'cancel': 'ยกเลิก / Cancel' if lang == 'th' else 'Cancel',
+        'save_data': 'บันทึก / Save Data' if lang == 'th' else 'Save Data',
+        
+        # Column headers
+        'col_name': 'ชื่อรายการ / Name' if lang == 'th' else 'Name',
+        'col_category': 'หมวดหมู่ / Category' if lang == 'th' else 'Category',
+        'col_price': 'ราคา / Price' if lang == 'th' else 'Price',
+        'col_status': 'สถานะ / Status' if lang == 'th' else 'Status',
+        'col_actions': 'การจัดการ / Actions' if lang == 'th' else 'Actions',
+        
+        # Table Names
+        'tbl_employees': 'พนักงาน / Employees' if lang == 'th' else 'Employees',
+        'tbl_customers': 'ลูกค้า / Customers' if lang == 'th' else 'Customers',
+        'tbl_tour_packages': 'แพ็คเกจทัวร์ / TourPackages' if lang == 'th' else 'TourPackages',
+        'tbl_tour_schedules': 'ตารางทัวร์ / TourSchedules' if lang == 'th' else 'TourSchedules',
+        'tbl_bookings': 'การจอง / Bookings' if lang == 'th' else 'Bookings',
+        'tbl_passengers': 'ผู้โดยสาร / Passengers' if lang == 'th' else 'Passengers',
+        'tbl_payments': 'การชำระเงิน / Payments' if lang == 'th' else 'Payments',
+        'tbl_flight_tickets': 'ตั๋วเครื่องบิน / FlightTickets' if lang == 'th' else 'FlightTickets',
+        'tbl_hotels': 'โรงแรม / Hotels' if lang == 'th' else 'Hotels',
+        'tbl_hotel_bookings': 'การจองโรงแรม / HotelBookings' if lang == 'th' else 'HotelBookings',
+        'tbl_guides': 'มัคคุเทศก์ / Guides' if lang == 'th' else 'Guides',
+        'tbl_guide_assignments': 'การมอบหมายไกด์ / GuideAssignments' if lang == 'th' else 'Guide Assignments',
+        'tbl_vehicles': 'ยานพาหนะ / Vehicles' if lang == 'th' else 'Vehicles',
+        'tbl_vehicle_assignments': 'การมอบหมายรถ / VehicleAssignments' if lang == 'th' else 'Vehicle Assignments',
+        'tbl_destinations': 'จุดหมายปลายทาง / Destinations' if lang == 'th' else 'Destinations',
+        'tbl_package_destinations': 'แพ็คเกจปลายทาง / PackageDestinations' if lang == 'th' else 'Package Destinations',
+        'tbl_package_hotels': 'แพ็คเกจโรงแรม / PackageHotels' if lang == 'th' else 'Package Hotels',
+        'tbl_package_vehicles': 'แพ็คเกจรถ / PackageVehicles' if lang == 'th' else 'Package Vehicles',
+        'tbl_reviews': 'รีวิวลูกค้า / Reviews' if lang == 'th' else 'Reviews',
+        'tbl_audit_log': 'ประวัติการใช้งาน / AuditLog' if lang == 'th' else 'Audit Log',
+        
+        # Audit Log
+        'audit_log_title': '📋 บันทึกการใช้งาน / Audit Log' if lang == 'th' else '📋 Audit Log',
+        'table': 'ตาราง / Table' if lang == 'th' else 'Table',
+        'by': 'ผู้ดำเนินการ / By' if lang == 'th' else 'By',
+        'details': 'รายละเอียด / Details' if lang == 'th' else 'Details',
+        'date': 'วันที่ / Date' if lang == 'th' else 'Date',
+        'no_audit_logs': 'ยังไม่มีบันทึก / No audit log entries yet' if lang == 'th' else 'No audit log entries yet',
+    }
+    return {'lang': lang, 't': words}

@@ -59,9 +59,9 @@
     <div class="form-panel">
       <div style="margin-bottom:1.75rem">
         <h1 style="font-size:1.625rem;font-weight:900;color:#111827;margin-bottom:.375rem">
-          สร้างบัญชีผู้ใช้ / <span style="background:linear-gradient(135deg,#059669,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Create Account</span>
+          {{ t.create_account }}
         </h1>
-        <p style="color:#6b7280;font-size:.9rem">กรุณากรอกข้อมูลส่วนตัวเพื่อลงทะเบียน</p>
+        <p style="color:#6b7280;font-size:.9rem">{{ t.register_desc }}</p>
       </div>
 
       {% if error_message %}
@@ -77,37 +77,37 @@
 
           <!-- Full Name (full width) -->
           <div style="grid-column:1/-1">
-            <label class="field-label">ชื่อ-นามสกุล / Full Name</label>
+            <label class="field-label">{{ t.fullname }}</label>
             <input class="form-input" type="text" name="fullname" placeholder="John Doe" required/>
           </div>
 
           <!-- Email -->
           <div>
-            <label class="field-label">อีเมล / Email</label>
+            <label class="field-label">{{ t.email }}</label>
             <input class="form-input" type="email" name="email" placeholder="example@mail.com" required/>
           </div>
 
           <!-- Phone -->
           <div>
-            <label class="field-label">เบอร์โทร / Phone</label>
+            <label class="field-label">{{ t.phone }}</label>
             <input class="form-input" type="tel" name="phone" placeholder="081-234-5678" required/>
           </div>
 
           <!-- Passport -->
           <div>
-            <label class="field-label">เลขพาสปอร์ต / Passport No.</label>
+            <label class="field-label">{{ t.passport }}</label>
             <input class="form-input" type="text" name="passport" placeholder="AA123456"/>
           </div>
 
           <!-- DOB -->
           <div>
-            <label class="field-label">วันเกิด / Date of Birth</label>
+            <label class="field-label">{{ t.dob }}</label>
             <input class="form-input" type="date" name="dob" required/>
           </div>
 
           <!-- Nationality (full width) -->
           <div style="grid-column:1/-1">
-            <label class="field-label">สัญชาติ / Nationality</label>
+            <label class="field-label">{{ t.nationality }}</label>
             <select class="form-input" name="nationality" required>
               <option disabled selected value="">เลือกสัญชาติ / Select</option>
               <option value="Thai">ไทย / Thai</option>
@@ -120,14 +120,14 @@
 
           <!-- Address (full width) -->
           <div style="grid-column:1/-1">
-            <label class="field-label">ที่อยู่ / Address</label>
-            <textarea class="form-input" name="address" rows="2" placeholder="123 ถนน/Road, อำเภอ/District..." required style="resize:none"></textarea>
+            <label class="field-label">{{ t.address }}</label>
+            <textarea class="form-input" name="address" rows="2" placeholder="123 ถนน/Road..." required style="resize:none"></textarea>
           </div>
 
           <!-- Password (full width) -->
           <div style="grid-column:1/-1">
-            <label class="field-label">รหัสผ่าน / Password</label>
-            <input class="form-input" type="password" name="password" placeholder="อย่างน้อย 8 ตัวอักษร / Min 8 chars" required/>
+            <label class="field-label">{{ t.password }}</label>
+            <input class="form-input" type="password" name="password" placeholder="{{ t.min_8_chars }}" required/>
           </div>
 
         </div>
@@ -136,18 +136,18 @@
         <div style="display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem">
           <input type="checkbox" id="terms" name="terms" required style="margin-top:2px"/>
           <label for="terms" style="font-size:.875rem;color:#374151;cursor:pointer;line-height:1.5">
-            ฉันยอมรับ <a href="#" style="color:#059669;font-weight:700;text-decoration:none">เงื่อนไขและข้อกำหนด / Terms of Service</a>
+            {{ t.i_accept }} <a href="#" style="color:#059669;font-weight:700;text-decoration:none">{{ t.terms }}</a>
           </label>
         </div>
 
         <button type="submit" class="btn-primary" style="margin-top: 1.5rem; width: 100%;">
-          สร้างบัญชีผู้ใช้ / Create Account →
+          {{ t.create_account }} →
         </button>
       </form>
 
       <p style="text-align:center;margin-top:1.5rem;color:#9ca3af;font-size:.875rem">
-        มีบัญชีผู้ใช้อยู่แล้ว? 
-        <a href="/login/" style="color:#059669;font-weight:700;text-decoration:none">เข้าสู่ระบบ / Login →</a>
+        {{ t.have_account }} 
+        <a href="/login/" style="color:#059669;font-weight:700;text-decoration:none">{{ t.login }} →</a>
       </p>
     </div>
 

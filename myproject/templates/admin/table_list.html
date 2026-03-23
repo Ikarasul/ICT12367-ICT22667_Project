@@ -111,7 +111,7 @@
 </head>
 
 <body class="bg-surface text-on-surface">
-    {% include 'components/sidebar.html' with active_menu='manage' %}
+    {% include 'components/sidebar_staff.html' with active_menu='manage' %}
     <!-- Main Content Area -->
     <main class="ml-64 min-h-screen">
         {% include 'components/header.html' with header_title='Admin' header_subtitle='Database Management' %}
@@ -119,8 +119,7 @@
         <div class="p-8 max-w-[1400px] mx-auto">
             <!-- Hero Header -->
             <div class="mb-10">
-                <h2 class="text-3xl font-bold text-on-background mb-2">ตารางข้อมูลทั้งหมด / <span
-                        class="text-primary">System Tables</span></h2>
+                <h2 class="text-3xl font-bold text-on-background mb-2">{{ t.system_tables }}</h2>
                 <p class="text-on-surface-variant max-w-2xl leading-relaxed">
                     Select a table below to manage records, perform audits, and update relational data for the
                     TourCompanyDB ecosystem.
@@ -143,9 +142,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">พนักงาน / Employees</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_employees }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Customers -->
@@ -160,9 +159,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ลูกค้า / Customers</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_customers }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: TourPackages -->
@@ -177,9 +176,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">แพ็คเกจทัวร์ / TourPackages</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_tour_packages }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: TourSchedules -->
@@ -194,9 +193,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ตารางทัวร์ / TourSchedules</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_tour_schedules }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Bookings -->
@@ -211,9 +210,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">การจอง / Bookings</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_bookings }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Passengers -->
@@ -228,9 +227,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ผู้โดยสาร / Passengers</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_passengers }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Payments -->
@@ -245,9 +244,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">การชำระเงิน / Payments</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_payments }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: FlightTickets -->
@@ -262,9 +261,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ตั๋วเครื่องบิน / FlightTickets</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_flight_tickets }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Hotels -->
@@ -279,9 +278,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">โรงแรม / Hotels</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_hotels }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: HotelBookings -->
@@ -296,9 +295,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">การจองโรงแรม / HotelBookings</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_hotel_bookings }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Guides -->
@@ -313,9 +312,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">มัคคุเทศก์ / Guides</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_guides }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: GuideAssignments -->
@@ -330,9 +329,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">การมอบหมายไกด์ / GuideAssignments</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_guide_assignments }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Vehicles -->
@@ -347,9 +346,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ยานพาหนะ / Vehicles</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_vehicles }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: VehicleAssignments -->
@@ -364,9 +363,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">การมอบหมายรถ / VehicleAssignments</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_vehicle_assignments }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Destinations -->
@@ -381,9 +380,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">จุดหมายปลายทาง / Destinations</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_destinations }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: PackageDestinations -->
@@ -398,9 +397,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">แพ็คเกจปลายทาง / PackageDestinations</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_package_destinations }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: PackageHotels -->
@@ -415,9 +414,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">แพ็คเกจโรงแรม / PackageHotels</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_package_hotels }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: PackageVehicles -->
@@ -432,9 +431,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">แพ็คเกจรถ / PackageVehicles</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_package_vehicles }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: Reviews -->
@@ -449,9 +448,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">รีวิวลูกค้า / Reviews</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_reviews }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
                 <!-- Table Card: AuditLog -->
@@ -466,9 +465,9 @@
                         </span>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold mb-1">ประวัติการใช้งาน / AuditLog</h3>
+                        <h3 class="text-xl font-bold mb-1">{{ t.tbl_audit_log }}</h3>
                         <p class="text-xs font-label text-primary font-bold uppercase tracking-tight">จัดการข้อมูล /
-                            Manage Data</p>
+                            {{ t.manage_data }}</p>
                     </div>
                 </a>
             </div>

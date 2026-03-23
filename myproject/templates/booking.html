@@ -16,12 +16,12 @@
 <!-- Editorial Header Section -->
 <div class="mb-12">
 <nav class="flex items-center gap-2 text-label-md text-outline font-bold uppercase mb-4 tracking-wider">
-<span>ทัวร์ / Tours</span>
+<span>{{ t.tours }}</span>
 <span class="material-symbols-outlined text-sm">chevron_right</span>
-<span class="text-primary">รายละเอียดการจอง / Booking Details</span>
+<span class="text-primary">{{ t.booking_details }}</span>
 </nav>
-<h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">จองทริปของคุณ / Book Your Journey</h1>
-<p class="text-on-surface-variant text-lg max-w-2xl">เตรียมพร้อมสัมผัสประสบการณ์สุดพิเศษที่คัดสรรมาเพื่อคุณโดยเฉพาะ</p>
+<h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">{{ t.book_your_journey }}</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">{{ t.booking_desc }}</p>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 <!-- Left Side: Form Section -->
@@ -30,13 +30,13 @@
 <section class="bg-surface-container-low rounded-2xl p-8 transition-all hover:bg-surface-container">
 <h2 class="text-2xl font-bold text-primary mb-8 flex items-center gap-3">
 <span class="material-symbols-outlined">group</span>
-                            จำนวนผู้เดินทาง / Travelers
+                            {{ t.travelers }}
                         </h2>
 <div class="space-y-10">
 <!-- Adults -->
 <div class="flex items-center justify-between">
 <div>
-<h3 class="text-xl font-semibold">ผู้ใหญ่ / Adults</h3>
+<h3 class="text-xl font-semibold">{{ t.adults }}</h3>
 <p class="text-on-surface-variant text-sm">อายุ 12 ปีขึ้นไป / Age 12+</p>
 </div>
 <div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
@@ -52,7 +52,7 @@
 <!-- Children -->
 <div class="flex items-center justify-between">
 <div>
-<h3 class="text-xl font-semibold">เด็ก / Children</h3>
+<h3 class="text-xl font-semibold">{{ t.children }}</h3>
 <p class="text-on-surface-variant text-sm">อายุ 2-11 ปี / Age 2-11</p>
 </div>
 <div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
@@ -70,22 +70,22 @@
 <section class="bg-surface-container-low rounded-2xl p-8">
 <h2 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
 <span class="material-symbols-outlined">contact_support</span>
-                            ข้อมูลติดต่อ / Contact Information
+                            {{ t.contact_info }}
                         </h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="space-y-2">
-<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">ชื่อ-นามสกุล / Full Name</label>
+<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{{ t.fullname }}</label>
 <input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="Your Name" type="text" name="full_name" required/>
 </div>
 <div class="space-y-2">
-<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">อีเมล / Email</label>
+<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{{ t.email }}</label>
 <input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="your@email.com" type="email" name="contact_email" required/>
 </div>
 </div>
 </section>
 <div class="block lg:hidden pt-4">
 <button class="w-full bg-gradient-primary text-on-primary py-5 rounded-2xl text-xl font-bold shadow-xl hover:scale-[0.98] duration-200" type="submit">
-                            ยืนยันการจอง · ฿<span class="total-display">{{ tour_price }}</span> / Confirm Booking
+                            {{ t.confirm_booking }} · ฿<span class="total-display">{{ tour_price }}</span>
                         </button>
 </div>
 </div>
@@ -106,14 +106,14 @@
 <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">location_on</span>
 </div>
 <div>
-<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">Destination</p>
+<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">{{ t.destination }}</p>
 <p class="text-lg font-semibold">{{ destination }}</p>
 </div>
 </div>
 <div class="flex items-center gap-8 pl-14 relative">
 <div class="absolute left-5 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-primary-fixed"></div>
 <div>
-<p class="text-xs text-on-surface-variant font-bold uppercase">Departure</p>
+<p class="text-xs text-on-surface-variant font-bold uppercase">{{ t.departure }}</p>
 <p class="font-medium">{{ departure_date }}</p>
 </div>
 <div>
@@ -126,7 +126,7 @@
 <span class="material-symbols-outlined text-on-secondary-fixed-variant text-sm">person</span>
 </div>
 <div>
-<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">Tour Guide</p>
+<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">{{ t.tour_guide }}</p>
 <p class="text-lg font-semibold">{{ guide_name }}</p>
 </div>
 </div>
@@ -134,15 +134,15 @@
 <div class="h-px bg-outline-variant opacity-20"></div>
 <div class="space-y-3">
 <div class="flex justify-between text-on-surface-variant">
-<span>ผู้ใหญ่ / Adult (x<span class="lbl-adults">1</span>)</span>
+<span>{{ t.adult }} (x<span class="lbl-adults">1</span>)</span>
 <span>฿<span class="adult-sub">{{ tour_price }}</span></span>
 </div>
 <div class="flex justify-between text-on-surface-variant">
-<span>เด็ก / Child (x<span class="lbl-children">0</span>)</span>
+<span>{{ t.child }} (x<span class="lbl-children">0</span>)</span>
 <span>฿<span class="child-sub">0</span></span>
 </div>
 <div class="flex justify-between text-primary font-bold text-2xl pt-4">
-<span>ยอดรวม / Total</span>
+<span>{{ t.total }}</span>
 <span>฿<span class="total-display">{{ tour_price }}</span></span>
 </div>
 </div>

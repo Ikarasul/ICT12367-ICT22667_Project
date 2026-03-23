@@ -136,11 +136,10 @@
 {% block footer %}{% endblock %}
 
 {% block sidebar %}
-{% include 'components/sidebar.html' with active_menu='dashboard' %}
+{% include 'components/sidebar_staff.html' with active_menu='dashboard' %}
 {% endblock %}
 
 {% block content %}
-{% include 'components/header.html' with header_title='Dashboard' header_subtitle='Overview' %}
 
 <!-- Page Content -->
 <div class="p-8 space-y-8 max-w-[1600px] mx-auto">
@@ -155,8 +154,8 @@
         </div>
         <span class="text-secondary text-xs font-bold bg-secondary-container px-2 py-1 rounded-full">+12%</span>
       </div>
-      <p class="text-sm text-on-surface-variant font-medium">Total Bookings / การจองทั้งหมด</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-primary">{{ bookings|length }}</h3>
+      <p class="text-sm text-on-surface-variant font-medium">{{ t.total_bookings }}</p>
+      <h3 class="text-3xl font-bold mt-1 headline text-primary">{{ stats.total_bookings }}</h3>
     </div>
     <div
       class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] border border-outline-variant/15 group hover:scale-[1.02] transition-transform">
@@ -168,8 +167,8 @@
         <span
           class="text-on-surface-variant text-xs font-bold bg-surface-container-high px-2 py-1 rounded-full">Steady</span>
       </div>
-      <p class="text-sm text-on-surface-variant font-medium">Active Schedules / ตารางเดินรถ</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ schedules|length }}</h3>
+      <p class="text-sm text-on-surface-variant font-medium">{{ t.active_schedules }}</p>
+      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ stats.total_schedules }}</h3>
     </div>
     <div
       class="bg-primary text-white p-6 rounded-2xl shadow-[0_20px_40px_rgba(21,66,18,0.1)] group hover:scale-[1.02] transition-transform relative overflow-hidden">
@@ -181,8 +180,8 @@
               style="font-variation-settings: 'FILL' 1;">payments</span>
           </div>
         </div>
-        <p class="text-sm text-primary-fixed/80 font-medium">Revenue Packages / รายได้</p>
-        <h3 class="text-3xl font-bold mt-1 headline text-white">฿{{ revenue|length }}</h3>
+        <p class="text-sm text-primary-fixed/80 font-medium">{{ t.revenue_packages }}</p>
+        <h3 class="text-3xl font-bold mt-1 headline text-white">฿{{ stats.total_revenue }}</h3>
         <p class="text-[10px] mt-2 opacity-60 uppercase tracking-widest">Admin/Accounting View</p>
       </div>
       <!-- Abstract Background Pattern -->
@@ -198,8 +197,8 @@
         <span class="text-tertiary text-xs font-bold bg-tertiary-fixed-dim/20 px-2 py-1 rounded-full">Next
           48h</span>
       </div>
-      <p class="text-sm text-on-surface-variant font-medium">Upcoming Tours / ทัวร์เร็วๆ นี้</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ schedules|length }}</h3>
+      <p class="text-sm text-on-surface-variant font-medium">{{ t.upcoming_tours }}</p>
+      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ stats.total_schedules }}</h3>
     </div>
   </div>
   <!-- Main Dashboard Area -->
@@ -211,8 +210,9 @@
           <h2 class="text-xl font-bold headline">Recent Bookings / การจองล่าสุด</h2>
           <p class="text-sm text-on-surface-variant">Live view from vw_BookingSummary</p>
         </div>
-        <button class="text-primary font-bold text-sm hover:underline underline-offset-4">View All /
-          ดูทั้งหมด</button>
+        <a href="{% url 'manage_tables' %}" class="text-primary font-bold text-sm hover:underline underline-offset-4">
+          {{ t.view_all }}
+        </a>
       </div>
       <div
         class="bg-surface-container-lowest rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] overflow-hidden border border-outline-variant/10">
@@ -228,82 +228,41 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-outline-variant/10">
+            {% for b in recent_bookings %}
             <tr class="searchable-item hover:bg-surface transition-colors">
-              <td class="px-6 py-4 font-bold text-primary">#B.0-1024</td>
+              <td class="px-6 py-4 font-bold text-primary">#{{ b.0 }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
-                    JD</div>
-                  <span class="font-medium">Jane Doe</span>
+                  <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
+                    {{ b.1|slice:':2'|upper }}
+                  </div>
+                  <span class="font-medium">{{ b.1 }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-sm font-medium">Phi Phi Island Express</td>
-              <td class="px-6 py-4 text-sm text-on-surface-variant">24 Oct 2023</td>
+              <td class="px-6 py-4 text-sm font-medium">{{ b.2 }}</td>
+              <td class="px-6 py-4 text-sm text-on-surface-variant">{{ b.3|date:'d M Y' }}</td>
               <td class="px-6 py-4">
                 <div class="flex justify-center">
-                  <span
-                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-secondary-container text-on-secondary-container">Confirmed</span>
+                  {% if b.4 == 'Confirmed' %}
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-secondary-container text-on-secondary-container">{{ b.4 }}</span>
+                  {% elif b.4 == 'Pending' %}
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-tertiary-fixed text-on-tertiary-fixed-variant">{{ b.4 }}</span>
+                  {% elif b.4 == 'Cancelled' %}
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-error-container text-on-error-container">{{ b.4 }}</span>
+                  {% else %}
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-surface-container text-on-surface-variant">{{ b.4 }}</span>
+                  {% endif %}
                 </div>
               </td>
             </tr>
-            <tr class="searchable-item hover:bg-surface transition-colors">
-              <td class="px-6 py-4 font-bold text-primary">#B.0-1025</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
-                    MS</div>
-                  <span class="font-medium">Mark Smith</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium">Chiang Mai Night Safari</td>
-              <td class="px-6 py-4 text-sm text-on-surface-variant">25 Oct 2023</td>
-              <td class="px-6 py-4">
-                <div class="flex justify-center">
-                  <span
-                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-tertiary-fixed text-on-tertiary-fixed-variant">Pending</span>
-                </div>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-4xl block mb-2">receipt_long</span>
+                ยังไม่มีข้อมูลการจอง / No bookings yet
               </td>
             </tr>
-            <tr class="searchable-item hover:bg-surface transition-colors">
-              <td class="px-6 py-4 font-bold text-primary">#B.0-1026</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
-                    AL</div>
-                  <span class="font-medium">Ariana Lee</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium">Old City Tuk Tuk Tour</td>
-              <td class="px-6 py-4 text-sm text-on-surface-variant">25 Oct 2023</td>
-              <td class="px-6 py-4">
-                <div class="flex justify-center">
-                  <span
-                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-error-container text-on-error-container">Cancelled</span>
-                </div>
-              </td>
-            </tr>
-            <tr class="searchable-item hover:bg-surface transition-colors">
-              <td class="px-6 py-4 font-bold text-primary">#B.0-1027</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
-                    RK</div>
-                  <span class="font-medium">Robert King</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium">Grand Palace Cultural</td>
-              <td class="px-6 py-4 text-sm text-on-surface-variant">26 Oct 2023</td>
-              <td class="px-6 py-4">
-                <div class="flex justify-center">
-                  <span
-                    class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-secondary-container text-on-secondary-container">Confirmed</span>
-                </div>
-              </td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -317,82 +276,47 @@
         </div>
       </div>
       <div class="space-y-3">
-        <!-- Schedule Item -->
-        <div
-          class="searchable-item bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group">
-          <div
-            class="flex-shrink-0 w-12 h-12 bg-surface rounded-xl flex flex-col items-center justify-center border border-outline-variant/10">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">Oct</span>
-            <span class="text-lg font-bold text-primary">24</span>
+        {% for s in schedules|slice:':5' %}
+        <a href="/manage/TourSchedules/"
+          class="searchable-item bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group no-underline block">
+          <div class="flex-shrink-0 w-12 h-12 bg-surface rounded-xl flex flex-col items-center justify-center border border-outline-variant/10">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ s.3|date:'M' }}</span>
+            <span class="text-lg font-bold text-primary">{{ s.3|date:'d' }}</span>
           </div>
           <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-sm truncate">Phi Phi Island Express</h4>
+            <h4 class="font-bold text-sm truncate">{{ s.1 }}</h4>
             <div class="flex items-center gap-3 mt-1">
               <div class="flex items-center gap-1 text-[11px] text-on-surface-variant">
                 <span class="material-symbols-outlined text-[14px]" data-icon="group">group</span>
-                <span>Available: 12</span>
+                <span>Available: {{ s.6 }}</span>
               </div>
               <div class="w-1 h-1 rounded-full bg-outline-variant"></div>
-              <div class="text-[11px] font-bold text-secondary">85% Full</div>
+              {% if s.6 == 0 %}
+                <div class="text-[11px] font-bold text-error">Fully Booked</div>
+              {% elif s.6 <= 5 %}
+                <div class="text-[11px] font-bold text-error">Almost Full</div>
+              {% else %}
+                <div class="text-[11px] font-bold text-secondary">{{ s.6 }}/{{ s.5 }} seats</div>
+              {% endif %}
             </div>
           </div>
-          <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors"
-            data-icon="chevron_right">chevron_right</span>
+          <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+        </a>
+        {% empty %}
+        <div class="text-center py-8 text-on-surface-variant">
+          <span class="material-symbols-outlined text-3xl block mb-2">calendar_off</span>
+          <p class="text-sm">ไม่มีตารางทัวร์ / No schedules</p>
         </div>
-        <div
-          class="searchable-item bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group">
-          <div
-            class="searchable-item bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group">
-            <div
-              class="flex-shrink-0 w-12 h-12 bg-surface rounded-xl flex flex-col items-center justify-center border border-outline-variant/10">
-              <span class="text-[10px] font-bold text-slate-400 uppercase">Oct</span>
-              <span class="text-lg font-bold text-primary">25</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="font-bold text-sm truncate">Ayutthaya Day Trip</h4>
-              <div class="flex items-center gap-3 mt-1">
-                <div class="flex items-center gap-1 text-[11px] text-on-surface-variant">
-                  <span class="material-symbols-outlined text-[14px]" data-icon="group">group</span>
-                  <span>Available: 4</span>
-                </div>
-                <div class="w-1 h-1 rounded-full bg-outline-variant"></div>
-                <div class="text-[11px] font-bold text-error">92% Full</div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors"
-              data-icon="chevron_right">chevron_right</span>
-          </div>
-          <div
-            class="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group">
-            <div
-              class="flex-shrink-0 w-12 h-12 bg-surface rounded-xl flex flex-col items-center justify-center border border-outline-variant/10">
-              <span class="text-[10px] font-bold text-slate-400 uppercase">Oct</span>
-              <span class="text-lg font-bold text-primary">27</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="font-bold text-sm truncate">Samui Island Hopping</h4>
-              <div class="flex items-center gap-3 mt-1">
-                <div class="flex items-center gap-1 text-[11px] text-on-surface-variant">
-                  <span class="material-symbols-outlined text-[14px]" data-icon="group">group</span>
-                  <span>Available: 28</span>
-                </div>
-                <div class="w-1 h-1 rounded-full bg-outline-variant"></div>
-                <div class="text-[11px] font-bold text-slate-400">15% Full</div>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors"
-              data-icon="chevron_right">chevron_right</span>
-          </div>
-          <button
-            class="w-full py-4 rounded-2xl border-2 border-dashed border-outline-variant/30 text-on-surface-variant text-sm font-medium hover:bg-white hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
-            <span>Add New Schedule / เพิ่มตาราง</span>
-          </button>
-        </div>
+        {% endfor %}
+        <a href="/manage/TourSchedules/create/"
+          class="w-full py-4 rounded-2xl border-2 border-dashed border-outline-variant/30 text-on-surface-variant text-sm font-medium hover:bg-white hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2 no-underline block">
+          <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+          <span>Add New Schedule / เพิ่มตาราง</span>
+        </a>
       </div>
     </div>
     <!-- Database & Audit Activity (Bento style bottom) -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+    <div class="lg:col-span-3 grid grid-cols-1 xl:grid-cols-2 gap-8">
       <div class="bg-surface-container-low p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
         <div class="flex items-center justify-between mb-6">
           <h3 class="font-bold headline flex items-center gap-2">
@@ -424,24 +348,20 @@
           <span class="text-[10px] font-bold bg-primary/10 text-primary px-2 py-1 rounded">Admin Only</span>
         </div>
         <div class="space-y-3">
+          {% for a in audit_logs %}
           <div class="flex items-center gap-3 text-xs">
-            <div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
-            <span class="text-on-surface-variant font-medium">10:45 AM</span>
-            <span class="font-bold">Admin</span>
-            <span class="text-on-surface-variant">updated Booking #B.0-1024</span>
+            {% if a.2 == 'DELETE' %}
+              <div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+            {% else %}
+              <div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+            {% endif %}
+            <span class="text-on-surface-variant font-medium">{{ a.5|date:'d M H:i' }}</span>
+            <span class="font-bold">{{ a.3 }}</span>
+            <span class="text-on-surface-variant">{{ a.2 }} → {{ a.1 }}</span>
           </div>
-          <div class="flex items-center gap-3 text-xs">
-            <div class="w-1.5 h-1.5 rounded-full bg-error"></div>
-            <span class="text-on-surface-variant font-medium">09:12 AM</span>
-            <span class="font-bold">System</span>
-            <span class="text-on-surface-variant">detected failed login attempt</span>
-          </div>
-          <div class="flex items-center gap-3 text-xs">
-            <div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
-            <span class="text-on-surface-variant font-medium">Yesterday</span>
-            <span class="font-bold">Staff_01</span>
-            <span class="text-on-surface-variant">created new schedule (ID: 55)</span>
-          </div>
+          {% empty %}
+          <p class="text-xs text-on-surface-variant italic">ยังไม่มี Audit Log / No logs yet</p>
+          {% endfor %}
         </div>
       </div>
     </div>

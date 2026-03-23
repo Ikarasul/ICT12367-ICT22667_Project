@@ -1,9 +1,10 @@
 # myproject/urls.py
-from django.urls import path
+from django.urls import path, include
 from django.views.generic import RedirectView
 from tour import views
 
 urlpatterns = [
+    path('lang/<str:lang_code>/', views.change_language, name='change_language'),
     # Public
     path('',            views.tours,           name='tours'),
     path('tours/',      views.tours,           name='tours_alias'),  # alias for /tours/

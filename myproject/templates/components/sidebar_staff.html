@@ -1,0 +1,84 @@
+{# templates/components/sidebar_staff.html | Usage: include this with active_menu='dashboard' etc. #}
+
+
+<aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#1E2433] w-64 shadow-2xl z-[60]">
+
+  {# Brand #}
+  <div class="p-6 border-b border-slate-700/40">
+    <a href="{% url 'dashboard' %}"
+       class="block text-xl font-bold text-white headline hover:text-emerald-400 transition-colors">
+      TourCompanyDB
+    </a>
+    <p class="text-slate-400 text-xs mt-1 uppercase tracking-wider">{{ t.staff_portal }}</p>
+  </div>
+
+  {# Navigation #}
+  <nav class="flex-1 px-4 space-y-1 mt-4 overflow-y-auto no-scrollbar">
+
+    {# Dashboard #}
+    <a href="{% url 'dashboard' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
+              {% if active_menu == 'dashboard' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>{{ t.menu_dashboard }}</span>
+    </a>
+
+    {# All Tours #}
+    <a href="{% url 'tours' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
+              {% if active_menu == 'tours' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
+      <span class="material-symbols-outlined">explore</span>
+      <span>{{ t.menu_tours }}</span>
+    </a>
+
+    {# Bookings #}
+    <a href="{% url 'crud_list' table='Bookings' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
+              {% if active_menu == 'bookings' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
+      <span class="material-symbols-outlined">confirmation_number</span>
+      <span>{{ t.menu_bookings }}</span>
+    </a>
+
+    {# Manage Data #}
+    <a href="{% url 'manage_tables' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
+              {% if active_menu == 'manage' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
+      <span class="material-symbols-outlined">database</span>
+      <span>{{ t.menu_manage }}</span>
+    </a>
+
+    {# Audit Log — Admin only #}
+    {% if request.session.user_role == 'Admin' %}
+    <a href="{% url 'audit_log' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
+              {% if active_menu == 'audit' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
+      <span class="material-symbols-outlined">history_edu</span>
+      <span>{{ t.menu_audit }}</span>
+    </a>
+    {% endif %}
+
+  </nav>
+
+  {# Bottom: User info + Logout #}
+  <div class="p-4 border-t border-slate-700/50 space-y-1">
+
+    {# User chip #}
+    <div class="flex items-center gap-3 px-3 py-2 mb-1">
+      <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        {{ request.session.user_name|slice:':2'|upper }}
+      </div>
+      <div class="min-w-0">
+        <p class="text-white text-sm font-semibold truncate">{{ request.session.user_name }}</p>
+        <p class="text-slate-400 text-[10px] uppercase tracking-wider">{{ request.session.user_role }}</p>
+      </div>
+    </div>
+
+    {# Logout #}
+    <a href="{% url 'logout' %}"
+       class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:text-red-400 hover:bg-red-900/30 transition-all">
+      <span class="material-symbols-outlined">logout</span>
+      <span>{{ t.logout }}</span>
+    </a>
+  </div>
+
+</aside>

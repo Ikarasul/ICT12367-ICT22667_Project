@@ -6,14 +6,14 @@
 {% block footer %}{% endblock %}
 
 {% block sidebar %}
-{% include 'components/sidebar.html' with active_menu='audit' %}
+{% include 'components/sidebar_staff.html' with active_menu='audit' %}
 {% endblock %}
 
 {% block content %}
 {% include 'components/header.html' with header_title='Audit Log' header_subtitle='ประวัติการใช้งาน' %}
 
 <div class="p-8 max-w-6xl mx-auto">
-  <h2 class="text-2xl font-bold mb-6">📋 บันทึกการใช้งาน / Audit Log</h2>
+  <h2 class="text-2xl font-bold mb-6">{{ t.audit_log_title }}</h2>
 
   {% if logs %}
   <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
@@ -21,11 +21,11 @@
       <thead>
         <tr class="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-widest">
           <th class="px-6 py-4">ID</th>
-          <th class="px-6 py-4">ตาราง / Table</th>
+          <th class="px-6 py-4">{{ t.table }}</th>
           <th class="px-6 py-4">Action</th>
-          <th class="px-6 py-4">ผู้ดำเนินการ / By</th>
-          <th class="px-6 py-4">รายละเอียด / Details</th>
-          <th class="px-6 py-4">วันที่ / Date</th>
+          <th class="px-6 py-4">{{ t.by }}</th>
+          <th class="px-6 py-4">{{ t.details }}</th>
+          <th class="px-6 py-4">{{ t.date }}</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -55,7 +55,7 @@
   {% else %}
   <div class="bg-white rounded-2xl p-12 text-center border border-gray-100">
     <span class="material-symbols-outlined text-5xl text-gray-300">history</span>
-    <p class="text-gray-400 mt-4">ยังไม่มีบันทึก / No audit log entries yet</p>
+    <p class="text-gray-400 mt-4">{{ t.no_audit_logs }}</p>
   </div>
   {% endif %}
 </div>

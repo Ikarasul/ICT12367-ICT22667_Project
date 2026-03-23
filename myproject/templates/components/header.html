@@ -15,6 +15,12 @@
                 placeholder="ค้นหา / Search..." type="text" />
         </div>
         <div class="flex items-center gap-3 pl-6 border-l border-slate-100">
+            <div class="relative inline-block mr-3">
+                <select onchange="window.location.href=this.value" class="bg-transparent border-none text-sm cursor-pointer outline-none focus:ring-0 text-slate-500 font-bold hover:text-emerald-700 transition-colors uppercase">
+                    <option value="{% url 'change_language' 'th' %}" {% if lang == 'th' %}selected{% endif %}>TH</option>
+                    <option value="{% url 'change_language' 'en' %}" {% if lang == 'en' %}selected{% endif %}>EN</option>
+                </select>
+            </div>
             <div class="text-right hidden sm:block">
                 <p class="text-sm font-bold text-slate-800">สวัสดี {{ request.session.user_name|default:'ผู้ใช้งาน' }}
                 </p>

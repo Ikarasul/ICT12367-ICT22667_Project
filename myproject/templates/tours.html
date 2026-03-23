@@ -62,24 +62,24 @@
 <!-- HERO -->
 <section class="max-w-7xl mx-auto px-6 pt-14 pb-10">
   <div class="fade-up">
-    <span class="badge badge-green mb-5">✈️ &nbsp;ค้นหาทัวร์ที่ใช่สำหรับคุณ</span>
+    <span class="badge badge-green mb-5">{{ t.find_your_tour }}</span>
     <h1 class="font-display text-5xl md:text-6xl font-900 leading-tight mb-3">
-      <span class="text-gradient">Find Your</span><br/>Perfect Journey
+      <span class="text-gradient">{{ t.perfect_journey_1 }}</span><br/>{{ t.perfect_journey_2 }}
     </h1>
-    <p class="text-text-muted text-lg max-w-xl mb-8">ทัวร์คุณภาพสูงจากทีมผู้เชี่ยวชาญ คัดสรรเส้นทางที่ดีที่สุดเพื่อประสบการณ์อันน่าจดจำ</p>
+    <p class="text-text-muted text-lg max-w-xl mb-8">{{ t.tour_desc }}</p>
   </div>
 
   <!-- Search + Filter -->
   <div class="fade-up delay-1 flex flex-col md:flex-row gap-4 items-start md:items-center">
     <div class="search-wrap flex-1 max-w-lg">
       <span class="material-symbols-outlined icon">search</span>
-      <input id="tour-search" type="text" placeholder="ค้นหาทัวร์ เช่น Japan, Bali, Europe..." />
+      <input id="tour-search" type="text" placeholder="{{ t.search_placeholder }}" />
     </div>
     <div class="flex flex-wrap gap-2">
-      <button class="pill active" data-filter="all">ทั้งหมด</button>
-      <button class="pill" data-filter="available">พร้อมจอง</button>
-      <button class="pill" data-filter="asia">เอเชีย</button>
-      <button class="pill" data-filter="europe">ยุโรป</button>
+      <button class="pill active" data-filter="all">{{ t.all }}</button>
+      <button class="pill" data-filter="available">{{ t.available }}</button>
+      <button class="pill" data-filter="asia">{{ t.asia }}</button>
+      <button class="pill" data-filter="europe">{{ t.europe }}</button>
     </div>
   </div>
 </section>
@@ -94,22 +94,29 @@
         <!-- Stable Placeholder Image based on destination -->
         <img class="w-full h-full object-cover" src="https://loremflickr.com/600/400/{{ t.2|urlencode }},travel/all" alt="{{ t.2 }}"/>
         
-        <div class="absolute top-3 left-3"><span class="badge badge-green">{{ t.2 }}</span></div>
+        <div class="absolute top-3 left-3">
+          <span class="badge badge-green">
+            {% if lang == 'en' and t.11 %}{{ t.11 }}{% else %}{{ t.2 }}{% endif %}
+          </span>
+        </div>
         <div class="absolute top-3 right-3">
           {% if t.6 == 0 %}
-            <span class="badge badge-gray px-4 py-2 shadow-sm text-sm">เต็มแล้ว / Full</span>
+            <span class="badge badge-gray px-4 py-2 shadow-sm text-sm">{{ t.fully_booked }}</span>
           {% elif t.6 > 0 and t.6 <= 5 %}
-            <span class="badge badge-red animate-pulse shadow-sm">เหลือ {{ t.6 }} ที่!</span>
+            <span class="badge badge-red animate-pulse shadow-sm">{{ t.seats_left }}</span>
           {% else %}
-            <span class="badge badge-green shadow-sm">{{ t.6 }} ที่นั่ง</span>
+            <span class="badge badge-green shadow-sm">{{ t.6 }} {{ t.seats }}</span>
           {% endif %}
         </div>
       </div>
       <div class="p-6">
         <div class="flex items-center gap-1 text-primary text-sm font-medium mb-2">
-          <span class="material-symbols-outlined text-base">location_on</span> {{ t.2 }}
+          <span class="material-symbols-outlined text-base">location_on</span>
+          {% if lang == 'en' and t.11 %}{{ t.11 }}{% else %}{{ t.2 }}{% endif %}
         </div>
-        <h3 class="font-display text-xl font-700 mb-3 text-text line-clamp-2" title="{{ t.1 }}">{{ t.1 }}</h3>
+        <h3 class="font-display text-xl font-700 mb-3 text-text line-clamp-2" title="{{ t.1 }}">
+          {% if lang == 'en' and t.10 %}{{ t.10 }}{% else %}{{ t.1 }}{% endif %}
+        </h3>
         <div class="flex items-center justify-between text-text-muted text-sm mb-4">
           <div class="flex items-center gap-1">
             <span class="material-symbols-outlined text-base">calendar_month</span> {{ t.3|date:"d M" }} – {{ t.4|date:"d M y" }}
@@ -119,26 +126,26 @@
         
         <div class="mb-5 bg-surface-container-lowest border border-border rounded-xl p-3">
           <div class="flex justify-between text-xs font-medium mb-1.5">
-            <span class="text-text-muted">จำนวนที่นั่งว่าง</span>
+            <span class="text-text-muted">{{ t.available_seats_label }}</span>
             <span class="{% if t.6 == 0 %}text-text-muted{% elif t.6 <= 5 %}text-red-500{% else %}text-primary{% endif %} font-700">{{ t.6 }} / {{ t.5 }}</span>
           </div>
           <div class="seats-bar bg-surface-container"><div class="seats-fill {% if t.6 <= 5 %}bg-error{% endif %}" style="width:{% widthratio t.6 t.5 100 %}%"></div></div>
         </div>
         
         {% if t.6 == 0 %}
-          <div class="btn-disabled text-sm text-center w-full py-3">เต็มแล้ว / Fully Booked</div>
+          <div class="btn-disabled text-sm text-center w-full py-3">{{ t.fully_booked }}</div>
         {% elif request.session.user_id %}
-          <a href="/booking/?schedule_id={{ t.0 }}" class="btn-primary text-sm block text-center py-3 w-full shadow-sm hover:shadow-md">จองเลย / Book Now</a>
+          <a href="/booking/?schedule_id={{ t.0 }}" class="btn-primary text-sm block text-center py-3 w-full shadow-sm hover:shadow-md">{{ t.book_now }}</a>
         {% else %}
-          <a href="/login/" class="btn-primary !bg-surface !text-primary border-2 border-primary text-sm block text-center py-3 w-full hover:bg-primary-light transition-colors">Login เพื่อจอง / Login to Book</a>
+          <a href="/login/" class="btn-primary !bg-surface !text-primary border-2 border-primary text-sm block text-center py-3 w-full hover:bg-primary-light transition-colors">{{ t.login_to_book }}</a>
         {% endif %}
       </div>
     </div>
     {% empty %}
     <div class="col-span-1 md:col-span-3 text-center py-20">
       <span class="material-symbols-outlined text-6xl text-border mb-4">search_off</span>
-      <p class="text-text-muted font-medium text-lg">ยังไม่มีรายการทัวร์ในขณะนี้</p>
-      <p class="text-text-light text-sm mt-1">กรุณากลับมาตรวจสอบใหม่ภายหลัง</p>
+      <p class="text-text-muted font-medium text-lg">{{ t.no_tours }}</p>
+      <p class="text-text-light text-sm mt-1">{{ t.check_later }}</p>
     </div>
     {% endfor %}
 
@@ -147,7 +154,7 @@
   <!-- Empty state client-side filter -->
   <div id="no-results" class="hidden text-center py-20">
     <span class="material-symbols-outlined text-5xl text-text-light mb-3">search_off</span>
-    <p class="text-text-muted mt-3 font-medium">ไม่พบทัวร์ที่ตรงกับการค้นหา</p>
+    <p class="text-text-muted mt-3 font-medium">{{ t.no_matching_tours }}</p>
   </div>
 </main>
 {% endblock %}

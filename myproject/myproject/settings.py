@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.utils.translation import gettext_lazy as _
 
 load_dotenv()
 
@@ -46,6 +47,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myproject.context_processors.custom_translations',
             ],
         },
     },
@@ -87,7 +89,7 @@ SESSION_COOKIE_AGE = 86400  # 1 วัน
 # ═══════════════════════════════════════
 LANGUAGE_CODE = 'th'
 TIME_ZONE = 'Asia/Bangkok'
-USE_I18N = True
+USE_I18N = False
 USE_TZ = True
 
 STATIC_URL = 'static/'

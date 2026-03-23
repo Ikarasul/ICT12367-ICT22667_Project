@@ -40,6 +40,13 @@ def tours(request):
     })
 
 
+def change_language(request, lang_code):
+    # บันทึกภาษาลง Session
+    request.session['django_language'] = lang_code
+    # รีเฟรชกลับไปหน้าเดิมที่เพิ่งกดมา
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
 def login_view(request):
     """Login — เช็คพนักงานก่อน ถ้าไม่ใช่เช็คลูกค้า"""
     if request.session.get('user_id'):
@@ -240,31 +247,57 @@ def my_tickets_view(request):
 @login_required(roles=['Admin', 'Sales', 'Accounting'])
 def dashboard_view(request):
     """Dashboard พนักงาน"""
-    bookings  = []
-    schedules = []
-    revenue   = []
+    recent_bookings = []
+    schedules       = []
+    revenue         = []
+    stats           = {'total_bookings': 0, 'total_schedules': 0, 'total_revenue': 0}
 
+    # ยอดรวม
     try:
-        bookings = exec_query("SELECT * FROM vw_BookingSummary")
+        rows = exec_query("SELECT * FROM vw_BookingSummary")
+        if rows:
+            stats['total_bookings'] = rows[0][0]
     except Exception:
         pass
 
+    # รายการจองล่าสุด 10 รายการ
     try:
-        schedules = exec_query("SELECT * FROM vw_ScheduleAvailability")
+        recent_bookings = exec_query(
+            "SELECT TOP 10 BookingID, CustomerName, TourName, DepartureDate, Status FROM vw_FlightTickets ORDER BY BookingID DESC"
+        )
     except Exception:
         pass
 
+    # ตารางทัวร์
+    try:
+        schedules = exec_query("SELECT * FROM vw_ScheduleAvailability ORDER BY DepartureDate ASC")
+        stats['total_schedules'] = len(schedules)
+    except Exception:
+        pass
+
+    # รายได้ (Admin/Accounting เท่านั้น)
     role = request.session.get('user_role')
     if role in ['Admin', 'Accounting']:
         try:
             revenue = exec_query("SELECT * FROM vw_PackageRevenue")
+            stats['total_revenue'] = sum(int(r[1]) for r in revenue) if revenue else 0
+        except Exception:
+            pass
+
+    # Audit Log ล่าสุด 5 รายการ (Admin เท่านั้น)
+    audit_logs = []
+    if role == 'Admin':
+        try:
+            audit_logs = exec_query("SELECT TOP 5 * FROM vw_AuditLog ORDER BY CreatedAt DESC")
         except Exception:
             pass
 
     return render(request, 'dashboard.html', {
-        'bookings':  bookings,
-        'schedules': schedules,
-        'revenue':   revenue,
+        'recent_bookings': recent_bookings,
+        'schedules':       schedules,
+        'revenue':         revenue,
+        'stats':           stats,
+        'audit_logs':      audit_logs,
     })
 
 

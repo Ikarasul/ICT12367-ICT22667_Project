@@ -128,7 +128,7 @@
 <div class="flex items-center gap-2 overflow-hidden">
 <nav aria-label="Breadcrumb" class="flex text-sm text-slate-400 font-medium">
 <ol class="flex items-center space-x-2">
-<li><span class="hover:text-secondary cursor-pointer">ฐานข้อมูล / Database</span></li>
+<li><span class="hover:text-secondary cursor-pointer">{{ t.database }}</span></li>
 <li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
 <li><span class="text-secondary font-bold">{{ table_name|default:"Tours_Master" }}</span></li>
 </ol>
@@ -155,7 +155,7 @@
 </div>
 <a class="inline-flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all" href="/manage/{{ table_name|default:'tours' }}/create/">
 <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
-<span>เพิ่มรายการ / Add Record</span>
+<span>{{ t.add_record_btn }}</span>
 </a>
 </div>
 <!-- Data Table Container (Editorial Style) -->
@@ -169,11 +169,11 @@
 </th>
 <!-- Mocked Column Headers -->
 <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">ID</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">ชื่อรายการ / Name</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">หมวดหมู่ / Category</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-center">ราคา / Price</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">สถานะ / Status</th>
-<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-right">การจัดการ / Actions</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">{{ t.col_name }}</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">{{ t.col_category }}</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-center">{{ t.col_price }}</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border">{{ t.col_status }}</th>
+<th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest font-label border-b ghost-border text-right">{{ t.col_actions }}</th>
 </tr>
 </thead>
 <tbody class="divide-y divide-slate-50">

@@ -18,43 +18,43 @@
 <main style="max-width:80rem;margin:0 auto;padding:3rem 1.5rem">
 <div class="fade-up" style="margin-bottom:2.5rem">
   <span style="font-size:.75rem;font-weight:700;color:#059669;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.5rem">✔️ Customer Portal</span>
-  <h1 style="font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;color:#059669;margin-bottom:.75rem">ตั๋วของฉัน / My Tickets</h1>
-  <p style="color:#6b7280;max-width:40rem;line-height:1.7">จัดการการจองและดูรายละเอียดการเดินทางทั้งหมดในที่เดียว / Manage your bookings and view all your travel itineraries in one place.</p>
+  <h1 style="font-family:'Outfit',sans-serif;font-size:2.5rem;font-weight:900;color:#059669;margin-bottom:.75rem">{{ t.my_tickets }}</h1>
+  <p style="color:#6b7280;max-width:40rem;line-height:1.7">{{ t.manage_bookings }}</p>
 </div>
 <!-- Bento Grid Layout for Tickets -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 <!-- Filter Sidebar (Hidden on mobile) -->
 <aside class="hidden lg:block lg:col-span-3 space-y-5">
 <div style="background:#f0fdf4;border-radius:1.25rem;padding:1.5rem;border:1px solid #d1fae5">
-<h3 style="font-family:'Outfit',sans-serif;font-weight:700;color:#059669;margin-bottom:1rem;font-size:1rem">ตัวกรอง / Filters</h3>
+<h3 style="font-family:'Outfit',sans-serif;font-weight:700;color:#059669;margin-bottom:1rem;font-size:1rem">{{ t.filters }}</h3>
 <div style="display:flex;flex-direction:column;gap:.875rem">
   <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
     <input type="checkbox" checked style="accent-color:#059669;width:1rem;height:1rem"/>
-    <span style="font-size:.9rem;font-weight:600;color:#111827">ทั้งหมด / All</span>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">{{ t.all }}</span>
   </label>
   <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
     <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
-    <span style="font-size:.9rem;font-weight:600;color:#111827">ยืนยันแล้ว / Confirmed</span>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">{{ t.confirmed }}</span>
     <span style="background:#d1fae5;color:#065f46;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">✓</span>
   </label>
   <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
     <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
-    <span style="font-size:.9rem;font-weight:600;color:#111827">รอดำเนินการ / Pending</span>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">{{ t.pending }}</span>
     <span style="background:#fef3c7;color:#92400e;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">⏳</span>
   </label>
   <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer">
     <input type="checkbox" style="accent-color:#059669;width:1rem;height:1rem"/>
-    <span style="font-size:.9rem;font-weight:600;color:#111827">ยกเลิก / Cancelled</span>
+    <span style="font-size:.9rem;font-weight:600;color:#111827">{{ t.cancelled }}</span>
     <span style="background:#fee2e2;color:#991b1b;border-radius:9999px;padding:.1rem .5rem;font-size:.7rem;font-weight:700;margin-left:auto">✗</span>
   </label>
 </div>
 </div>
 <div style="background:linear-gradient(135deg,#059669,#10b981);border-radius:1.25rem;padding:1.5rem;position:relative;overflow:hidden;color:#fff">
 <div style="position:relative;z-index:1">
-<h4 style="font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:.375rem">ต้องการความช่วยเหลือ?</h4>
-<p style="font-size:.875rem;color:rgba(255,255,255,.8);margin-bottom:1rem">Need help with your booking?</p>
+<h4 style="font-family:'Outfit',sans-serif;font-weight:700;margin-bottom:.375rem">{{ t.need_help }}</h4>
+<p style="font-size:.875rem;color:rgba(255,255,255,.8);margin-bottom:1rem"></p>
 <button style="background:#fff;color:#059669;border:none;width:100%;border-radius:.75rem;padding:.625rem 1rem;font-family:'Outfit',sans-serif;font-weight:700;cursor:pointer;font-size:.875rem;transition:all .2s">
-ติดต่อเรา / Contact Us
+{{ t.contact_us }}
 </button>
 </div>
 <span class="material-symbols-outlined" style="position:absolute;bottom:-1rem;right:-1rem;font-size:6rem;opacity:.15;font-variation-settings:'FILL' 1">support_agent</span>
@@ -97,7 +97,7 @@
     </div>
     
     <div class="space-y-1">
-      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Destination</p>
+      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">{{ t.destination }}</p>
       <div class="flex items-center text-on-surface">
         <span class="material-symbols-outlined text-primary mr-2">location_on</span>
         <span class="font-bold">{{ t.3 }}</span>
@@ -105,7 +105,7 @@
     </div>
     
     <div class="space-y-1">
-      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">Departure</p>
+      <p class="text-[10px] text-outline font-bold uppercase tracking-tighter">{{ t.departure }}</p>
       <div class="flex items-center text-on-surface">
         <span class="material-symbols-outlined text-primary mr-2">calendar_today</span>
         <span class="font-bold">{{ t.4|date:"d M Y" }}</span>
@@ -114,18 +114,18 @@
   </div>
   
   <div class="bg-surface-container-low p-8 border-l border-outline-variant/10 md:w-64 flex flex-col justify-center items-center text-center">
-    <p class="text-[10px] text-outline font-bold uppercase mb-1">Total Price</p>
+    <p class="text-[10px] text-outline font-bold uppercase mb-1">{{ t.total_price }}</p>
     <p class="text-2xl font-extrabold {% if t.5 == 'Cancelled' %}text-slate-400 line-through{% else %}text-primary{% endif %} mb-4">฿ {{ t.7 }}</p>
     <div class="flex items-center text-xs text-on-surface-variant mb-4">
       <span class="material-symbols-outlined text-sm mr-1">person</span>
-      {{ t.6 }} Passengers
+      {{ t.6 }} {{ t.passengers }}
     </div>
     {% if t.5 == 'Confirmed' %}
-      <button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm hover:scale-95 transition-all">ดูตั๋ว / View Ticket</button>
+      <button class="w-full bg-primary text-white py-3 rounded-xl font-bold text-sm hover:scale-95 transition-all">{{ t.view_ticket }}</button>
     {% elif t.5 == 'Cancelled' %}
       <button class="w-full bg-slate-200 text-slate-500 py-3 rounded-xl font-bold text-sm cursor-not-allowed">ยกเลิกแล้ว / Cancelled</button>
     {% else %}
-      <button class="w-full border-2 border-primary text-primary py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all">ชำระเงิน / Pay Now</button>
+      <button class="w-full border-2 border-primary text-primary py-3 rounded-xl font-bold text-sm hover:bg-primary hover:text-white transition-all">{{ t.pay_now }}</button>
     {% endif %}
   </div>
 
@@ -133,9 +133,9 @@
 {% empty %}
 <div class="col-span-1 md:col-span-12 py-12 text-center text-on-surface-variant">
   <span class="material-symbols-outlined text-6xl opacity-20 mb-4">confirmation_number</span>
-  <h3 class="text-xl font-bold text-primary">ยังไม่มีตั๋ว / No Tickets Yet</h3>
-  <p class="mt-2 text-sm">คุณยังไม่มีประวัติการจองทัวร์</p>
-  <a href="/" class="inline-block mt-6 bg-primary-container text-white px-6 py-2 rounded-xl font-bold text-sm hover:scale-95 transition-all">ดูทัวร์และโปรโมชั่น</a>
+  <h3 class="text-xl font-bold text-primary">{{ t.no_tickets_yet }}</h3>
+  <p class="mt-2 text-sm">{{ t.no_booking_history }}</p>
+  <a href="/" class="inline-block mt-6 bg-primary-container text-white px-6 py-2 rounded-xl font-bold text-sm hover:scale-95 transition-all">{{ t.view_tours_promos }}</a>
 </div>
 {% endfor %}
 
