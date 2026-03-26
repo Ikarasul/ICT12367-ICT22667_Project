@@ -1,68 +1,56 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/components_navbar.css' %}">
+
 {% load i18n %}
-<header class="sticky top-0 z-40 bg-[#FAF9F5] dark:bg-slate-900 border-none">
-  <div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
-    <div class="text-2xl font-bold text-[#154212] dark:text-emerald-500 headline-font">TourCompanyDB</div>
-    <nav class="hidden md:flex items-center space-x-8">
-<a class="text-[#154212] font-bold border-b-2 border-[#154212] pb-1 hover:text-[#2D5A27] transition-colors" href="/">{{ t.tours }}</a>
-<a class="text-slate-600 dark:text-slate-400 hover:text-[#2D5A27] transition-colors" href="/my-tickets/">{{ t.tickets }}</a>
-</nav>
-    <div class="flex items-center space-x-6">
-      <div class="hidden md:flex space-x-4">
-        <div class="relative inline-block mt-1 mr-4">
-          <select onchange="window.location.href=this.value" class="bg-transparent border-none text-sm cursor-pointer outline-none focus:ring-0 text-slate-500 font-bold hover:text-primary transition-colors uppercase">
-              <option value="{% url 'change_language' 'th' %}" {% if lang == 'th' %}selected{% endif %}>TH</option>
-              <option value="{% url 'change_language' 'en' %}" {% if lang == 'en' %}selected{% endif %}>EN</option>
-          </select>
-        </div>
-        <div class="relative">
-          <button id="profile-btn"
-            class="btn-icon text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </button>
-          <div id="profileMenu"
-            class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 p-2 z-50">
-            {% if request.session.user_id %}
-        <a href="/my-tickets/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">{{ t.my_tickets }}</a>
-        <a href="/logout/" class="block px-4 py-2 text-sm text-error font-bold hover:bg-error/10 rounded-lg">{{ t.logout }}</a>
-    {% else %}
-        <a href="/login/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">{{ t.login }}</a>
-        <a href="/register/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg">{{ t.register }}</a>
-    {% endif %}
-          </div>
-        </div>
-      </div>
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm h-16 flex justify-between items-center px-8">
+  <div class="flex items-center gap-10">
+    <a href="/" class="text-xl font-extrabold text-emerald-600" style="font-family:'Plus Jakarta Sans',sans-serif;">TourCompanyDB</a>
+    <div class="hidden md:flex items-center gap-6 font-semibold text-sm" style="font-family:'Plus Jakarta Sans',sans-serif;">
+      <a class="{% if request.path == '/' or request.path == '/tours/' %}text-emerald-600 border-b-2 border-emerald-500 pb-0.5{% else %}text-slate-600 hover:text-emerald-500 transition-colors{% endif %}" href="/tours/">{% trans "Tours" %}</a>
+      <a class="{% if 'my-tickets' in request.path %}text-emerald-600 border-b-2 border-emerald-500 pb-0.5{% else %}text-slate-600 hover:text-emerald-500 transition-colors{% endif %}" href="/my-tickets/">{% trans "Tickets" %}</a>
     </div>
   </div>
-</header>
-<style>
-  .dropdown-menu {
-    display: none;
-  }
 
-  .dropdown-menu.show {
-    display: block;
-  }
-</style>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const profileBtn = document.getElementById('profile-btn');
-    const profileMenu = document.getElementById('profileMenu');
+  <div class="flex items-center gap-3">
+    <!-- Language Switcher -->
+    <div class="relative">
+      <form action="{% url 'set_language' %}" method="post" id="language-form" class="m-0 p-0">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+        <select name="language" onchange="document.getElementById('language-form').submit()" class="appearance-none bg-gray-100 border-none text-xs font-bold cursor-pointer outline-none rounded-full px-3 py-2 text-slate-500 hover:text-emerald-600 transition-colors uppercase">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% for lang in LANGUAGES %}
+            <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+              🌐 {{ lang.0|upper }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
 
-    if (profileBtn && profileMenu) {
-      profileBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        profileMenu.classList.toggle('show');
-      });
-      document.addEventListener('click', function () {
-        profileMenu.classList.remove('show');
-      });
-      profileMenu.addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
-    }
-  });
-</script>
+    <!-- Profile Dropdown (if logged in) or Login button -->
+    {% if request.session.user_id %}
+      <div class="relative">
+        <button id="profile-btn" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+        <div id="profileMenu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 z-50">
+          <a href="/my-tickets/" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl">{% trans "My Tickets" %}</a>
+          <a href="/logout/" class="block px-4 py-2 text-sm text-red-500 font-bold hover:bg-red-50 rounded-xl">{% trans "Logout" %}</a>
+        </div>
+      </div>
+    {% else %}
+      <a href="/login/" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-full font-bold text-sm transition-all active:scale-95" style="font-family:'Plus Jakarta Sans',sans-serif;">
+        {% trans "Login" %}
+      </a>
+    {% endif %}
+  </div>
+</nav>
+
+
+
+<script src="{% static 'js/components_navbar.js' %}"></script>

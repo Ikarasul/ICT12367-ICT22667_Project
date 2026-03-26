@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="th" id="html-root">
 <head>
@@ -5,103 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{% block title %}TourCompanyDB Staff{% endblock %}</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --primary: #154212;
-    --primary-light: #2d5a27;
-    --sidebar-w: 240px;
-    --surface: #f8f9fa;
-    --surface-low: #f1f3f4;
-    --text: #1a1a2e;
-    --text-muted: #6b7280;
-    --border: rgba(0,0,0,0.06);
-    --green-soft: #86efac;
-    --error: #dc2626;
-    --radius: 12px;
-  }
-  *, *::before, *::after { box-sizing: border-box; }
-  body {
-    font-family: 'Manrope', sans-serif;
-    background: var(--surface);
-    color: var(--text);
-    min-height: 100vh;
-  }
-  h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
-  .staff-layout {
-    display: flex; min-height: 100vh;
-  }
-  .staff-main {
-    flex: 1;
-    margin-left: var(--sidebar-w);
-    padding: 2rem 2.5rem;
-    min-height: 100vh;
-  }
-  @media (max-width: 768px) {
-    .staff-main { margin-left: 0; padding: 1rem; padding-top: 4rem; }
-  }
-  /* Shared table styles */
-  .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-  .data-table th {
-    padding: 0.75rem 1rem; text-align: left;
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; color: var(--text-muted);
-    background: var(--surface-low);
-    border-bottom: 1px solid var(--border);
-  }
-  .data-table td {
-    padding: 0.85rem 1rem;
-    border-bottom: 1px solid rgba(0,0,0,0.03);
-    color: var(--text);
-  }
-  .data-table tr:hover td { background: rgba(21,66,18,0.02); }
-  /* Status badges */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 0.25rem 0.65rem; border-radius: 999px;
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .badge-confirmed { background: #dcfce7; color: #166534; }
-  .badge-cancelled { background: #fee2e2; color: #991b1b; }
-  .badge-pending   { background: #fef3c7; color: #92400e; }
-  /* Cards */
-  .card {
-    background: white; border-radius: var(--radius);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-weight: 700; font-size: 0.9rem; color: var(--text); }
-  .card-body { padding: 1.5rem; }
-  /* Buttons */
-  .btn {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 1.1rem; border-radius: 10px;
-    font-size: 0.875rem; font-weight: 600; cursor: pointer;
-    text-decoration: none; border: none; transition: all 0.15s;
-  }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { background: var(--primary-light); }
-  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--surface-low); }
-  .btn-danger { background: #fee2e2; color: var(--error); }
-  .btn-danger:hover { background: #fecaca; }
-  /* Breadcrumb */
-  .breadcrumb {
-    display: flex; align-items: center; gap: 0.4rem;
-    font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;
-  }
-  .breadcrumb a { color: var(--primary); text-decoration: none; }
-  .breadcrumb a:hover { text-decoration: underline; }
-  .breadcrumb-sep { color: var(--border); }
-</style>
+
 {% block extra_css %}{% endblock %}
+<link rel="stylesheet" href="{% static 'css/base_staff.css' %}">
 </head>
 <body>
 <div class="staff-layout">

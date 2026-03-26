@@ -2,61 +2,118 @@
 {% load static %}
 {% block title %}Audit Log - TourCompanyDB{% endblock %}
 
-{% block topnav %}{% endblock %}
-{% block footer %}{% endblock %}
-
-{% block sidebar %}
-{% include 'components/sidebar_staff.html' with active_menu='audit' %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/audit_log.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-{% include 'components/header.html' with header_title='Audit Log' header_subtitle='ประวัติการใช้งาน' %}
+<div class="min-h-full">
 
-<div class="p-8 max-w-6xl mx-auto">
-  <h2 class="text-2xl font-bold mb-6">{{ t.audit_log_title }}</h2>
+  <!-- Page Canvas -->
+  <div class="p-8 max-w-7xl mx-auto">
 
-  {% if logs %}
-  <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-widest">
-          <th class="px-6 py-4">ID</th>
-          <th class="px-6 py-4">{{ t.table }}</th>
-          <th class="px-6 py-4">Action</th>
-          <th class="px-6 py-4">{{ t.by }}</th>
-          <th class="px-6 py-4">{{ t.details }}</th>
-          <th class="px-6 py-4">{{ t.date }}</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        {% for log in logs %}
-        <tr class="searchable-item hover:bg-gray-50 transition-colors">
-          <td class="px-6 py-4 font-bold text-green-800">#{{ log.0 }}</td>
-          <td class="px-6 py-4 font-medium">{{ log.1 }}</td>
-          <td class="px-6 py-4">
-            {% if log.2 == 'INSERT' %}
-            <span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">INSERT</span>
-            {% elif log.2 == 'UPDATE' %}
-            <span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">UPDATE</span>
-            {% elif log.2 == 'DELETE' %}
-            <span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">DELETE</span>
-            {% else %}
-            <span class="px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">{{ log.2 }}</span>
-            {% endif %}
-          </td>
-          <td class="px-6 py-4">{{ log.3 }}</td>
-          <td class="px-6 py-4 text-sm text-gray-600">{{ log.4 }}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">{{ log.5 }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <!-- Breadcrumbs & Header -->
+    <div class="mb-10">
+      <nav class="flex items-center gap-2 text-sm text-slate-400 mb-4 font-medium">
+        <a href="{% url 'dashboard' %}" class="hover:text-primary transition-colors">Dashboard</a>
+        <span class="material-symbols-outlined text-xs">chevron_right</span>
+        <span class="text-primary font-bold">Audit Log</span>
+      </nav>
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-4xl font-extrabold font-headline text-primary leading-tight tracking-tight">
+            Audit Log <span class="text-slate-300 font-light mx-2">/</span> บันทึกการเปลี่ยนแปลง
+          </h2>
+          <p class="text-slate-500 font-medium mt-1">ประวัติการแก้ไขข้อมูลทั้งหมดในระบบ — All database change history</p>
+        </div>
+        <div class="flex gap-3">
+          <a href="{% url 'manage_tables' %}"
+             class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-all shadow-sm">
+            <span class="material-symbols-outlined text-sm">database</span>
+            Database
+          </a>
+          <a href="{% url 'dashboard' %}"
+             class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95">
+            <span class="material-symbols-outlined text-sm">dashboard</span>
+            Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit Table Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-emerald-50 border-b border-emerald-100">
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">Log ID</th>
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">Table Name</th>
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">Action</th>
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">Performed By</th>
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">Details</th>
+              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider text-right">Created At</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+            {% for log in logs %}
+            <tr class="bg-white hover:bg-slate-50 transition-colors">
+              <td class="px-8 py-4 font-bold text-slate-500 font-headline">#{{ log.0 }}</td>
+              <td class="px-8 py-4 text-emerald-700 font-bold">{{ log.1 }}</td>
+              <td class="px-8 py-4">
+                <span class="px-3 py-1 rounded-full text-xs font-bold
+                  {% if log.2 == 'INSERT' %}bg-green-100 text-green-700
+                  {% elif log.2 == 'UPDATE' %}bg-blue-100 text-blue-700
+                  {% elif log.2 == 'DELETE' %}bg-red-100 text-red-700
+                  {% else %}bg-gray-100 text-gray-700{% endif %}">
+                  {{ log.2 }}
+                </span>
+              </td>
+              <td class="px-8 py-4 text-slate-600 font-medium">User ID: {{ log.3 }}</td>
+              <td class="px-8 py-4 text-slate-500 text-sm">{{ log.4|truncatechars:60 }}</td>
+              <td class="px-8 py-4 text-right text-slate-400 text-sm">{{ log.5|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="px-8 py-10 text-center text-slate-500">
+                ไม่มีบันทึก Audit Log / No audit logs found.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- System Health Footer -->
+    <div class="mt-10 p-6 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-6">
+        <div class="flex flex-col">
+          <span class="text-xs uppercase tracking-widest font-bold text-slate-400 mb-1">Database Engine</span>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="font-headline font-extrabold text-primary">SQL Server (TourCompanyDB)</span>
+          </div>
+        </div>
+        <div class="h-10 w-px bg-slate-200"></div>
+        <div class="flex flex-col">
+          <span class="text-xs uppercase tracking-widest font-bold text-slate-400 mb-1">Total Entries</span>
+          <span class="font-headline font-extrabold text-primary">{{ logs|length }} record{{ logs|length|pluralize }}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="{% url 'manage_tables' %}"
+           class="px-5 py-2.5 bg-white text-primary border border-slate-200 rounded-xl font-bold text-sm hover:bg-slate-50 transition-all active:scale-95 shadow-sm">
+          Browse Tables
+        </a>
+        <a href="{% url 'dashboard' %}"
+           class="px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:shadow-lg hover:-translate-y-0.5 transition-all active:scale-95">
+          Back to Dashboard
+        </a>
+      </div>
+    </div>
+
   </div>
-  {% else %}
-  <div class="bg-white rounded-2xl p-12 text-center border border-gray-100">
-    <span class="material-symbols-outlined text-5xl text-gray-300">history</span>
-    <p class="text-gray-400 mt-4">{{ t.no_audit_logs }}</p>
-  </div>
-  {% endif %}
 </div>
 {% endblock %}

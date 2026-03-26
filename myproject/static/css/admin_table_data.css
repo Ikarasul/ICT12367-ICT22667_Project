@@ -1,0 +1,6 @@
+.material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift {
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(242, 244, 246, 0.5) 100%);
+        }

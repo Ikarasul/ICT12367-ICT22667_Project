@@ -1,3 +1,4 @@
+{% load i18n %}
 <aside class="flex flex-col h-screen fixed left-0 top-0 bg-[#1E2433] w-64 shadow-2xl z-[60]">
   <div class="p-6">
     <a href="/dashboard/"
@@ -8,22 +9,17 @@
     <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'dashboard' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
       href="/dashboard/">
       <span class="material-symbols-outlined">dashboard</span>
-      <span class="font-medium">{{ t.dashboard }}</span>
+      <span class="font-medium">{% trans "Dashboard" %}</span>
     </a>
     <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'tours' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
       href="/tours/">
       <span class="material-symbols-outlined">explore</span>
-      <span class="font-medium">{{ t.tours }}</span>
-    </a>
-    <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'tickets' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
-      href="/my-tickets/">
-      <span class="material-symbols-outlined">confirmation_number</span>
-      <span class="font-medium">{{ t.my_tickets }}</span>
+      <span class="font-medium">{% trans "Tours" %}</span>
     </a>
     <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'manage' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
       href="/manage/">
       <span class="material-symbols-outlined">database</span>
-      <span class="font-medium">{{ t.manage }}</span>
+      <span class="font-medium">{% trans "Manage" %}</span>
     </a>
     <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all {% if active_menu == 'audit' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% endif %}"
       href="/audit-log/">
@@ -35,7 +31,7 @@
     <a class="text-slate-400 hover:text-white hover:bg-[#252D3D] px-4 py-3 rounded-xl flex items-center gap-3 transition-all"
       href="/logout/">
       <span class="material-symbols-outlined">logout</span>
-      <span class="font-medium">{{ t.logout }}</span>
+      <span class="font-medium">{% trans "Logout" %}</span>
     </a>
   </div>
 </aside>

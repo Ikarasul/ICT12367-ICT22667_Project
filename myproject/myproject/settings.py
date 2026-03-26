@@ -26,6 +26,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -35,6 +36,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'myproject.urls'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 TEMPLATES = [
     {
@@ -69,7 +74,7 @@ DATABASES = {
 # SQL Server connection — ใช้ตรงนี้สำหรับ pyodbc โดยตรง
 MSSQL_CONFIG = {
     'SERVER': 'DESKTOP-S27JDCN\\RAVEN',   # ← ชื่อ Server บน Desktop
-    'DATABASE': 'TourCompanyDB',
+    'DATABASE': 'TourSongkhla',
     'DRIVER': 'ODBC Driver 17 for SQL Server',
     # Windows Authentication (ไม่ต้อง username/password)
     'TRUSTED_CONNECTION': 'yes',
@@ -89,8 +94,17 @@ SESSION_COOKIE_AGE = 86400  # 1 วัน
 # ═══════════════════════════════════════
 LANGUAGE_CODE = 'th'
 TIME_ZONE = 'Asia/Bangkok'
-USE_I18N = False
+USE_I18N = True
 USE_TZ = True
+
+LANGUAGES = [
+    ('th', _('Thai')),
+    ('en', _('English')),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [

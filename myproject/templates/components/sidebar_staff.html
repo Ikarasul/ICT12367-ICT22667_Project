@@ -1,3 +1,4 @@
+{% load i18n %}
 {# templates/components/sidebar_staff.html | Usage: include this with active_menu='dashboard' etc. #}
 
 
@@ -9,7 +10,7 @@
        class="block text-xl font-bold text-white headline hover:text-emerald-400 transition-colors">
       TourCompanyDB
     </a>
-    <p class="text-slate-400 text-xs mt-1 uppercase tracking-wider">{{ t.staff_portal }}</p>
+    <p class="text-slate-400 text-xs mt-1 uppercase tracking-wider">{% trans "Staff Portal" %}</p>
   </div>
 
   {# Navigation #}
@@ -20,7 +21,7 @@
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
               {% if active_menu == 'dashboard' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
       <span class="material-symbols-outlined">dashboard</span>
-      <span>{{ t.menu_dashboard }}</span>
+      <span>{% trans "Dashboard" %}</span>
     </a>
 
     {# All Tours #}
@@ -28,7 +29,7 @@
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
               {% if active_menu == 'tours' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
       <span class="material-symbols-outlined">explore</span>
-      <span>{{ t.menu_tours }}</span>
+      <span>{% trans "All Tours" %}</span>
     </a>
 
     {# Bookings #}
@@ -36,7 +37,7 @@
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
               {% if active_menu == 'bookings' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
       <span class="material-symbols-outlined">confirmation_number</span>
-      <span>{{ t.menu_bookings }}</span>
+      <span>{% trans "Bookings" %}</span>
     </a>
 
     {# Manage Data #}
@@ -44,7 +45,7 @@
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
               {% if active_menu == 'manage' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
       <span class="material-symbols-outlined">database</span>
-      <span>{{ t.menu_manage }}</span>
+      <span>{% trans "Manage Data" %}</span>
     </a>
 
     {# Audit Log — Admin only #}
@@ -53,7 +54,7 @@
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
               {% if active_menu == 'audit' %}bg-emerald-600 text-white shadow-lg shadow-emerald-600/20{% else %}text-slate-400 hover:text-white hover:bg-[#252D3D]{% endif %}">
       <span class="material-symbols-outlined">history_edu</span>
-      <span>{{ t.menu_audit }}</span>
+      <span>{% trans "Audit Log" %}</span>
     </a>
     {% endif %}
 
@@ -77,7 +78,7 @@
     <a href="{% url 'logout' %}"
        class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:text-red-400 hover:bg-red-900/30 transition-all">
       <span class="material-symbols-outlined">logout</span>
-      <span>{{ t.logout }}</span>
+      <span>{% trans "Logout" %}</span>
     </a>
   </div>
 

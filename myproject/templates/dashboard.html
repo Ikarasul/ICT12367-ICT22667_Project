@@ -3,380 +3,212 @@
 {% block title %}Dashboard - TourCompanyDB{% endblock %}
 
 {% block extra_head %}
-<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link
-  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
-  rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-  rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-  rel="stylesheet" />
-<style>
-  .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  }
-
-  body {
-    font-family: 'Manrope', sans-serif;
-  }
-
-  h1,
-  h2,
-  h3,
-  .headline {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: -0.02em;
-  }
-
-  .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.875rem 1.25rem;
-    border-radius: 0.75rem;
-    color: #6b7280;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.2s;
-  }
-
-  .sidebar-link:hover {
-    background-color: #f0fdf4;
-    color: #059669;
-  }
-
-  .sidebar-link.active {
-    background-color: #059669;
-    color: white;
-    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
-  }
-
-  .stat-card {
-    background: white;
-    border-radius: 1.25rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    border: 1px solid #f3f4f6;
-    transition: transform 0.2s;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  }
-</style>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "on-background": "#1b1c1a",
-          "inverse-surface": "#2f312e",
-          "on-secondary-fixed-variant": "#005313",
-          "on-tertiary-container": "#f7b900",
-          "surface-variant": "#e3e2df",
-          "background": "#faf9f5",
-          "surface-bright": "#faf9f5",
-          "inverse-on-surface": "#f2f1ed",
-          "surface-container-high": "#e9e8e4",
-          "tertiary": "#4b3600",
-          "on-tertiary": "#ffffff",
-          "on-error-container": "#93000a",
-          "on-primary": "#ffffff",
-          "surface-container-highest": "#e3e2df",
-          "on-surface": "#1b1c1a",
-          "surface": "#faf9f5",
-          "surface-container": "#efeeea",
-          "inverse-primary": "#a1d494",
-          "tertiary-container": "#684c00",
-          "on-tertiary-fixed": "#261a00",
-          "secondary-container": "#91f78e",
-          "primary-fixed-dim": "#a1d494",
-          "on-secondary-fixed": "#002204",
-          "surface-container-low": "#f4f4f0",
-          "on-tertiary-fixed-variant": "#5c4300",
-          "on-error": "#ffffff",
-          "primary-fixed": "#bcf0ae",
-          "secondary-fixed": "#94f990",
-          "tertiary-fixed-dim": "#fbbc00",
-          "secondary-fixed-dim": "#78dc77",
-          "on-secondary-container": "#00731e",
-          "on-secondary": "#ffffff",
-          "outline-variant": "#c2c9bb",
-          "on-primary-fixed": "#002201",
-          "secondary": "#006e1c",
-          "primary": "#154212",
-          "on-primary-fixed-variant": "#23501e",
-          "primary-container": "#2d5a27",
-          "error": "#ba1a1a",
-          "outline": "#72796e",
-          "surface-container-lowest": "#ffffff",
-          "tertiary-fixed": "#ffdfa0",
-          "error-container": "#ffdad6",
-          "surface-tint": "#3b6934",
-          "surface-dim": "#dbdad6",
-          "on-primary-container": "#9dd090",
-          "on-surface-variant": "#42493e"
-        },
-        fontFamily: {
-          "headline": ["Plus Jakarta Sans"],
-          "body": ["Manrope"],
-          "label": ["Manrope"]
-        },
-        borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-      },
-    },
-  }
-</script>
-{% endblock %}
-
-{% block topnav %}{% endblock %}
-{% block footer %}{% endblock %}
-
-{% block sidebar %}
-{% include 'components/sidebar_staff.html' with active_menu='dashboard' %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
+<div class="flex flex-col min-h-full overflow-y-auto bg-surface-container-low">
 
-<!-- Page Content -->
-<div class="p-8 space-y-8 max-w-[1600px] mx-auto">
-  <!-- Stat Bento Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div
-      class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] border border-outline-variant/15 group hover:scale-[1.02] transition-transform">
-      <div class="flex justify-between items-start mb-4">
-        <div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary">
-          <span class="material-symbols-outlined" data-icon="book_online"
-            style="font-variation-settings: 'FILL' 1;">book_online</span>
-        </div>
-        <span class="text-secondary text-xs font-bold bg-secondary-container px-2 py-1 rounded-full">+12%</span>
-      </div>
-      <p class="text-sm text-on-surface-variant font-medium">{{ t.total_bookings }}</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-primary">{{ stats.total_bookings }}</h3>
+  <!-- Page Title Bar -->
+  <div class="px-8 pt-8 pb-4 flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Executive Dashboard</h2>
+      <p class="text-on-surface-variant text-sm font-medium">{{ request.session.user_name|default:"Staff" }} &mdash; {{ request.session.user_role|default:"Staff" }}</p>
     </div>
-    <div
-      class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] border border-outline-variant/15 group hover:scale-[1.02] transition-transform">
-      <div class="flex justify-between items-start mb-4">
-        <div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
-          <span class="material-symbols-outlined" data-icon="calendar_today"
-            style="font-variation-settings: 'FILL' 1;">calendar_today</span>
-        </div>
-        <span
-          class="text-on-surface-variant text-xs font-bold bg-surface-container-high px-2 py-1 rounded-full">Steady</span>
-      </div>
-      <p class="text-sm text-on-surface-variant font-medium">{{ t.active_schedules }}</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ stats.total_schedules }}</h3>
-    </div>
-    <div
-      class="bg-primary text-white p-6 rounded-2xl shadow-[0_20px_40px_rgba(21,66,18,0.1)] group hover:scale-[1.02] transition-transform relative overflow-hidden">
-      <div class="relative z-10">
-        <div class="flex justify-between items-start mb-4">
-          <div
-            class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-primary-fixed">
-            <span class="material-symbols-outlined" data-icon="payments"
-              style="font-variation-settings: 'FILL' 1;">payments</span>
-          </div>
-        </div>
-        <p class="text-sm text-primary-fixed/80 font-medium">{{ t.revenue_packages }}</p>
-        <h3 class="text-3xl font-bold mt-1 headline text-white">฿{{ stats.total_revenue }}</h3>
-        <p class="text-[10px] mt-2 opacity-60 uppercase tracking-widest">Admin/Accounting View</p>
-      </div>
-      <!-- Abstract Background Pattern -->
-      <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/5 rounded-full blur-3xl"></div>
-    </div>
-    <div
-      class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] border border-outline-variant/15 group hover:scale-[1.02] transition-transform">
-      <div class="flex justify-between items-start mb-4">
-        <div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
-          <span class="material-symbols-outlined" data-icon="departure_board"
-            style="font-variation-settings: 'FILL' 1;">departure_board</span>
-        </div>
-        <span class="text-tertiary text-xs font-bold bg-tertiary-fixed-dim/20 px-2 py-1 rounded-full">Next
-          48h</span>
-      </div>
-      <p class="text-sm text-on-surface-variant font-medium">{{ t.upcoming_tours }}</p>
-      <h3 class="text-3xl font-bold mt-1 headline text-on-surface">{{ stats.total_schedules }}</h3>
+    <div class="flex items-center gap-3">
+      <a href="{% url 'manage_tables' %}"
+         class="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+        <span class="material-symbols-outlined text-base">database</span>
+        Manage DB
+      </a>
+      <a href="{% url 'audit_log' %}"
+         class="text-sm font-bold text-secondary hover:underline flex items-center gap-1">
+        <span class="material-symbols-outlined text-base">history_edu</span>
+        Audit Log
+      </a>
     </div>
   </div>
-  <!-- Main Dashboard Area -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Recent Bookings Table (2/3 width) -->
-    <div class="lg:col-span-2 space-y-4">
-      <div class="flex justify-between items-end px-2">
-        <div>
-          <h2 class="text-xl font-bold headline">Recent Bookings / การจองล่าสุด</h2>
-          <p class="text-sm text-on-surface-variant">Live view from vw_BookingSummary</p>
-        </div>
-        <a href="{% url 'manage_tables' %}" class="text-primary font-bold text-sm hover:underline underline-offset-4">
-          {{ t.view_all }}
-        </a>
-      </div>
-      <div
-        class="bg-surface-container-lowest rounded-2xl shadow-[0_20px_40px_rgba(27,28,26,0.04)] overflow-hidden border border-outline-variant/10">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr
-              class="bg-surface-container-low text-on-surface-variant text-[11px] font-bold uppercase tracking-widest">
-              <th class="px-6 py-4">ID</th>
-              <th class="px-6 py-4">Customer / ลูกค้า</th>
-              <th class="px-6 py-4">Package / แพ็กเกจ</th>
-              <th class="px-6 py-4">Date / วันที่</th>
-              <th class="px-6 py-4 text-center">Status / สถานะ</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-outline-variant/10">
-            {% for b in recent_bookings %}
-            <tr class="searchable-item hover:bg-surface transition-colors">
-              <td class="px-6 py-4 font-bold text-primary">#{{ b.0 }}</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">
-                    {{ b.1|slice:':2'|upper }}
-                  </div>
-                  <span class="font-medium">{{ b.1 }}</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium">{{ b.2 }}</td>
-              <td class="px-6 py-4 text-sm text-on-surface-variant">{{ b.3|date:'d M Y' }}</td>
-              <td class="px-6 py-4">
-                <div class="flex justify-center">
-                  {% if b.4 == 'Confirmed' %}
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-secondary-container text-on-secondary-container">{{ b.4 }}</span>
-                  {% elif b.4 == 'Pending' %}
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-tertiary-fixed text-on-tertiary-fixed-variant">{{ b.4 }}</span>
-                  {% elif b.4 == 'Cancelled' %}
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-error-container text-on-error-container">{{ b.4 }}</span>
-                  {% else %}
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-surface-container text-on-surface-variant">{{ b.4 }}</span>
-                  {% endif %}
-                </div>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="5" class="px-6 py-12 text-center text-on-surface-variant">
-                <span class="material-symbols-outlined text-4xl block mb-2">receipt_long</span>
-                ยังไม่มีข้อมูลการจอง / No bookings yet
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Schedule Availability Panel (1/3 width) -->
-    <div class="space-y-4">
-      <div class="flex justify-between items-end px-2">
-        <div>
-          <h2 class="text-xl font-bold headline">Schedules / ตารางงาน</h2>
-          <p class="text-sm text-on-surface-variant">vw_ScheduleAvailability</p>
-        </div>
-      </div>
-      <div class="space-y-3">
-        {% for s in schedules|slice:':5' %}
-        <a href="/manage/TourSchedules/"
-          class="searchable-item bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/15 flex gap-4 items-center group no-underline block">
-          <div class="flex-shrink-0 w-12 h-12 bg-surface rounded-xl flex flex-col items-center justify-center border border-outline-variant/10">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ s.3|date:'M' }}</span>
-            <span class="text-lg font-bold text-primary">{{ s.3|date:'d' }}</span>
+
+  <div class="px-8 pb-10 space-y-10">
+
+    <!-- Bento Stats Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Stat Card 1 (Revenue) -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">payments</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-sm truncate">{{ s.1 }}</h4>
-            <div class="flex items-center gap-3 mt-1">
-              <div class="flex items-center gap-1 text-[11px] text-on-surface-variant">
-                <span class="material-symbols-outlined text-[14px]" data-icon="group">group</span>
-                <span>Available: {{ s.6 }}</span>
-              </div>
-              <div class="w-1 h-1 rounded-full bg-outline-variant"></div>
-              {% if s.6 == 0 %}
-                <div class="text-[11px] font-bold text-error">Fully Booked</div>
-              {% elif s.6 <= 5 %}
-                <div class="text-[11px] font-bold text-error">Almost Full</div>
-              {% else %}
-                <div class="text-[11px] font-bold text-secondary">{{ s.6 }}/{{ s.5 }} seats</div>
-              {% endif %}
+          <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">Revenue</span>
+        </div>
+        <p class="text-on-surface-variant text-sm font-semibold mb-1">Total Revenue</p>
+        <h3 class="text-2xl font-extrabold text-on-surface">฿{{ stats.total_revenue|floatformat:0 }}</h3>
+      </div>
+      <!-- Stat Card 2 (Bookings) -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">confirmation_number</span>
+          </div>
+          <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">+8%</span>
+        </div>
+        <p class="text-on-surface-variant text-sm font-semibold mb-1">Active Bookings</p>
+        <h3 class="text-2xl font-extrabold text-on-surface">{{ stats.total_bookings }}</h3>
+      </div>
+      <!-- Stat Card 3 (Rating) -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-secondary/10 rounded-xl group-hover:bg-secondary/20 transition-colors">
+            <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">star</span>
+          </div>
+          <span class="text-xs font-bold text-secondary px-2 py-1 bg-secondary/10 rounded-full">4.9/5</span>
+        </div>
+        <p class="text-on-surface-variant text-sm font-semibold mb-1">Customer Rating</p>
+        <h3 class="text-2xl font-extrabold text-on-surface">Excellent</h3>
+      </div>
+      <!-- Stat Card 4 (Schedules) -->
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="p-3 bg-secondary/10 rounded-xl group-hover:bg-secondary/20 transition-colors">
+            <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">campaign</span>
+          </div>
+          <span class="text-xs font-bold text-secondary px-2 py-1 bg-secondary/10 rounded-full">Active</span>
+        </div>
+        <p class="text-on-surface-variant text-sm font-semibold mb-1">Tour Schedules</p>
+        <h3 class="text-2xl font-extrabold text-on-surface">{{ stats.total_schedules }}</h3>
+      </div>
+    </section>
+
+    <!-- Main Content: Bookings & Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Recent Bookings Table (2/3) -->
+      <section class="lg:col-span-2 space-y-4">
+        <div class="flex justify-between items-end">
+          <h3 class="text-xl font-extrabold tracking-tight">Recent Bookings</h3>
+          <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1"
+             href="{% url 'manage_tables' %}">
+            View All
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/10">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-primary/5">
+                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Customer</th>
+                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Tour Package</th>
+                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Date</th>
+                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-container">
+              {% for b in recent_bookings %}
+              <tr class="hover:bg-secondary/5 transition-colors cursor-pointer">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">{{ b.1|slice:":2"|upper }}</div>
+                    <span class="font-bold text-sm">{{ b.1 }}</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm font-medium">{{ b.2 }}</td>
+                <td class="px-6 py-4 text-sm text-on-surface-variant">{{ b.3|date:"d M, Y" }}</td>
+                <td class="px-6 py-4">
+                  <span class="px-3 py-1 {% if b.4 == 'Confirmed' %}bg-primary/10 text-primary{% elif b.4 == 'Pending' %}bg-secondary/20 text-secondary{% else %}bg-slate-100 text-slate-500{% endif %} text-[10px] font-black uppercase tracking-widest rounded-full">{{ b.4 }}</span>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="px-6 py-8 text-center text-slate-500">
+                  ไม่มีรายการจองล่าสุด / No recent bookings
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Side Panel -->
+      <section class="space-y-4">
+        <h3 class="text-xl font-extrabold tracking-tight">Staff Spotlight</h3>
+        <div class="relative overflow-hidden rounded-2xl group cursor-pointer h-[240px]">
+          <img alt="Thailand Temple"
+               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuARaNf5MgRMv-_JG9I_TWKIuGIRtMG0kAr-Mq7fA9zlxDoxNugtcRhx37ygV45o09W8hGcvU1lnB6iafuEiKPl5JnZ0-SVt22di3BrbfKGAQ8kDDkcnyX5vRN5GnMo_o_qgu_NITFEISj7KpOTBZURJM6MWjK3dEtQ8NyzLfOpcS-51WMpWSUWe8OR-IEyrNynLwnSku0XXGJVO9jN7f0FSsV4N6lkbd61zciTJJE6v0K32z6_OXgGSHEw5GFSdJNKpYj8XkCnREa4"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-6 w-full">
+            <span class="bg-secondary text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full mb-3 inline-block">Best Seller</span>
+            <h4 class="text-white text-xl font-extrabold mb-1">Bangkok Culture Tour</h4>
+            <div class="flex items-center gap-4 text-white/80 text-xs">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">timer</span>8 Hours
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">person</span>24 Booked today
+              </span>
             </div>
           </div>
-          <span class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
-        </a>
-        {% empty %}
-        <div class="text-center py-8 text-on-surface-variant">
-          <span class="material-symbols-outlined text-3xl block mb-2">calendar_off</span>
-          <p class="text-sm">ไม่มีตารางทัวร์ / No schedules</p>
         </div>
-        {% endfor %}
-        <a href="/manage/TourSchedules/create/"
-          class="w-full py-4 rounded-2xl border-2 border-dashed border-outline-variant/30 text-on-surface-variant text-sm font-medium hover:bg-white hover:border-primary/30 hover:text-primary transition-all flex items-center justify-center gap-2 no-underline block">
-          <span class="material-symbols-outlined text-lg" data-icon="add">add</span>
-          <span>Add New Schedule / เพิ่มตาราง</span>
-        </a>
-      </div>
-    </div>
-    <!-- Database & Audit Activity (Bento style bottom) -->
-    <div class="lg:col-span-3 grid grid-cols-1 xl:grid-cols-2 gap-8">
-      <div class="bg-surface-container-low p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="font-bold headline flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" data-icon="database">database</span>
-            Management Tools
-          </h3>
+
+        <!-- Inventory Alert -->
+        <div class="bg-surface-container p-5 rounded-2xl border-l-4 border-secondary shadow-sm">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-outlined text-secondary">warning</span>
+            <h4 class="font-bold text-sm">Inventory Alert</h4>
+          </div>
+          <p class="text-on-surface-variant text-xs mb-3 leading-relaxed">
+            "Koh Samui Sunset Sail" is nearly at capacity for next weekend. Consider adding a second vessel.
+          </p>
+          <a href="{% url 'crud_list' 'TourSchedules' %}"
+             class="text-secondary font-bold text-xs uppercase tracking-widest hover:underline">
+            Update Inventory
+          </a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-          <button
-            class="bg-white p-4 rounded-2xl text-left hover:shadow-lg transition-shadow border border-outline-variant/5 h-full flex flex-col justify-center">
-            <span class="material-symbols-outlined text-secondary" data-icon="tour">tour</span>
-            <p class="mt-2 font-bold text-sm">Manage Tours</p>
-            <p class="text-[10px] text-on-surface-variant">Update packages &amp; pricing</p>
-          </button>
-          <button
-            class="bg-white p-4 rounded-2xl text-left hover:shadow-lg transition-shadow border border-outline-variant/5 h-full flex flex-col justify-center">
-            <span class="material-symbols-outlined text-tertiary" data-icon="badge">badge</span>
-            <p class="mt-2 font-bold text-sm">Staff Roles</p>
-            <p class="text-[10px] text-on-surface-variant">Permissions &amp; access</p>
-          </button>
+
+        <!-- Task List -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm space-y-4">
+          <h4 class="font-bold text-sm">Today's Tasks</h4>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[14px]" style="font-variation-settings:'wght' 700;">check</span>
+              </div>
+              <span class="text-xs font-medium line-through text-on-surface-variant/50">Confirm group bus for Phi Phi</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded border-2 border-outline cursor-pointer"></div>
+              <span class="text-xs font-medium">Review customer feedback from Sunday</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded border-2 border-outline cursor-pointer"></div>
+              <span class="text-xs font-medium">Update pricing for High Season</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="bg-surface-container-low p-6 rounded-3xl border border-outline-variant/10 flex flex-col">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="font-bold headline flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" data-icon="history">history</span>
-            Audit Log Summary
-          </h3>
-          <span class="text-[10px] font-bold bg-primary/10 text-primary px-2 py-1 rounded">Admin Only</span>
-        </div>
-        <div class="space-y-3">
-          {% for a in audit_logs %}
-          <div class="flex items-center gap-3 text-xs">
-            {% if a.2 == 'DELETE' %}
-              <div class="w-1.5 h-1.5 rounded-full bg-error"></div>
-            {% else %}
-              <div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
-            {% endif %}
-            <span class="text-on-surface-variant font-medium">{{ a.5|date:'d M H:i' }}</span>
-            <span class="font-bold">{{ a.3 }}</span>
-            <span class="text-on-surface-variant">{{ a.2 }} → {{ a.1 }}</span>
+
+        <!-- Audit Log Quick View (Admin only) -->
+        {% if request.session.user_role == 'Admin' %}
+        <div class="bg-white p-5 rounded-2xl shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="font-bold text-sm">Recent Audit Activity</h4>
+            <a href="{% url 'audit_log' %}" class="text-xs text-primary font-bold hover:underline">View All</a>
+          </div>
+          {% for log in audit_logs %}
+          <div class="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">
+            <span class="text-[10px] font-black px-2 py-0.5 rounded {% if log.2 == 'INSERT' %}bg-green-100 text-green-700{% elif log.2 == 'UPDATE' %}bg-blue-100 text-blue-700{% elif log.2 == 'DELETE' %}bg-red-100 text-red-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ log.2 }}</span>
+            <span class="text-xs text-slate-500 truncate flex-1">{{ log.1 }}</span>
           </div>
           {% empty %}
-          <p class="text-xs text-on-surface-variant italic">ยังไม่มี Audit Log / No logs yet</p>
+          <p class="text-xs text-slate-400">No recent activity.</p>
           {% endfor %}
         </div>
-      </div>
+        {% endif %}
+
+      </section>
     </div>
+
   </div>
-  </main>
-  <!-- DJANGO BOOKINGS LOOP:
-{% for b in bookings %}
-<tr>
-  <td>#{{ b.0 }}</td>
-  <td>{{ b.1 }}</td>
-  <td>{{ b.2 }}</td>
-  <td>{{ b.3 }}</td>
-  <td>{{ b.4 }}</td>
-</tr>
-{% endfor %}
--->
 </div>
 {% endblock %}

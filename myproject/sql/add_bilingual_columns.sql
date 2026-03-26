@@ -1,6 +1,6 @@
 
 
-USE TourCompanyDB;
+USE TourSongkhla;
 GO
 
 IF NOT EXISTS (

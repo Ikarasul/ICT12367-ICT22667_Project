@@ -1,225 +1,260 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}TourCompanyDB - Booking{% endblock %}
+{% block title %}Booking - TourCompanyDB{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+{% endblock %}
+
 {% block content %}
-<form action="/booking/" method="POST" class="max-w-7xl mx-auto px-6 py-12 md:py-20">
-    {% csrf_token %}
-    <input name="schedule_id" type="hidden" value="{{ schedule_id }}"/>
-    
-    {% if error_message %}
-    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl flex items-center gap-3 text-red-700">
-        <span class="material-symbols-outlined">error</span>
-        <p class="font-bold">{{ error_message }}</p>
+<main class="pt-24 pb-20 px-4 md:px-6">
+  <div class="max-w-[1100px] mx-auto">
+    <!-- Navigation Back Link -->
+    <div class="mb-8">
+      <a class="inline-flex items-center text-primary font-bold hover:translate-x-[-4px] transition-transform" href="{% url 'tours' %}">
+        <span class="material-symbols-outlined mr-2">arrow_back</span>
+        <span>← กลับ / Back</span>
+      </a>
     </div>
-    {% endif %}
 
-<!-- Editorial Header Section -->
-<div class="mb-12">
-<nav class="flex items-center gap-2 text-label-md text-outline font-bold uppercase mb-4 tracking-wider">
-<span>{{ t.tours }}</span>
-<span class="material-symbols-outlined text-sm">chevron_right</span>
-<span class="text-primary">{{ t.booking_details }}</span>
-</nav>
-<h1 class="text-4xl md:text-5xl font-bold text-primary mb-2">{{ t.book_your_journey }}</h1>
-<p class="text-on-surface-variant text-lg max-w-2xl">{{ t.booking_desc }}</p>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-<!-- Left Side: Form Section -->
-<div class="lg:col-span-7">
-<div class="space-y-8">
-<section class="bg-surface-container-low rounded-2xl p-8 transition-all hover:bg-surface-container">
-<h2 class="text-2xl font-bold text-primary mb-8 flex items-center gap-3">
-<span class="material-symbols-outlined">group</span>
-                            {{ t.travelers }}
-                        </h2>
-<div class="space-y-10">
-<!-- Adults -->
-<div class="flex items-center justify-between">
-<div>
-<h3 class="text-xl font-semibold">{{ t.adults }}</h3>
-<p class="text-on-surface-variant text-sm">อายุ 12 ปีขึ้นไป / Age 12+</p>
-</div>
-<div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
-<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface hover:bg-surface-container-high transition-colors text-primary border border-outline-variant/30" type="button" onclick="adjustGuest('num_adults', -1)">
-<span class="material-symbols-outlined">remove</span>
-</button>
-<input id="num_adults" class="w-12 text-center bg-transparent border-none font-bold text-xl focus:ring-0 p-0" min="1" name="num_adults" type="number" value="1" onchange="calcTotal()"/>
-<button class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity" type="button" onclick="adjustGuest('num_adults', 1)">
-<span class="material-symbols-outlined">add</span>
-</button>
-</div>
-</div>
-<!-- Children -->
-<div class="flex items-center justify-between">
-<div>
-<h3 class="text-xl font-semibold">{{ t.children }}</h3>
-<p class="text-on-surface-variant text-sm">อายุ 2-11 ปี / Age 2-11</p>
-</div>
-<div class="flex items-center gap-6 bg-surface-container-lowest rounded-full p-2 border border-outline-variant/15">
-<button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface hover:bg-surface-container-high transition-colors text-primary border border-outline-variant/30" type="button" onclick="adjustGuest('num_children', -1)">
-<span class="material-symbols-outlined">remove</span>
-</button>
-<input id="num_children" class="w-12 text-center bg-transparent border-none font-bold text-xl focus:ring-0 p-0" min="0" name="num_children" type="number" value="0" onchange="calcTotal()"/>
-<button class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary hover:opacity-90 transition-opacity" type="button" onclick="adjustGuest('num_children', 1)">
-<span class="material-symbols-outlined">add</span>
-</button>
-</div>
-</div>
-</div>
-</section>
-<section class="bg-surface-container-low rounded-2xl p-8">
-<h2 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
-<span class="material-symbols-outlined">contact_support</span>
-                            {{ t.contact_info }}
-                        </h2>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="space-y-2">
-<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{{ t.fullname }}</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="Your Name" type="text" name="full_name" required/>
-</div>
-<div class="space-y-2">
-<label class="text-sm font-bold text-on-surface-variant uppercase tracking-wider">{{ t.email }}</label>
-<input class="w-full bg-surface-container-highest border-b-2 border-transparent focus:border-primary focus:ring-0 transition-all rounded-t-lg p-4" placeholder="your@email.com" type="email" name="contact_email" required/>
-</div>
-</div>
-</section>
-<div class="block lg:hidden pt-4">
-<button class="w-full bg-gradient-primary text-on-primary py-5 rounded-2xl text-xl font-bold shadow-xl hover:scale-[0.98] duration-200" type="submit">
-                            {{ t.confirm_booking }} · ฿<span class="total-display">{{ tour_price }}</span>
-                        </button>
-</div>
-</div>
-</div>
-<!-- Right Side: Summary Card -->
-<aside class="lg:col-span-5 sticky top-32">
-<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(27,28,26,0.06)] border border-outline-variant/15">
-<div class="h-48 relative">
-<img class="w-full h-full object-cover" data-alt="Tropical island bay with turquoise water" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcvuciNWmw3B8oWBI6fz0oPZ6DB8Rkaw4YmSj1MNntFwMEP6V51E6Dza14nyKL-6ouEpePqdnOlxu3nan0g8KCvvlMjQryTlF9YIT00PyFVjqFieRGY_SxpjfSjWR8NH108Yp5GsCvwuucHx0NAMiPzEbvZbJ-JAoxe0aWcA5pClaCGEGmGcaYiioamkkSxVPtii69cNJ7rCZw_sLIwLZUU0Kz9cL16nJ9vTpIracz5PmCyRfu5L8DuT_VaaX7Aq622OMHztZY4WHL"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-<h2 class="text-white text-2xl font-bold">{{ tour_name }}</h2>
-</div>
-</div>
-<div class="p-8 space-y-6">
-<div class="space-y-4">
-<div class="flex items-start gap-4">
-<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">location_on</span>
-</div>
-<div>
-<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">{{ t.destination }}</p>
-<p class="text-lg font-semibold">{{ destination }}</p>
-</div>
-</div>
-<div class="flex items-center gap-8 pl-14 relative">
-<div class="absolute left-5 top-0 bottom-0 w-0.5 border-l-2 border-dashed border-primary-fixed"></div>
-<div>
-<p class="text-xs text-on-surface-variant font-bold uppercase">{{ t.departure }}</p>
-<p class="font-medium">{{ departure_date }}</p>
-</div>
-<div>
-<p class="text-xs text-on-surface-variant font-bold uppercase">Return</p>
-<p class="font-medium">{{ return_date }}</p>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-on-secondary-fixed-variant text-sm">person</span>
-</div>
-<div>
-<p class="text-sm text-on-surface-variant font-bold uppercase tracking-wide">{{ t.tour_guide }}</p>
-<p class="text-lg font-semibold">{{ guide_name }}</p>
-</div>
-</div>
-</div>
-<div class="h-px bg-outline-variant opacity-20"></div>
-<div class="space-y-3">
-<div class="flex justify-between text-on-surface-variant">
-<span>{{ t.adult }} (x<span class="lbl-adults">1</span>)</span>
-<span>฿<span class="adult-sub">{{ tour_price }}</span></span>
-</div>
-<div class="flex justify-between text-on-surface-variant">
-<span>{{ t.child }} (x<span class="lbl-children">0</span>)</span>
-<span>฿<span class="child-sub">0</span></span>
-</div>
-<div class="flex justify-between text-primary font-bold text-2xl pt-4">
-<span>{{ t.total }}</span>
-<span>฿<span class="total-display">{{ tour_price }}</span></span>
-</div>
-</div>
-<div class="bg-tertiary-fixed/30 p-4 rounded-xl flex items-center gap-3">
-<span class="material-symbols-outlined text-tertiary">info</span>
-<p class="text-xs text-tertiary font-bold uppercase">ที่ว่างเหลือเพียง / Only {{ available_seats }} seats left</p>
-</div>
-<button type="submit" class="hidden lg:block w-full bg-gradient-primary text-on-primary py-5 rounded-2xl text-lg font-bold shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-                            ยืนยันการจอง · ฿<span class="total-display">{{ tour_price }}</span> / Confirm Booking
-                        </button>
-</div>
-</div>
-<div class="mt-8 flex items-center justify-center gap-4 text-on-surface-variant text-sm">
-<span class="material-symbols-outlined text-secondary">verified_user</span>
-<span>Secure Checkout • SSL Encrypted</span>
-</div>
-</aside>
-</div>
-</form>
-<!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-[#FAF9F5]/80 backdrop-blur-md shadow-[0_-10px_30px_rgba(27,28,26,0.04)] rounded-t-2xl">
-<a class="flex flex-col items-center justify-center bg-[#2D5A27] text-white rounded-2xl px-6 py-2" href="#">
-<span class="material-symbols-outlined">explore</span>
-<span class="font-['Manrope'] text-[10px] font-bold uppercase">ทัวร์ / TOURS</span>
-</a>
-<a class="flex flex-col items-center justify-center text-slate-500" href="#">
-<span class="material-symbols-outlined">confirmation_number</span>
-<span class="font-['Manrope'] text-[10px] font-bold uppercase">ตั๋ว / TICKETS</span>
-</a>
-</nav>
-<!-- Footer for Desktop -->
-<footer class="hidden md:block py-20 bg-surface-container-low mt-20">
-<div class="max-w-7xl mx-auto px-8 grid grid-cols-4 gap-12">
-<div class="col-span-2">
-<div class="text-2xl font-bold text-primary mb-6">TourCompanyDB</div>
-<p class="text-on-surface-variant max-w-sm">เราคัดสรรทริปที่ดีที่สุดเพื่อให้คุณได้รับประสบการณ์การเดินทางที่น่าประทับใจที่สุดในชีวิต</p>
-</div>
-<div class="space-y-4">
-<h4 class="font-bold uppercase tracking-wider text-primary">Explore</h4>
-<ul class="space-y-2 text-on-surface-variant">
-<li><a class="hover:text-primary" href="#">Domestic Tours</a></li>
-<li><a class="hover:text-primary" href="#">International Tickets</a></li>
-<li><a class="hover:text-primary" href="#">Special Offers</a></li>
-</ul>
-</div>
-<div class="space-y-4">
-<h4 class="font-bold uppercase tracking-wider text-primary">Support</h4>
-<ul class="space-y-2 text-on-surface-variant">
-<li><a class="hover:text-primary" href="#">Help Center</a></li>
-<li><a class="hover:text-primary" href="#">Terms of Service</a></li>
-<li><a class="hover:text-primary" href="#">Privacy Policy</a></li>
-</ul>
-</div>
-</div>
-</footer>
+    <!-- Booking Content Grid -->
+    <form action="{% url 'booking' %}" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="schedule_id" value="{{ schedule_id }}">
+      <input type="hidden" name="num_adults" id="num_adults" value="1">
+      <input type="hidden" name="num_children" id="num_children" value="0">
 
+      {% if error_message %}
+      <div class="mb-4 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">{{ error_message }}</div>
+      {% endif %}
+
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <!-- Left Column: Booking Form (7/12) -->
+        <div class="w-full lg:w-7/12 space-y-6">
+          <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/50">
+            <!-- Gradient Banner -->
+            <div class="bg-primary p-8 text-white">
+              <h1 class="font-headline font-extrabold text-3xl mb-2 tracking-tight">{{ tour_name|default:"Tour Name" }}</h1>
+              <div class="flex flex-wrap gap-4 text-sm font-medium opacity-90">
+                <div class="flex items-center">
+                  <span class="material-symbols-outlined text-sm mr-1">location_on</span>
+                  <span>{{ destination|default:"-" }}</span>
+                </div>
+                <div class="flex items-center">
+                  <span class="material-symbols-outlined text-sm mr-1">calendar_today</span>
+                  <span>{{ departure_date }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Sections -->
+            <div class="p-8 space-y-10">
+              <!-- Guests Section -->
+              <section>
+                <div class="mb-6">
+                  <h2 class="text-xl font-extrabold font-headline mb-1">จำนวนผู้ร่วมเดินทาง</h2>
+                  <p class="text-slate-500 font-medium text-sm">Select Number of Guests</p>
+                </div>
+                <div class="space-y-4">
+                  <!-- Adult Counter -->
+                  <div class="flex items-center justify-between p-5 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <div>
+                      <p class="font-bold text-lg">ผู้ใหญ่ / Adult</p>
+                      <!-- FIX: ราคาจาก context (price_adult) แทนค่าฮาร์ดโค้ด -->
+                      <p class="text-sm text-slate-500 font-medium">฿{{ price_adult|default:"1,200" }} / Person</p>
+                    </div>
+                    <div class="flex items-center space-x-5">
+                      <button type="button" onclick="changeCount('adults', -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined">remove</span>
+                      </button>
+                      <span class="text-xl font-extrabold font-headline w-6 text-center" id="adults-display">1</span>
+                      <button type="button" onclick="changeCount('adults', 1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined">add</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Children Counter -->
+                  <div class="flex items-center justify-between p-5 bg-surface-container-low rounded-xl border border-outline-variant/30">
+                    <div>
+                      <p class="font-bold text-lg">เด็ก / Children</p>
+                      <p class="text-sm text-slate-500 font-medium">฿{{ price_child|default:"600" }} / Person (50% Off)</p>
+                    </div>
+                    <div class="flex items-center space-x-5">
+                      <button type="button" onclick="changeCount('children', -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined">remove</span>
+                      </button>
+                      <span class="text-xl font-extrabold font-headline w-6 text-center" id="children-display">0</span>
+                      <button type="button" onclick="changeCount('children', 1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined">add</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Seats Warning Banner -->
+              {% if seats_left is not None %}
+              <div class="bg-secondary-container/30 border-l-4 border-secondary p-4 rounded-r-xl flex items-start space-x-3">
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">error</span>
+                <div>
+                  <p class="text-on-secondary-container font-bold">เหลือที่นั่งเพียง {{ seats_left }} ที่สุดท้าย!</p>
+                  <p class="text-on-secondary-container/80 text-sm font-medium">Only {{ seats_left }} seat{{ seats_left|pluralize }} left for this date!</p>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- Action Buttons -->
+              <div class="space-y-4 pt-4">
+                <button type="submit" class="w-full py-4 rounded-xl bg-primary text-white font-extrabold text-xl font-headline flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-primary/20 transition-all active:scale-[0.98]">
+                  <span class="material-symbols-outlined">check_circle</span>
+                  <span>ยืนยันการจอง / Confirm Booking</span>
+                </button>
+                <a href="{% url 'tours' %}" class="block w-full py-3 rounded-xl border-2 border-secondary/30 text-secondary font-bold hover:bg-secondary-container/20 transition-colors text-center">
+                  ยกเลิกรายการ / Cancel Booking
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Summary Card (5/12) -->
+        <!-- FIX: ใช้ template variables แทน hardcode ทั้งหมด -->
+        <aside class="w-full lg:w-5/12 lg:sticky lg:top-28">
+          <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-outline-variant/50">
+            <!-- Tour Image -->
+            <div class="h-44 relative bg-slate-100 flex items-center justify-center">
+              {% if tour_image_url %}
+              <img alt="{{ tour_name }}" class="w-full h-full object-cover" src="{{ tour_image_url }}"/>
+              {% else %}
+              <span class="material-symbols-outlined text-6xl text-slate-300">landscape</span>
+              {% endif %}
+              <div class="absolute bottom-4 left-4 bg-primary px-3 py-1 rounded-full text-[10px] font-extrabold text-white uppercase tracking-widest shadow-lg">
+                Best Seller
+              </div>
+            </div>
+
+            <!-- Summary Breakdown -->
+            <div class="p-6">
+              <div class="mb-6">
+                <h3 class="text-lg font-extrabold font-headline leading-tight">{{ tour_name|default:"Tour Name" }}</h3>
+                <p class="text-sm text-slate-500 font-medium mt-1">{{ destination|default:"-" }}</p>
+              </div>
+
+              <!-- FIX: ราคารวมคำนวณจาก JS — ค่า data-* อ่านจาก context -->
+              <div id="summary-breakdown" class="space-y-4 border-b border-outline-variant/50 pb-6 mb-6"
+                   data-price-adult="{{ price_adult|default:1200 }}"
+                   data-price-child="{{ price_child|default:600 }}">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-600 font-medium" id="summary-adults-label">1x Adult (ผู้ใหญ่)</span>
+                  <span class="font-bold" id="summary-adults-price">฿{{ price_adult|default:1200 }}</span>
+                </div>
+                <div class="flex justify-between items-center" id="summary-children-row" style="display:none!important">
+                  <span class="text-slate-600 font-medium" id="summary-children-label">0x Child (เด็ก)</span>
+                  <span class="font-bold" id="summary-children-price">฿0</span>
+                </div>
+                <div class="flex justify-between items-center text-primary text-sm font-bold">
+                  <span>Discount (โปรโมชั่น)</span>
+                  <span>- ฿0</span>
+                </div>
+              </div>
+
+              <!-- Total -->
+              <div class="flex justify-between items-end mb-6">
+                <div>
+                  <p class="text-[10px] font-extrabold font-headline uppercase tracking-wider text-slate-400">ยอดรวม / Total</p>
+                  <p class="text-3xl font-extrabold font-headline text-primary tracking-tighter" id="summary-total">
+                    ฿{{ price_adult|default:1200 }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Info Banner -->
+              <div class="bg-primary-container/30 rounded-xl p-4 flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+                <div>
+                  <p class="text-primary font-bold text-sm">ยกเลิกฟรี 24 ชม.</p>
+                  <p class="text-on-primary-container/70 text-[11px] font-semibold uppercase tracking-tight">Free cancel 24hr before trip</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust Indicators -->
+          <div class="mt-6 flex justify-around px-2">
+            <div class="flex flex-col items-center text-slate-400">
+              <span class="material-symbols-outlined text-3xl">security</span>
+              <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Secure</span>
+            </div>
+            <div class="flex flex-col items-center text-slate-400">
+              <span class="material-symbols-outlined text-3xl">workspace_premium</span>
+              <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Premium</span>
+            </div>
+            <div class="flex flex-col items-center text-slate-400">
+              <span class="material-symbols-outlined text-3xl">sentiment_satisfied</span>
+              <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">Top Rated</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </form>
+  </div>
+</main>
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/booking.js' %}"></script>
 <script>
-const ADULT_PRICE = parseFloat("{{ tour_price|default:'0' }}".replace(/,/g,'')) || 0;
-const CHILD_PRICE = Math.round(ADULT_PRICE * 0.5);
-function adjustGuest(field, delta){
-  const el = document.getElementById(field);
-  el.value = Math.max(parseInt(el.min)||0, (parseInt(el.value)||0)+delta);
-  calcTotal();
+// FIX: อ่านราคาจาก data attributes แทน hardcode
+const breakdown = document.getElementById('summary-breakdown');
+const PRICE_ADULT = parseInt(breakdown.dataset.priceAdult) || 1200;
+const PRICE_CHILD  = parseInt(breakdown.dataset.priceChild)  || 600;
+
+let countAdults   = 1;
+let countChildren = 0;
+
+function changeCount(type, delta) {
+  if (type === 'adults') {
+    countAdults = Math.max(1, countAdults + delta);   // ขั้นต่ำ 1 ผู้ใหญ่
+    document.getElementById('adults-display').textContent = countAdults;
+    document.getElementById('num_adults').value = countAdults;
+  } else {
+    countChildren = Math.max(0, countChildren + delta);
+    document.getElementById('children-display').textContent = countChildren;
+    document.getElementById('num_children').value = countChildren;
+  }
+  updateSummary();
 }
-function calcTotal(){
-  const a = Math.max(1, parseInt(document.getElementById('num_adults')?.value)||1);
-  const k = Math.max(0, parseInt(document.getElementById('num_children')?.value)||0);
-  const total = a*ADULT_PRICE + k*CHILD_PRICE;
-  document.querySelectorAll('.total-display').forEach(el=>el.textContent=fmt(total));
-  document.querySelectorAll('.adult-sub').forEach(el=>el.textContent=fmt(a*ADULT_PRICE));
-  document.querySelectorAll('.child-sub').forEach(el=>el.textContent=fmt(k*CHILD_PRICE));
-  document.querySelectorAll('.lbl-adults').forEach(el=>el.textContent=a);
-  document.querySelectorAll('.lbl-children').forEach(el=>el.textContent=k);
+
+function updateSummary() {
+  const totalAdults   = countAdults   * PRICE_ADULT;
+  const totalChildren = countChildren * PRICE_CHILD;
+  const total         = totalAdults + totalChildren;
+
+  // Update adult row
+  document.getElementById('summary-adults-label').textContent =
+    `${countAdults}x Adult (ผู้ใหญ่)`;
+  document.getElementById('summary-adults-price').textContent =
+    `฿${totalAdults.toLocaleString()}`;
+
+  // Show/hide children row
+  const childRow = document.getElementById('summary-children-row');
+  if (countChildren > 0) {
+    childRow.style.removeProperty('display');
+    document.getElementById('summary-children-label').textContent =
+      `${countChildren}x Child (เด็ก)`;
+    document.getElementById('summary-children-price').textContent =
+      `฿${totalChildren.toLocaleString()}`;
+  } else {
+    childRow.style.setProperty('display', 'none', 'important');
+  }
+
+  // Update total
+  document.getElementById('summary-total').textContent =
+    `฿${total.toLocaleString()}`;
 }
-document.addEventListener('DOMContentLoaded', calcTotal);
+
+// Init on load
+updateSummary();
 </script>
 {% endblock %}

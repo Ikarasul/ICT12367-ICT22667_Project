@@ -10,197 +10,63 @@
   <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#059669',
-            'primary-light': '#10b981',
-            'primary-dark': '#047857',
-            secondary: '#2D5A27'
-          },
-          fontFamily: {
-            'sans': ['DM Sans', 'sans-serif'],
-            'display': ['Outfit', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Google Material Symbols (Outlined) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-  <!-- Standard CSS (Self-contained & Safe) -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&family=DM+Sans:wght@400;500;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD@400,0,0..1&display=swap');
+  <!-- Google Fonts: Plus Jakarta Sans & Manrope -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" />
 
-    :root {
-      --primary: #059669;
-      --primary-light: #10b981;
-      --secondary: #2D5A27;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background-color: #f8fffe;
-      color: #1f2937;
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    .font-display {
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* Icon Fix */
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined' !important;
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-      line-height: 1;
-    }
-
-    /* Buttons */
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white !important;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.75rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      white-space: nowrap;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      filter: brightness(1.1);
-    }
-
-    .btn-logout {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.5rem 1rem;
-      background-color: #fee2e2;
-      color: #ef4444 !important;
-      border-radius: 0.75rem;
-      font-weight: 700;
-      font-size: 0.875rem;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .btn-logout:hover {
-      background-color: #fecaca;
-    }
-
-    /* UI Components */
-    .tour-card {
-      background: white;
-      border-radius: 1.5rem;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s;
-      border: 1px solid #e5e7eb;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .tour-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-green {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-
-    /* Mobile Nav Fallback (if Tailwind fails) */
-    @media (min-width: 768px) {
-      .mobile-only {
-        display: none !important;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .desktop-only {
-        display: none !important;
-      }
-    }
-  </style>
+  <!-- FIX: ย้าย base.css ออกนอก block เพื่อให้โหลดทุกหน้า (เดิมถูก override โดย child templates) -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
   {% block extra_head %}{% endblock %}
 </head>
 
-<body class="bg-background font-sans antialiased text-on-background flex h-screen overflow-hidden">
+<body class="bg-background font-sans antialiased text-on-background">
 
   {% if request.session.user_type == 'employee' %}
-  {% include 'components/sidebar.html' %}
+    {% include 'components/sidebar.html' %}
+    <div class="flex-1 flex flex-col h-screen overflow-hidden md:ml-64">
+      {% include 'components/header.html' %}
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-surface">
+  {% else %}
+    <div class="flex flex-col min-h-screen w-full">
+      {% include 'components/navbar.html' %}
+      <div class="flex-1 w-full">
+  {% endif %}
 
-  <!-- เพิ่ม md:ml-64 ไว้เพื่อไม่ให้ Header กับ Content ซ้อนทับกับ Sidebar ด้านซ้าย -->
-  <div class="flex-1 flex flex-col h-screen overflow-hidden md:ml-64">
-    {% include 'components/header.html' %}
+        {% block content %}{% endblock %}
 
-    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-surface p-6">
-      {% else %}
-      <div class="flex-1 flex flex-col h-screen overflow-hidden w-full">
-        {% include 'components/navbar.html' %}
-
-        <main class="flex-1 overflow-x-hidden overflow-y-auto w-full">
-          {% endif %}
-
-          {% block content %}{% endblock %}
-
-        </main>
-
-        {% if request.session.user_type != 'employee' %}
-        {% block footer %}
-        <footer class="hidden md:block bg-white border-t border-gray-100 mt-10 py-12">
-          <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div>
-              <p class="font-display font-800 text-2xl text-primary mb-1">TourCompanyDB</p>
-              <p class="text-gray-500 text-sm">
-                เราคัดสรรทริปที่ดีที่สุดเพื่อให้คุณได้รับประสบการณ์การเดินทางที่น่าประทับใจที่สุดในชีวิต</p>
-              <p class="text-gray-400 text-xs mt-4">© 2026 TourCompanyDB. All rights reserved.</p>
-            </div>
-            <div class="flex gap-8 text-sm text-gray-500 font-medium">
-              <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" class="hover:text-primary transition-colors">Help Center</a>
-            </div>
-          </div>
-        </footer>
-        {% endblock %}
-        {% endif %}
-
+  {% if request.session.user_type == 'employee' %}
+      </main>
+    </div>
+  {% else %}
       </div>
 
-      <!-- Custom JS -->
-      <script src="{% static 'js/main.js' %}"></script>
-      {% block extra_js %}{% endblock %}
+      {% block footer %}
+      <footer class="hidden md:block bg-white border-t border-gray-100 mt-10 py-12">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <p class="font-display font-800 text-2xl text-primary mb-1">TourCompanyDB</p>
+            <p class="text-gray-500 text-sm">
+              เราคัดสรรทริปที่ดีที่สุดเพื่อให้คุณได้รับประสบการณ์การเดินทางที่น่าประทับใจที่สุดในชีวิต</p>
+            <p class="text-gray-400 text-xs mt-4">© 2026 TourCompanyDB. All rights reserved.</p>
+          </div>
+          <div class="flex gap-8 text-sm text-gray-500 font-medium">
+            <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
+            <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
+            <a href="#" class="hover:text-primary transition-colors">Help Center</a>
+          </div>
+        </div>
+      </footer>
+      {% endblock %}
+    </div>
+  {% endif %}
+
+  <!-- FIX: ย้าย base.js ออกนอก block เพื่อให้โหลดทุกหน้า -->
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/base.js' %}"></script>
+  {% block extra_js %}{% endblock %}
 
 </body>
 

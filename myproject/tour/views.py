@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth.hashers import make_password, check_password
 from .db import exec_sp, exec_query, get_columns, get_all_tables
 
 
@@ -29,13 +30,31 @@ def login_required(roles=None):
 
 def tours(request):
     """หน้าหลัก — แสดงทัวร์ทั้งหมดจาก vw_ScheduleAvailability"""
+    TROPICAL  = ['phuket', 'krabi', 'samui', 'beach', 'island', 'koh', 'ภูเก็ต', 'กระบี่']
+    ADVENTURE = ['chiang', 'mountain', 'trek', 'north', 'nature', 'forest', 'เชียงใหม่', 'น้ำตก']
+    CULTURAL  = ['japan', 'korea', 'europe', 'china', 'vietnam', 'taiwan', 'singapore',
+                 'paris', 'tokyo', 'seoul', 'beijing', 'taipei', 'hanoi',
+                 'ญี่ปุ่น', 'เกาหลี', 'ยุโรป', 'จีน', 'เวียดนาม', 'ไต้หวัน', 'สิงคโปร์']
+
+    def infer_cat(dest):
+        d = (dest or '').lower()
+        if any(k in d for k in TROPICAL):  return 'tropical'
+        if any(k in d for k in ADVENTURE): return 'adventure'
+        if any(k in d for k in CULTURAL):  return 'cultural'
+        return 'other'
+
     try:
-        tour_list = exec_query("SELECT * FROM vw_ScheduleAvailability")
+        raw = exec_query("SELECT * FROM vw_ScheduleAvailability")
     except Exception:
-        tour_list = []
+        raw = []
+
+    tour_list = [
+        {'data': row, 'cat': infer_cat(str(row[2]) if len(row) > 2 else '')}
+        for row in raw
+    ]
 
     return render(request, 'tours.html', {
-        'tours': tour_list,
+        'tours':        tour_list,
         'is_logged_in': request.session.get('user_id') is not None,
     })
 
@@ -55,43 +74,41 @@ def login_view(request):
     error_message = None
 
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
+        email    = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '').strip()
 
+        # ลอง Login พนักงานก่อน (employees ใช้ plain hash ใน DB)
         try:
-            # ลอง Login พนักงานก่อน
             result = exec_sp('sp_Login', {
-                'Email': email,
+                'Email':        email,
                 'PasswordHash': password,
             })
-
             if result:
                 row = result[0]
-                request.session['user_id']   = row[0]
-                request.session['user_name'] = row[1]
+                request.session['user_id']    = row[0]
+                request.session['user_name']  = row[1]
                 request.session['user_email'] = row[2]
-                request.session['user_role'] = row[3]
-                request.session['user_type'] = 'employee'
+                request.session['user_role']  = row[3]
+                request.session['user_type']  = 'employee'
                 return redirect('/dashboard/')
-
         except Exception:
             pass
 
+        # ลอง Login ลูกค้า — ดึง hash จาก DB แล้ว check_password() ใน Python
         try:
-            # ลอง Login ลูกค้า
-            result = exec_sp('sp_LoginCustomer', {
-                'Email': email,
-                'PasswordHash': password,
-            })
-
-            if result:
-                row = result[0]
-                request.session['user_id']   = row[0]
-                request.session['user_name'] = row[1]
-                request.session['user_role'] = 'Customer'
-                request.session['user_type'] = 'customer'
-                return redirect('/')
-
+            rows = exec_query(
+                "SELECT CustomerID, FullName, PasswordHash FROM Customers WHERE Email = ?",
+                [email]
+            )
+            if rows:
+                row         = rows[0]
+                stored_hash = row[2]
+                if check_password(password, stored_hash):
+                    request.session['user_id']   = row[0]
+                    request.session['user_name']  = row[1]
+                    request.session['user_role']  = 'Customer'
+                    request.session['user_type']  = 'customer'
+                    return redirect('/')
         except Exception:
             pass
 
@@ -102,29 +119,32 @@ def login_view(request):
 
 def register_view(request):
     """สมัครสมาชิกลูกค้า"""
-    error_message = None
+    error_message   = None
     success_message = None
 
     if request.method == 'POST':
         try:
-            result = exec_sp('sp_RegisterCustomer', {
+            email           = request.POST.get('email', '').strip().lower()
+            raw_password    = request.POST.get('password', '')
+            hashed_password = make_password(raw_password)
+
+            exec_sp('sp_RegisterCustomer', {
                 'FullName':    request.POST.get('fullname', ''),
-                'Email':       request.POST.get('email', ''),
+                'Email':       email,
                 'Phone':       request.POST.get('phone', ''),
                 'Passport':    request.POST.get('passport', ''),
                 'DateOfBirth': request.POST.get('dob', ''),
                 'Nationality': request.POST.get('nationality', ''),
                 'Address':     request.POST.get('address', ''),
-                'PasswordHash':request.POST.get('password', ''),
+                'PasswordHash': hashed_password,
             })
-            success_message = 'สมัครสมาชิกสำเร็จ! กรุณา Login'
             return redirect('/login/')
 
         except Exception as e:
             error_message = f'เกิดข้อผิดพลาด: {str(e)}'
 
     return render(request, 'register.html', {
-        'error_message': error_message,
+        'error_message':   error_message,
         'success_message': success_message,
     })
 
@@ -225,19 +245,82 @@ def booking_view(request):
 
 @login_required()
 def my_tickets_view(request):
-    """ตั๋วของฉัน"""
+    """ตั๋วของฉัน — แสดงเฉพาะ ticket ของ customer ที่ login อยู่เท่านั้น"""
+    user_id       = request.session.get('user_id')
+    tickets       = []
+    error_message = None
+
+    # ลอง View ก่อน
     try:
         tickets = exec_query(
             "SELECT * FROM vw_FlightTickets WHERE CustomerID = ?",
-            [request.session.get('user_id')]
+            [user_id]
         )
-    except Exception:
-        try:
-            tickets = exec_query("SELECT * FROM vw_FlightTickets")
-        except Exception:
-            tickets = []
+    except Exception as e:
+        error_message = str(e)
 
-    return render(request, 'my_tickets.html', {'tickets': tickets})
+    # Fallback ชั้น 1: ลอง JOIN กับ TourSchedules / TourPackages (ชื่อตารางจริง)
+    if error_message:
+        try:
+            tickets = exec_query(
+                """SELECT
+                       b.BookingID,
+                       b.CustomerID,
+                       c.FullName                                                       AS CustomerName,
+                       ISNULL(tp.TourName, ISNULL(tp.PackageName, 'Tour'))              AS TourName,
+                       ISNULL(tp.Destination, '')                                       AS Destination,
+                       ISNULL(ts.DepartureDate, b.BookingDate)                          AS DepartureDate,
+                       ISNULL(ts.ReturnDate,    b.BookingDate)                          AS ReturnDate,
+                       b.Status,
+                       b.NumAdults,
+                       b.NumChildren,
+                       ISNULL(
+                           b.NumAdults * tp.Price + b.NumChildren * (tp.Price * 0.5),
+                           0
+                       )                                                                AS TotalPrice,
+                       ISNULL(ts.GuideName, N'')                                        AS GuideName
+                   FROM Bookings b
+                   LEFT JOIN Customers     c  ON b.CustomerID  = c.CustomerID
+                   LEFT JOIN TourSchedules ts ON b.ScheduleID  = ts.ScheduleID
+                   LEFT JOIN TourPackages  tp ON ts.TourID     = tp.TourID
+                   WHERE b.CustomerID = ?
+                   ORDER BY b.BookingID DESC""",
+                [user_id]
+            )
+            error_message = None
+        except Exception:
+            # Fallback ชั้น 2: แสดงแค่ Bookings ล้วนๆ
+            try:
+                tickets = exec_query(
+                    """SELECT
+                           b.BookingID,
+                           b.CustomerID,
+                           c.FullName,
+                           CAST(b.ScheduleID AS NVARCHAR),
+                           N'',
+                           b.BookingDate,
+                           b.BookingDate,
+                           b.Status,
+                           b.NumAdults,
+                           b.NumChildren,
+                           0,
+                           N''
+                       FROM Bookings b
+                       LEFT JOIN Customers c ON b.CustomerID = c.CustomerID
+                       WHERE b.CustomerID = ?
+                       ORDER BY b.BookingID DESC""",
+                    [user_id]
+                )
+                error_message = None
+            except Exception:
+                tickets = []
+
+    return render(request, 'my_tickets.html', {
+        'tickets':       tickets,
+        'error_message': error_message,
+        'user_name':     request.session.get('user_name', ''),
+        'user_email':    request.session.get('user_email', ''),
+    })
 
 
 # ═══════════════════════════════════════
@@ -375,17 +458,18 @@ def crud_create(request, table):
 
             return redirect(f'/manage/{table}/')
         except Exception as e:
+            fields = [{'name': c, 'value': request.POST.get(c, '')} for c in columns]
             return render(request, 'admin/table_form.html', {
                 'table_name':    table,
-                'columns':       columns,
-                'row':           None,
+                'fields':        fields,
                 'error_message': str(e),
             })
 
+    fields = [{'name': c, 'value': ''} for c in columns]
     return render(request, 'admin/table_form.html', {
         'table_name': table,
-        'columns':    columns,
-        'row':        None,
+        'fields':     fields,
+        'error_message': None,
     })
 
 
@@ -424,17 +508,18 @@ def crud_edit(request, table, id):
 
             return redirect(f'/manage/{table}/')
         except Exception as e:
+            fields = [{'name': c, 'value': request.POST.get(c, '')} for c in edit_columns]
             return render(request, 'admin/table_form.html', {
                 'table_name':    table,
-                'columns':       edit_columns,
-                'row':           row,
+                'fields':        fields,
                 'error_message': str(e),
             })
 
+    fields = [{'name': c, 'value': row[i+1] if row else ''} for i, c in enumerate(edit_columns)]
     return render(request, 'admin/table_form.html', {
         'table_name': table,
-        'columns':    edit_columns,
-        'row':        row,
+        'fields':     fields,
+        'error_message': None,
     })
 
 

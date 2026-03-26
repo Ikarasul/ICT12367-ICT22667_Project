@@ -4,6 +4,7 @@ from django.views.generic import RedirectView
 from tour import views
 
 urlpatterns = [
+    path('i18n/', include('django.conf.urls.i18n')),
     path('lang/<str:lang_code>/', views.change_language, name='change_language'),
     # Public
     path('',            views.tours,           name='tours'),
@@ -24,8 +25,8 @@ urlpatterns = [
     path('manage/',                              views.manage_tables_view, name='manage_tables'),
     path('manage/<str:table>/',                  views.crud_list,          name='crud_list'),
     path('manage/<str:table>/create/',           views.crud_create,        name='crud_create'),
-    path('manage/<str:table>/edit/<int:id>/',    views.crud_edit,          name='crud_edit'),
-    path('manage/<str:table>/delete/<int:id>/',  views.crud_delete,        name='crud_delete'),
+    path('manage/<str:table>/edit/<path:id>/',    views.crud_edit,          name='crud_edit'),
+    path('manage/<str:table>/delete/<path:id>/',  views.crud_delete,        name='crud_delete'),
 
     # Misc
     path('forgot-password/', RedirectView.as_view(url='/login/'), name='forgot_password'),

@@ -1,114 +1,91 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}เข้าสู่ระบบ / Login - TourCompanyDB{% endblock %}
+{% block title %}Login - TourCompanyDB{% endblock %}
 
 {% block extra_head %}
-<style>
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .fade-up{animation:fadeUp .5s ease both}
-  .delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
-  .text-gradient{background:linear-gradient(135deg,#059669,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-  /* Input field */
-  .field{position:relative}
-  .field input{width:100%;padding:.9rem 1rem .9rem 3rem;border:2px solid #e5e7eb;border-radius:.875rem;background:#fff;font-family:'DM Sans',sans-serif;font-size:.9375rem;transition:border-color .2s,box-shadow .2s;outline:none;color:#111827}
-  .field input:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.12)}
-  .field .icon{position:absolute;left:.875rem;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:1.2rem;transition:color .2s}
-  .field input:focus~.icon,.field:focus-within .icon{color:#059669}
-
-  /* Card */
-  .auth-card{background:#fff;border-radius:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,.04),0 24px 48px rgba(0,0,0,.08);overflow:hidden}
-  .hero-panel{background:linear-gradient(160deg,#047857 0%,#059669 40%,#10b981 100%);position:relative;overflow:hidden}
-  .hero-panel::before{content:'';position:absolute;inset:0;background:url('https://loremflickr.com/600/800/nature,forest') center/cover no-repeat;opacity:.25}
-  .dot-pattern{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.15) 1px,transparent 1px);background-size:28px 28px}
-  input[type="checkbox"]{accent-color:#059669;width:1.1rem;height:1.1rem}
-  label.field-label{display:block;font-size:.8125rem;font-weight:600;color:#374151;margin-bottom:.5rem;letter-spacing:.03em;text-transform:uppercase}
-</style>
 {% endblock %}
 
 {% block content %}
-<!-- MAIN -->
-<main class="flex-1 flex items-center justify-center px-4 py-12">
-  <div class="auth-card w-full max-w-5xl flex flex-col md:flex-row fade-up">
+<main class="min-h-screen flex items-center justify-center p-6 bg-destination relative" data-alt="Scenic Thai tropical island with turquoise water and limestone cliffs at sunrise">
+<!-- Login Card -->
+<div class="glass-panel w-full max-auto max-w-md p-10 rounded-xl shadow-[0_20px_40px_rgba(25,28,30,0.06)] border border-white/20">
+<!-- Logo Section -->
+<div class="flex flex-col items-center mb-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="travel_explore">travel_explore</span>
+<span class="font-headline font-extrabold text-2xl tracking-tight text-primary">TourCompanyDB</span>
+</div>
+<div class="text-center">
+<h1 class="font-headline text-2xl font-bold text-on-surface mb-1">ยินดีต้อนรับ / Welcome Back</h1>
+<p class="text-on-surface-variant text-sm">Please enter your details to continue your journey</p>
+</div>
+</div>
+<form class="space-y-6" method="POST" action="/login/">
+{% csrf_token %}
 
-    <!-- Left: Hero Panel -->
-    <div class="hero-panel hidden md:flex flex-col justify-between p-12 w-2/5 text-white">
-      <div class="dot-pattern"></div>
-      <div class="relative z-10">
-        <span style="background:rgba(255,255,255,.2);border-radius:9999px;padding:.375rem 1rem;font-size:.8125rem;font-weight:700;letter-spacing:.04em">✈️ &nbsp;TOURCOMPANYDB</span>
-        <h2 class="font-display text-4xl font-900 mt-8 mb-5 leading-tight">
-          {{ t.discover_new }}
-        </h2>
-        <p style="color:rgba(255,255,255,.8)" class="text-base leading-relaxed">
-          {{ t.hero_desc }}
-        </p>
-      </div>
-      <div class="relative z-10 flex gap-4">
-        <div style="background:rgba(255,255,255,.15);border-radius:1rem;padding:1rem 1.25rem">
-          <p style="font-size:1.75rem;font-family:'Outfit',sans-serif;font-weight:900">200+</p>
-          <p style="color:rgba(255,255,255,.7);font-size:.8125rem">เส้นทางทั่วโลก</p>
-        </div>
-        <div style="background:rgba(255,255,255,.15);border-radius:1rem;padding:1rem 1.25rem">
-          <p style="font-size:1.75rem;font-family:'Outfit',sans-serif;font-weight:900">50K+</p>
-          <p style="color:rgba(255,255,255,.7);font-size:.8125rem">ลูกค้าพึงพอใจ</p>
-        </div>
-      </div>
-    </div>
+{% if error_message %}
+<div class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-semibold border border-red-100 flex items-center gap-2 animate-fade-in">
+<span class="material-symbols-outlined text-[18px]">error</span>
+{{ error_message }}
+</div>
+{% endif %}
 
-    <!-- Right: Login Form -->
-    <div class="flex-1 p-8 md:p-12">
-      <div class="mb-8 fade-up delay-1">
-        <h1 class="font-display text-3xl font-900 mb-1"><span class="text-gradient">{{ t.welcome }}</span></h1>
-        <p style="color:#6b7280">{{ t.login_desc }}</p>
-      </div>
-
-      {% if error_message %}
-      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:.75rem;padding:1rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.75rem">
-        <span class="material-symbols-outlined" style="color:#dc2626">error</span>
-        <p style="color:#991b1b;font-size:.9rem">{{ error_message }}</p>
-      </div>
-      {% endif %}
-
-      <form action="/login/" method="POST" class="space-y-5 fade-up delay-2">
-        {% csrf_token %}
-
-        <div>
-          <label class="field-label">{{ t.email }}</label>
-          <div class="field">
-            <span class="material-symbols-outlined icon">mail</span>
-            <input type="email" name="email" placeholder="example@domain.com" required/>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-2">
-            <label class="field-label" style="margin-bottom:0">{{ t.password }}</label>
-            <a href="/forgot-password/" style="font-size:.8125rem;color:#059669;font-weight:600;text-decoration:none">{{ t.forgot_pwd }}</a>
-          </div>
-          <div class="field">
-            <span class="material-symbols-outlined icon">lock</span>
-            <input type="password" name="password" placeholder="••••••••" required/>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <input type="checkbox" id="remember" name="remember"/>
-          <label for="remember" style="font-size:.9rem;color:#374151;cursor:pointer">{{ t.remember_me }}</label>
-        </div>
-
-        <button type="submit" class="btn-primary">
-          {{ t.sign_in }} &nbsp;→
-        </button>
-      </form>
-
-      <div class="fade-up delay-3 mt-8 pt-8 text-center" style="border-top:1px solid #f0fdf4">
-        <p style="color:#9ca3af;font-size:.9rem;margin-bottom:1rem">{{ t.no_account }}</p>
-        <a href="/register/" style="display:inline-flex;align-items:center;gap:.5rem;border:2px solid #059669;color:#059669;font-family:'Outfit',sans-serif;font-weight:700;border-radius:.875rem;padding:.75rem 2rem;text-decoration:none;transition:all .2s">
-          {{ t.register }} →
-        </a>
-      </div>
-    </div>
-  </div>
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="font-label text-sm font-semibold text-on-surface ml-1" for="email">Email Address</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline" id="email" name="email" placeholder="alex@example.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="font-label text-sm font-semibold text-on-surface" for="password">Password</label>
+<a class="text-xs font-semibold text-primary hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-3.5 bg-surface-container-low border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline" id="password" name="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Remember Me -->
+<div class="flex items-center gap-2 px-1">
+<input class="w-4 h-4 rounded border-outline text-primary focus:ring-primary/20" id="remember" type="checkbox"/>
+<label class="text-sm text-on-surface-variant" for="remember">Keep me logged in for 30 days</label>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-200" type="submit">
+                    Sign In
+                </button>
+</form>
+<!-- Social/Alternative -->
+<div class="mt-8 pt-8 border-t border-outline-variant/30 text-center">
+<p class="text-on-surface-variant text-sm mb-6">Don't have an account yet?</p>
+<a class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary-container/10 text-secondary font-bold text-sm hover:bg-secondary-container/20 transition-colors" href="/register/">
+<span class="material-symbols-outlined text-[18px]" data-icon="person_add">person_add</span>
+                    Register Now
+                </a>
+</div>
+</div>
+<!-- Floating Decorative Element -->
+<div class="absolute bottom-8 right-8 hidden lg:block">
+<div class="glass-panel p-4 rounded-xl flex items-center gap-4 shadow-xl max-w-xs border border-white/30">
+<div class="w-12 h-12 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-on-secondary-fixed-variant uppercase tracking-widest">Special Offer</p>
+<p class="text-xs text-on-surface font-medium leading-tight">Join today and get 15% off your first Phi Phi island tour.</p>
+</div>
+</div>
+</div>
 </main>
-
 {% endblock %}

@@ -1,156 +1,149 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}ลงทะเบียน / Register - TourCompanyDB{% endblock %}
+{% block title %}Register - TourCompanyDB{% endblock %}
 
 {% block extra_head %}
-<style>
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .fade-up{animation:fadeUp .5s ease both}
-  .auth-wrap{display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
-  .auth-card{background:#fff;border-radius:1.5rem;box-shadow:0 4px 6px rgba(0,0,0,.04),0 20px 48px rgba(0,0,0,.08);overflow:hidden;width:100%;max-width:960px;display:flex;flex-direction:row}
-  .hero-panel{background:linear-gradient(160deg,#047857 0%,#059669 50%,#10b981 100%);padding:3rem 2.5rem;color:#fff;width:340px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-  .dot-pattern{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.15) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
-  .form-panel{flex:1;padding:2.5rem 2.5rem;overflow-y:auto}
-  .field-label{display:block;font-size:.75rem;font-weight:700;color:#374151;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.04em}
-  .form-input{width:100%;padding:.8rem 1rem;border:2px solid #e5e7eb;border-radius:.75rem;background:#fff;font-family:'DM Sans',sans-serif;font-size:.9375rem;transition:border-color .2s,box-shadow .2s;color:#111827;outline:none}
-  .form-input:focus{border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.12)}
-  select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right .75rem center;background-size:1.25rem;padding-right:2.5rem}
-  input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(38%) sepia(70%) saturate(500%) hue-rotate(110deg) brightness(90%)}
-  input[type="checkbox"]{accent-color:#059669;width:1.1rem;height:1.1rem}
-  
-  @media(max-width:768px){
-    .auth-card{flex-direction:column}
-    .hero-panel{width:100%;min-height:auto;padding:2rem}
-    .form-panel{padding:2rem 1.5rem}
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/register.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
 {% endblock %}
 
 {% block content %}
-<!-- MAIN -->
-<div class="auth-wrap">
-  <div class="auth-card fade-up">
-
-    <!-- LEFT HERO PANEL -->
-    <div class="hero-panel">
-      <div class="dot-pattern"></div>
-      <div style="position:relative;z-index:1">
-        <span style="background:rgba(255,255,255,.2);border-radius:9999px;padding:.375rem 1rem;font-size:.75rem;font-weight:700;letter-spacing:.05em">✈️ &nbsp;TOURCOMPANYDB</span>
-        <h2 style="font-size:2rem;font-weight:900;margin-top:2rem;margin-bottom:1rem;line-height:1.2">
-          เริ่มการเดินทาง<br/>ที่ออกแบบ<br/>มาเพื่อคุณ
-        </h2>
-        <p style="color:rgba(255,255,255,.8);font-size:.9375rem;line-height:1.7">
-          สัมผัสประสบการณ์การเดินทางที่ไม่เหมือนใครกับทีมผู้เชี่ยวชาญของเรา
-        </p>
-      </div>
-      <div style="position:relative;z-index:1;display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.5rem">
-        <div style="background:rgba(255,255,255,.15);border-radius:1rem;padding:.875rem 1.125rem;flex:1;min-width:100px">
-          <p style="font-family:'Outfit',sans-serif;font-size:1.625rem;font-weight:900">200+</p>
-          <p style="color:rgba(255,255,255,.7);font-size:.75rem;margin-top:.2rem">เส้นทางทั่วโลก</p>
-        </div>
-        <div style="background:rgba(255,255,255,.15);border-radius:1rem;padding:.875rem 1.125rem;flex:1;min-width:100px">
-          <p style="font-family:'Outfit',sans-serif;font-size:1.625rem;font-weight:900">50K+</p>
-          <p style="color:rgba(255,255,255,.7);font-size:.75rem;margin-top:.2rem">ลูกค้าพึงพอใจ</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT FORM PANEL -->
-    <div class="form-panel">
-      <div style="margin-bottom:1.75rem">
-        <h1 style="font-size:1.625rem;font-weight:900;color:#111827;margin-bottom:.375rem">
-          {{ t.create_account }}
-        </h1>
-        <p style="color:#6b7280;font-size:.9rem">{{ t.register_desc }}</p>
-      </div>
-
-      {% if error_message %}
-      <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:.75rem;padding:.875rem 1rem;margin-bottom:1.25rem;display:flex;gap:.75rem;align-items:flex-start">
-        <span class="material-symbols-outlined" style="color:#dc2626;font-size:1.25rem">error</span>
-        <p style="color:#991b1b;font-size:.875rem">{{ error_message }}</p>
-      </div>
-      {% endif %}
-
-      <form action="/register/" method="POST">
-        {% csrf_token %}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-
-          <!-- Full Name (full width) -->
-          <div style="grid-column:1/-1">
-            <label class="field-label">{{ t.fullname }}</label>
-            <input class="form-input" type="text" name="fullname" placeholder="John Doe" required/>
-          </div>
-
-          <!-- Email -->
-          <div>
-            <label class="field-label">{{ t.email }}</label>
-            <input class="form-input" type="email" name="email" placeholder="example@mail.com" required/>
-          </div>
-
-          <!-- Phone -->
-          <div>
-            <label class="field-label">{{ t.phone }}</label>
-            <input class="form-input" type="tel" name="phone" placeholder="081-234-5678" required/>
-          </div>
-
-          <!-- Passport -->
-          <div>
-            <label class="field-label">{{ t.passport }}</label>
-            <input class="form-input" type="text" name="passport" placeholder="AA123456"/>
-          </div>
-
-          <!-- DOB -->
-          <div>
-            <label class="field-label">{{ t.dob }}</label>
-            <input class="form-input" type="date" name="dob" required/>
-          </div>
-
-          <!-- Nationality (full width) -->
-          <div style="grid-column:1/-1">
-            <label class="field-label">{{ t.nationality }}</label>
-            <select class="form-input" name="nationality" required>
-              <option disabled selected value="">เลือกสัญชาติ / Select</option>
-              <option value="Thai">ไทย / Thai</option>
-              <option value="Chinese">จีน / Chinese</option>
-              <option value="American">อเมริกัน / American</option>
-              <option value="British">อังกฤษ / British</option>
-              <option value="Other">อื่นๆ / Other</option>
-            </select>
-          </div>
-
-          <!-- Address (full width) -->
-          <div style="grid-column:1/-1">
-            <label class="field-label">{{ t.address }}</label>
-            <textarea class="form-input" name="address" rows="2" placeholder="123 ถนน/Road..." required style="resize:none"></textarea>
-          </div>
-
-          <!-- Password (full width) -->
-          <div style="grid-column:1/-1">
-            <label class="field-label">{{ t.password }}</label>
-            <input class="form-input" type="password" name="password" placeholder="{{ t.min_8_chars }}" required/>
-          </div>
-
-        </div>
-
-        <!-- Terms -->
-        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-top:1rem">
-          <input type="checkbox" id="terms" name="terms" required style="margin-top:2px"/>
-          <label for="terms" style="font-size:.875rem;color:#374151;cursor:pointer;line-height:1.5">
-            {{ t.i_accept }} <a href="#" style="color:#059669;font-weight:700;text-decoration:none">{{ t.terms }}</a>
-          </label>
-        </div>
-
-        <button type="submit" class="btn-primary" style="margin-top: 1.5rem; width: 100%;">
-          {{ t.create_account }} →
-        </button>
-      </form>
-
-      <p style="text-align:center;margin-top:1.5rem;color:#9ca3af;font-size:.875rem">
-        {{ t.have_account }} 
-        <a href="/login/" style="color:#059669;font-weight:700;text-decoration:none">{{ t.login }} →</a>
-      </p>
-    </div>
-
-  </div>
+<main class="pt-24 pb-20 px-4 flex justify-center items-center">
+<!-- Registration Card -->
+<div class="bg-white w-full max-w-[850px] rounded-2xl shadow-[0_32px_64px_-16px_rgba(16,185,129,0.1)] overflow-hidden relative border border-primary/5">
+<!-- Botanical Accent Decoration -->
+<div class="absolute top-8 right-8 w-24 h-24 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-8xl text-primary" data-icon="potted_plant">potted_plant</span>
 </div>
+<div class="p-8 md:p-14">
+<!-- Header -->
+<div class="mb-10">
+<h1 class="font-headline font-extrabold text-3xl md:text-4xl text-on-surface tracking-tight inline-block relative">
+                        สร้างบัญชีใหม่ / Create Account
+                        <span class="absolute bottom-[-6px] left-0 w-16 h-1.5 bg-primary rounded-full"></span>
+</h1>
+<p class="mt-4 text-on-surface-variant font-medium text-lg">
+                        เริ่มต้นการเดินทางกับเรา / Begin your journey with us
+                    </p>
+</div>
+<!-- Registration Form -->
+<form action="/register/" method="POST" class="space-y-8">
+            {% csrf_token %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+<!-- Left Column -->
+<div class="space-y-6">
+<!-- Full Name -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">ชื่อ-นามสกุล</span>
+<span class="bilingual-label-en">Full Name</span>
+</label>
+<input name="fullname" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400" placeholder="John Doe" type="text" required/>
+</div>
+<!-- Email -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">อีเมล</span>
+<span class="bilingual-label-en">Email Address</span>
+</label>
+<input name="email" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400" placeholder="john@example.com" type="email" required/>
+</div>
+<!-- Phone -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">เบอร์โทรศัพท์</span>
+<span class="bilingual-label-en">Phone Number</span>
+</label>
+<input name="phone" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400" placeholder="08x-xxx-xxxx" type="tel"/>
+</div>
+<!-- Passport -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">หมายเลขพาสปอร์ต / บัตรประชาชน</span>
+<span class="bilingual-label-en">Passport / ID Number</span>
+</label>
+<input name="passport" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400" placeholder="A1234567" type="text"/>
+</div>
+</div>
+<!-- Right Column -->
+<div class="space-y-6">
+<!-- Date of Birth -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">วันเดือนปีเกิด</span>
+<span class="bilingual-label-en">Date of Birth</span>
+</label>
+<input name="dob" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface" type="date"/>
+</div>
+<!-- Nationality -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">สัญชาติ</span>
+<span class="bilingual-label-en">Nationality</span>
+</label>
+<select name="nationality" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface appearance-none">
+<option value="">เลือกสัญชาติ / Select Nationality</option>
+<option value="TH">Thai</option>
+<option value="US">American</option>
+<option value="GB">British</option>
+<option value="CN">Chinese</option>
+</select>
+</div>
+<!-- Address -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">ที่อยู่</span>
+<span class="bilingual-label-en">Current Address</span>
+</label>
+<textarea name="address" class="w-full px-5 py-3.5 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400 resize-none" placeholder="Street, City, Postcode" rows="1"></textarea>
+</div>
+<!-- Password -->
+<div class="group">
+<label class="mb-2 block">
+<span class="bilingual-label-th font-bold text-primary">รหัสผ่าน</span>
+<span class="bilingual-label-en">Password</span>
+</label>
+<div class="relative">
+<input id="passwordInput" name="password" class="w-full px-5 py-3.5 pr-14 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all font-body text-on-surface placeholder:text-slate-400" placeholder="••••••••" type="password" required/>
+<button type="button" id="togglePassword" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none" tabindex="-1" aria-label="แสดง/ซ่อนรหัสผ่าน">
+<span id="eyeIcon" class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Register Button -->
+<div class="pt-6">
+<button class="w-full bg-secondary text-white font-headline font-extrabold text-lg py-4.5 rounded-xl shadow-lg shadow-secondary/30 hover:shadow-secondary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center space-x-2" type="submit">
+<span>ลงทะเบียน / Register</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Footer Links -->
+<div class="mt-12 text-center border-t border-slate-100 pt-8">
+<p class="text-on-surface-variant font-medium">
+                        มีบัญชีแล้ว? / Have account? 
+                        <a class="ml-2 text-primary font-bold hover:underline decoration-2 underline-offset-4" href="/login/">
+                            เข้าสู่ระบบ / Login
+                        </a>
+</p>
+</div>
+</div>
+</div>
+</main>
+<script>
+function togglePasswordVisibility() {
+  var input = document.getElementById('passwordInput');
+  var icon  = document.getElementById('eyeIcon');
+  if (input.type === 'password') {
+    input.type   = 'text';
+    icon.textContent = 'visibility_off';
+  } else {
+    input.type   = 'password';
+    icon.textContent = 'visibility';
+  }
+}
+</script>
 {% endblock %}

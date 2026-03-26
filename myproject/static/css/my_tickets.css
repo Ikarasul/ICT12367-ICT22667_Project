@@ -1,0 +1,8 @@
+.material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .thai-text { line-height: 1.8; }
+      .eng-text { line-height: 1.6; }
+      body {
+        background: radial-gradient(circle at top right, #F0FFF4 0%, #F9FCFB 100%);
+      }

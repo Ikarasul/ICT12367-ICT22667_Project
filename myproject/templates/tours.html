@@ -1,173 +1,204 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}ทัวร์ / Tours - TourCompanyDB{% endblock %}
+{% block title %}Tours - TourCompanyDB{% endblock %}
 
 {% block extra_head %}
-<style>
-    .text-gradient {
-        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .search-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 1rem;
-        padding-left: 1rem;
-        transition: all 0.2s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .search-wrap:focus-within {
-        border-color: #059669;
-        box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
-    }
-    .search-wrap input {
-        border: none;
-        outline: none;
-        width: 100%;
-        padding: 0.875rem 1rem;
-        background: transparent;
-        font-size: 0.875rem;
-    }
-    .search-wrap .icon { color: #9ca3af; }
+<link rel="stylesheet" href="{% static 'css/tours.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-    .pill {
-        padding: 0.5rem 1.25rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        background: #f3f4f6;
-        color: #4b5563;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .pill.active {
-        background: #059669;
-        color: white;
-    }
-    .pill:hover:not(.active) {
-        background: #e5e7eb;
-    }
-
-    .text-text-muted { color: #6b7280; }
-</style>
 {% endblock %}
 
 {% block content %}
-
-<!-- HERO -->
-<section class="max-w-7xl mx-auto px-6 pt-14 pb-10">
-  <div class="fade-up">
-    <span class="badge badge-green mb-5">{{ t.find_your_tour }}</span>
-    <h1 class="font-display text-5xl md:text-6xl font-900 leading-tight mb-3">
-      <span class="text-gradient">{{ t.perfect_journey_1 }}</span><br/>{{ t.perfect_journey_2 }}
-    </h1>
-    <p class="text-text-muted text-lg max-w-xl mb-8">{{ t.tour_desc }}</p>
-  </div>
-
-  <!-- Search + Filter -->
-  <div class="fade-up delay-1 flex flex-col md:flex-row gap-4 items-start md:items-center">
-    <div class="search-wrap flex-1 max-w-lg">
-      <span class="material-symbols-outlined icon">search</span>
-      <input id="tour-search" type="text" placeholder="{{ t.search_placeholder }}" />
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <button class="pill active" data-filter="all">{{ t.all }}</button>
-      <button class="pill" data-filter="available">{{ t.available }}</button>
-      <button class="pill" data-filter="asia">{{ t.asia }}</button>
-      <button class="pill" data-filter="europe">{{ t.europe }}</button>
-    </div>
-  </div>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="hero-gradient min-h-[716px] flex flex-col items-center justify-center px-6 text-center">
+<h1 class="font-headline text-5xl md:text-7xl font-extrabold text-on-surface tracking-tight max-w-4xl mb-6">
+                Travel experiences <span class="text-primary italic">tailored</span> for you.
+            </h1>
+<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mb-12">
+                Discover curated local tours and hidden gems with the precision of our Digital Concierge. Breezy, effortless, and premium.
+            </p>
+<!-- Large Search Bar Component -->
+<div class="w-full max-w-4xl bg-surface-container-lowest p-4 rounded-3xl shadow-2xl shadow-on-surface/5 flex flex-col md:flex-row gap-4 items-center">
+<div class="flex-1 w-full flex items-center px-4 py-3 bg-surface-container-low rounded-2xl">
+<span class="material-symbols-outlined text-primary mr-3" data-icon="location_on">location_on</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-medium" placeholder="Where do you want to go?" type="text"/>
+</div>
+<div class="flex-1 w-full flex items-center px-4 py-3 bg-surface-container-low rounded-2xl">
+<span class="material-symbols-outlined text-primary mr-3" data-icon="calendar_month">calendar_month</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-medium" placeholder="Select dates" type="text"/>
+</div>
+<button class="w-full md:w-auto bg-primary-container text-on-primary-container px-10 py-4 rounded-2xl font-headline font-bold hover:brightness-105 transition-all">
+                    Search
+                </button>
+</div>
 </section>
-
-<!-- TOUR GRID -->
-<main class="max-w-7xl mx-auto px-6 pb-20">
-  <div id="tour-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-
-    {% for t in tours %}
-    <div class="tour-card fade-up {% if t.6 == 0 %}opacity-60 grayscale{% endif %}" data-name="{{ t.1|lower }}" data-dest="{{ t.2|lower }}" data-seats="{{ t.6 }}">
-      <div class="relative h-56 overflow-hidden bg-gray-100">
-        <!-- Stable Placeholder Image based on destination -->
-        <img class="w-full h-full object-cover" src="https://loremflickr.com/600/400/{{ t.2|urlencode }},travel/all" alt="{{ t.2 }}"/>
-        
-        <div class="absolute top-3 left-3">
-          <span class="badge badge-green">
-            {% if lang == 'en' and t.11 %}{{ t.11 }}{% else %}{{ t.2 }}{% endif %}
-          </span>
-        </div>
-        <div class="absolute top-3 right-3">
-          {% if t.6 == 0 %}
-            <span class="badge badge-gray px-4 py-2 shadow-sm text-sm">{{ t.fully_booked }}</span>
-          {% elif t.6 > 0 and t.6 <= 5 %}
-            <span class="badge badge-red animate-pulse shadow-sm">{{ t.seats_left }}</span>
-          {% else %}
-            <span class="badge badge-green shadow-sm">{{ t.6 }} {{ t.seats }}</span>
-          {% endif %}
-        </div>
-      </div>
-      <div class="p-6">
-        <div class="flex items-center gap-1 text-primary text-sm font-medium mb-2">
-          <span class="material-symbols-outlined text-base">location_on</span>
-          {% if lang == 'en' and t.11 %}{{ t.11 }}{% else %}{{ t.2 }}{% endif %}
-        </div>
-        <h3 class="font-display text-xl font-700 mb-3 text-text line-clamp-2" title="{{ t.1 }}">
-          {% if lang == 'en' and t.10 %}{{ t.10 }}{% else %}{{ t.1 }}{% endif %}
-        </h3>
-        <div class="flex items-center justify-between text-text-muted text-sm mb-4">
-          <div class="flex items-center gap-1">
-            <span class="material-symbols-outlined text-base">calendar_month</span> {{ t.3|date:"d M" }} – {{ t.4|date:"d M y" }}
-          </div>
-          <div class="font-bold text-primary text-lg">฿ {{ t.7 }}</div>
-        </div>
-        
-        <div class="mb-5 bg-surface-container-lowest border border-border rounded-xl p-3">
-          <div class="flex justify-between text-xs font-medium mb-1.5">
-            <span class="text-text-muted">{{ t.available_seats_label }}</span>
-            <span class="{% if t.6 == 0 %}text-text-muted{% elif t.6 <= 5 %}text-red-500{% else %}text-primary{% endif %} font-700">{{ t.6 }} / {{ t.5 }}</span>
-          </div>
-          <div class="seats-bar bg-surface-container"><div class="seats-fill {% if t.6 <= 5 %}bg-error{% endif %}" style="width:{% widthratio t.6 t.5 100 %}%"></div></div>
-        </div>
-        
-        {% if t.6 == 0 %}
-          <div class="btn-disabled text-sm text-center w-full py-3">{{ t.fully_booked }}</div>
-        {% elif request.session.user_id %}
-          <a href="/booking/?schedule_id={{ t.0 }}" class="btn-primary text-sm block text-center py-3 w-full shadow-sm hover:shadow-md">{{ t.book_now }}</a>
-        {% else %}
-          <a href="/login/" class="btn-primary !bg-surface !text-primary border-2 border-primary text-sm block text-center py-3 w-full hover:bg-primary-light transition-colors">{{ t.login_to_book }}</a>
-        {% endif %}
-      </div>
-    </div>
-    {% empty %}
-    <div class="col-span-1 md:col-span-3 text-center py-20">
-      <span class="material-symbols-outlined text-6xl text-border mb-4">search_off</span>
-      <p class="text-text-muted font-medium text-lg">{{ t.no_tours }}</p>
-      <p class="text-text-light text-sm mt-1">{{ t.check_later }}</p>
-    </div>
-    {% endfor %}
-
-  </div>
-
-  <!-- Empty state client-side filter -->
-  <div id="no-results" class="hidden text-center py-20">
-    <span class="material-symbols-outlined text-5xl text-text-light mb-3">search_off</span>
-    <p class="text-text-muted mt-3 font-medium">{{ t.no_matching_tours }}</p>
-  </div>
+<!-- Discovery Section -->
+<section class="max-w-7xl mx-auto px-8 py-20">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div>
+<span class="text-secondary font-headline font-bold tracking-widest uppercase text-sm mb-2 block">Our Collection</span>
+<h2 class="text-4xl font-headline font-extrabold text-on-surface">Curated Tours</h2>
+</div>
+<!-- Filter Pills -->
+<div class="flex flex-wrap gap-3" id="filter-pills">
+<button onclick="filterTours('all')" data-filter="all" class="filter-pill active px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-bold font-headline transition-all">All Tours</button>
+<button onclick="filterTours('tropical')" data-filter="tropical" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏖️ Tropical</button>
+<button onclick="filterTours('adventure')" data-filter="adventure" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏔️ Adventure</button>
+<button onclick="filterTours('cultural')" data-filter="cultural" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏛️ Cultural</button>
+</div>
+</div>
+<!-- Bento-style Tour Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="tour-grid">
+{% for tour in tours %}
+<div class="tour-card bg-surface-container-lowest rounded-[2rem] overflow-hidden group shadow-lg flex flex-col transition-all duration-300" data-category="{{ tour.cat }}">
+<div class="h-64 relative overflow-hidden bg-slate-100">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBut2ECT7KobFH_2LA-yCyc_h7MmLeVxL7rROHrXWfZ_qahuLhID-MVIl4rlMmh9l_ln2IMovnXrcQdPPfzlm-Accu-uRFVkAans0ElJSdbodDOoGtuZqiqFWF4aH0gh9r7JnWduoQsdKt30gq3RgWGvQw3-jQ6dvkmqsSYf4rTEPXyQO_jBpiy3loczADwWcaeXWs0j6wKyv65h7e5FHb86QT0zWUcKUtLidUw7hFVqc7aeT_KAbNBiZjc0ZbJk4Qbkj0npFjMA4k"/>
+<div class="absolute top-4 right-4 bg-secondary-container/90 backdrop-blur text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
+{% if tour.data.6 <= 5 %}Low Seats: {{ tour.data.6 }}{% else %}{{ tour.data.6 }} Seats Left{% endif %}
+</div>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-slate-700">
+{{ tour.data.2 }}
+</div>
+</div>
+<div class="p-8 flex flex-col flex-grow">
+<h3 class="text-xl font-headline font-bold text-on-surface mb-2">{{ tour.data.1 }}</h3>
+<p class="text-on-surface-variant text-sm mb-6 leading-relaxed flex-grow">
+<span class="block mb-1"><span class="material-symbols-outlined text-[16px] align-middle mr-1">calendar_today</span> {{ tour.data.3|date:"d M Y" }} - {{ tour.data.4|date:"d M Y" }}</span>
+<span class="block"><span class="material-symbols-outlined text-[16px] align-middle mr-1">person</span> Guide: {{ tour.data.9|default:"-" }}</span>
+</p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
+<span class="text-2xl font-black text-primary">฿{{ tour.data.7 }}</span>
+<a href="/booking/?schedule_id={{ tour.data.0 }}" class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-xl font-headline font-bold transition-all shadow-md hover:shadow-lg">
+Book Now
+</a>
+</div>
+</div>
+</div>
+{% empty %}
+<div class="col-span-full py-20 text-center">
+<span class="material-symbols-outlined text-6xl text-slate-300 mb-4 block">travel_explore</span>
+<h3 class="text-2xl font-bold text-slate-800 mb-2">ไม่มีตารางทัวร์ในขณะนี้ / No tours available</h3>
+<p class="text-slate-500">กรุณากลับมาตรวจสอบอีกครั้งภายหลัง / Please check back later.</p>
+</div>
+{% endfor %}
+</div>
+<!-- Middle Content Section -->
+<div class="md:col-span-8 bg-surface-container-low rounded-[2rem] p-12 flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1">
+<h3 class="text-3xl font-headline font-extrabold text-on-surface mb-4">Why choose TourCompanyDB?</h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<p class="font-bold font-headline">Verified Local Guides</p>
+<p class="text-sm text-on-surface-variant">We only work with experts who know the hidden corners.</p>
+</div>
+</li>
+<li class="flex items-start gap-4">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="eco">eco</span>
+</div>
+<div>
+<p class="font-bold font-headline">Eco-Conscious Travel</p>
+<p class="text-sm text-on-surface-variant">1% of every booking goes to reef restoration projects.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="flex-1 relative">
+<div class="aspect-video bg-white rounded-2xl shadow-xl overflow-hidden rotate-2">
+<img class="w-full h-full object-cover" data-alt="POV of someone reading a travel guide while sitting on a balcony overlooking a bright blue ocean with islands" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2Hx9AKGhWA6lkQZqmtU2Mv9vZhz4sc2BiWZ3UCobsjCjt-BlwrT4aGn1Yjh6VS-vNZqYez4RAplozVwKkn5dT7uEpSZhe5UWm6fqU2fAqsjsFr00GfFAiWK4x4130BjoLb9cWitWRQLtcUX0BOgwYxNOuvxKEoX_2JAWJAPVSeAFOjWTg9kz7BZitoU-Na2okYzDkFuB2NlztBGaud-Bm7ImjbmfZ4tI-9FMLHitgwShdTokw1WQU4EVy6HHgf7htUIk1iU0gsgY"/>
+</div>
+<div class="absolute -bottom-6 -left-6 bg-secondary text-white p-6 rounded-2xl shadow-xl -rotate-3 hidden lg:block">
+<p class="font-headline font-black text-4xl">15k+</p>
+<p class="text-xs font-bold uppercase tracking-widest">Happy Travelers</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Component: Destination Overlay -->
+<section class="max-w-7xl mx-auto px-8 py-20 bg-surface-container-low rounded-[3rem] my-20 overflow-hidden relative">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="order-2 lg:order-1">
+<h2 class="text-4xl font-headline font-extrabold text-on-surface mb-6">Expertise in Every Mile</h2>
+<p class="text-lg text-on-surface-variant leading-relaxed mb-8">
+                        Our digital marketplace doesn't just list tours; it curates memories. Using the Digital Concierge logic, we match your travel style—whether it's high-octane adventure or sunset relaxation—with the perfect itinerary.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-2xl font-headline font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all">Start Your Journey</button>
+<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-2xl font-headline font-bold hover:bg-surface-variant transition-all">Explore Map</button>
+</div>
+</div>
+<div class="order-1 lg:order-2 relative flex justify-center">
+<div class="w-full max-w-md aspect-[4/5] bg-white rounded-3xl overflow-hidden shadow-2xl relative">
+<img class="w-full h-full object-cover" data-alt="Young couple smiling and taking a photo on a luxury yacht deck with blue sky and turquoise water background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk3Vnnm_Kw4b-NjT2zR1qcktspwN12WwxUVVR54RDBVKijd83La9JDit7CYDQ5PJnROY_8HbUGq6jKXYDGbRVkFCI8p6nMOkCpvCDj6KUQt5Axn_qbhwgHPm4w7k1MXLjz2G1fplxrMJmNCKkQCP5cV9MeYY4avdT7h35NfuF-TnTI6g6yooyPBRVeBK5cZ0HAKMC8KyF9wGKAXBDAlQhvVPhbmvPu_sFM13-X1EjUbqjC93npZ8qE8dKuIO_rkoVr1kCikhIuwqM"/>
+<!-- Glassmorphic Box Overlay -->
+<div class="absolute -bottom-10 -right-10 md:-right-16 w-64 p-8 bg-white/70 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/40">
+<p class="text-primary font-bold text-sm mb-2">Featured Spot</p>
+<h4 class="text-xl font-headline font-extrabold text-on-surface">Private Yacht Charter</h4>
+<p class="text-xs text-on-surface-variant mt-2">Available for groups up to 12. Sunset dining included.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Map Section (Tonal Transition) -->
+<section class="bg-white py-20">
+<div class="max-w-7xl mx-auto px-8">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-headline font-extrabold mb-4">Explore by Region</h2>
+<p class="text-on-surface-variant">Click on a destination to see our local expert offerings.</p>
+</div>
+<div class="w-full h-[500px] rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 shadow-inner bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Detailed artistic cartography map with vintage paper texture and elegant typography showing coastlines and mountain ranges" data-location="Bangkok" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy2JUjEXVCkSKYDVWCia3iw6KCH9_OhU4atN12qySsIyXTnzV6ATCQkG19o94UNBzsZz__ExolFja9Gpto9p4j39rUxqQ93YvpjL2LKi_gRwQZwZXRPtDKrlNr3Yoz-7dj9WSoezxC9NLjYLuls0MWVSVEwe6IxZCoQZOQAPZJRg5E_Y8C25PkCqR-9YO4crm8f1q0ji6rUJDkgbQ1lKQSnjhxu_fZjJksbY5sb2uPy-2tP5CZ7HTn-BHOK7PlJNYIh8NN_4d47Tg"/>
+</div>
+</div>
+</section>
 </main>
-{% endblock %}
 
-{% block extra_js %}
+<style>
+.filter-pill.active {
+  background-color: var(--color-primary-container, #d0e8ff);
+  color: var(--color-on-primary-container, #001d36);
+  font-weight: 700;
+}
+.tour-card.hidden-card {
+  display: none;
+}
+</style>
+
 <script>
-document.querySelectorAll('.pill').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    applyFilters();
+function filterTours(category) {
+  // Update active pill
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.classList.remove('active', 'bg-primary-container', 'text-on-primary-container', 'font-bold');
+    btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant', 'font-medium');
   });
-});
-document.getElementById('tour-search')?.addEventListener('input',applyFilters);
+  const activeBtn = document.querySelector(`[data-filter="${category}"]`);
+  if (activeBtn) {
+    activeBtn.classList.add('active', 'bg-primary-container', 'text-on-primary-container', 'font-bold');
+    activeBtn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant', 'font-medium');
+  }
+
+  // Show/hide cards
+  document.querySelectorAll('.tour-card').forEach(card => {
+    const cardCat = card.dataset.category;
+    if (category === 'all' || cardCat === category || cardCat === 'all') {
+      card.style.display = '';
+      card.style.animation = 'fadeIn 0.3s ease';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  // Show empty state if no results
+  const visible = [...document.querySelectorAll('.tour-card')].filter(c => c.style.display !== 'none');
+  const emptyState = document.getElementById('no-results');
+  if (emptyState) emptyState.style.display = visible.length === 0 ? 'block' : 'none';
+}
 </script>
 {% endblock %}

@@ -63,8 +63,11 @@ def exec_sp(sp_name, params=None):
                     break
             except pyodbc.ProgrammingError:
                 pass
-            if not cursor.nextset():
-                break
+            try:
+                if not cursor.nextset():
+                    break
+            except pyodbc.ProgrammingError:
+                break  # SP ไม่มี resultset (เช่น INSERT-only) — ออกจาก loop ปกติ
 
         conn.commit()
         return results
@@ -98,9 +101,14 @@ def exec_query(sql, params=None):
             cursor.execute(sql, params)
         else:
             cursor.execute(sql)
-        rows = cursor.fetchall()
+        try:
+            rows = cursor.fetchall()
+        except pyodbc.ProgrammingError:
+            rows = []
+        conn.commit()
         return rows
     except pyodbc.Error as e:
+        conn.rollback()
         err_msg = str(e)
         if "Invalid object name" in err_msg:
             raise ObjectNotFoundError(f"ระบบไม่พบตารางหรือ View ที่เรียกใช้ กรุณารัน setup_procedures.sql ({err_msg})")

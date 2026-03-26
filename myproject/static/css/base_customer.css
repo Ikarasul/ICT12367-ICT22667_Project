@@ -1,0 +1,25 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #154212;
+    --primary-light: #2d5a27;
+    --primary-bg: #f0f7ee;
+    --surface: #FAF9F5;
+    --surface-low: #F4F4F0;
+    --text: #1a2e1a;
+    --text-muted: #6b7280;
+    --border: rgba(0,0,0,0.06);
+    --amber: #f59e0b;
+    --error: #dc2626;
+    --radius: 14px;
+  }
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+  a { color: inherit; }
+  img { max-width: 100%; }
+  .page-content { padding-top: 64px; }
