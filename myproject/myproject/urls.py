@@ -13,6 +13,7 @@ urlpatterns = [
 
     # Customer
     path('booking/',    views.booking_view,     name='booking'),
+    path('checkout/',   views.checkout_view,    name='checkout'),
     path('my-tickets/', views.my_tickets_view,  name='my_tickets'),
 
     # Staff
