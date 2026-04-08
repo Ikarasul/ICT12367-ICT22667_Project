@@ -2,6 +2,8 @@
 # ═══════════════════════════════════════
 # Views เชื่อม SQL Server จริง
 # ═══════════════════════════════════════
+import promptpay
+import qrcode
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -33,6 +35,9 @@ def login_required(roles=None):
 # ═══════════════════════════════════════
 # PUBLIC PAGES
 # ═══════════════════════════════════════
+
+PROMPTPAY_ID = "0632688015"
+
 
 def tours(request):
     """หน้าหลัก — แสดงทัวร์ทั้งหมดจาก TourPackages (ORM)"""
@@ -446,11 +451,14 @@ def register_view(request):
     })
 
 
+
+
 def logout_view(request):
     request.session.flush()
     return redirect('/login/')
 
 
+<<<<<<< HEAD
 def forgot_password_view(request):
     """Step 1 — ลูกค้ากรอก email เพื่อรีเซ็ตรหัสผ่าน"""
     smtp_error = None
@@ -1039,6 +1047,7 @@ def crud_list(request, table):
     })
 
 
+<<<<<<< HEAD
 # ═══════════════════════════════════════════════════════════════════════════════
 # SMART FIELD SYSTEM — FK Dropdowns + Enum Dropdowns for all CRUD forms
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1318,6 +1327,7 @@ def crud_create(request, table):
     })
 
 
+<<<<<<< HEAD
 @login_required(roles=['Admin'])
 def crud_edit(request, table, id):
     """แก้ไขข้อมูลในตาราง"""
@@ -1426,6 +1436,7 @@ def crud_edit(request, table, id):
     })
 
 
+<<<<<<< HEAD
 @login_required(roles=['Admin'])
 def crud_delete(request, table, id):
     """ลบข้อมูลในตาราง"""
@@ -1451,6 +1462,7 @@ def crud_delete(request, table, id):
     return redirect(f'/manage/{table}/')
 
 
+<<<<<<< HEAD
 # ═══════════════════════════════════════════════════════════════════════════════
 # CHECKOUT  →  PAYMENT  →  PDF TICKET  →  EMAIL
 # ═══════════════════════════════════════════════════════════════════════════════

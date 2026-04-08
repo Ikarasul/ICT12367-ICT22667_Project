@@ -8,3 +8,7 @@ PyJWT==2.12.1
 pyodbc==5.3.0
 sqlparse==0.5.5
 tzdata==2025.3
+promptpay
+qrcode[pil]
+Pillow
+xhtml2pdf
