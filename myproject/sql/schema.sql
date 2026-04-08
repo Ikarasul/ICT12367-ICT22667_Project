@@ -241,5 +241,13 @@ INSERT INTO Employees (FullName, Email, PasswordHash, Role, IsActive) VALUES
 (N'บัญชี การเงิน',    'accounting@toursongkhla.com',  'acct1234',    'Accounting', 1);
 GO
 
+-- Customers (Seed test account — password: customer1234 hashed with Django make_password)
+-- Hash นี้ใช้ bcrypt/pbkdf2 ผ่าน Django's make_password('customer1234')
+INSERT INTO Customers (FullName, Email, Phone, Nationality, PasswordHash, CreatedDate) VALUES
+(N'Test Customer', 'test@customer.com', '081-999-0001', N'Thai',
+ 'pbkdf2_sha256$1200000$NFRbdYE8dZZLYqTbbwghtN$fKVzHnMwLLe+jZoZlJ9/5q/4wwMKC78cB3ipy6+l1fo=',
+ GETDATE());
+GO
+
 PRINT '=== schema.sql completed — TourSongkhla 10 tables + sample data OK ===';
 GO
