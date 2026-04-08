@@ -54,6 +54,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'myproject.context_processors.custom_translations',
             ],
+            # ลงทะเบียน custom template tag libraries โดยตรง
+            'libraries': {
+                'tour_filters': 'tour.templatetags.tour_filters',
+            },
         },
     },
 ]
@@ -66,8 +70,13 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # ═══════════════════════════════════════
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'mssql',
+        'NAME': 'TourSongkhla',
+        'HOST': 'DESKTOP-S27JDCN\\RAVEN',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'extra_params': 'TrustServerCertificate=yes;Connection Timeout=30;',
+        },
     }
 }
 
@@ -86,7 +95,7 @@ MSSQL_CONFIG = {
 # ═══════════════════════════════════════
 # SESSION
 # ═══════════════════════════════════════
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_AGE = 86400  # 1 วัน
 
 # ═══════════════════════════════════════
@@ -115,10 +124,35 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ═══════════════════════════════════════
 # EMAIL CONFIGURATION
 # ═══════════════════════════════════════
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# ─────────────────────────────────────────────────────────────────
+# เลือก backend ที่นี่:
+#   'console'  → พิมพ์ email ใน terminal (สำหรับ dev)
+#   'smtp'     → ส่ง email จริงผ่าน Gmail SMTP
+# ─────────────────────────────────────────────────────────────────
+_EMAIL_MODE = os.environ.get('EMAIL_MODE', 'console')   # เปลี่ยนใน .env เป็น 'smtp'
+
+if _EMAIL_MODE == 'smtp':
+    # ══ Gmail SMTP ═══════════════════════════════════════════════
+    # วิธีสร้าง App Password:
+    #   1. myaccount.google.com → Security → 2-Step Verification (เปิดก่อน)
+    #   2. myaccount.google.com → Security → App passwords
+    #   3. สร้าง App password สำหรับ "Mail" → คัดลอก 16 ตัว
+    #   4. ใส่ใน .env:  EMAIL_HOST_USER=you@gmail.com
+    #                   EMAIL_HOST_PASSWORD=xxxx xxxx xxxx xxxx
+    # ══════════════════════════════════════════════════════════════
+    EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST          = 'smtp.gmail.com'
+    EMAIL_PORT          = 587
+    EMAIL_USE_TLS       = True
+    EMAIL_USE_UTF8      = True   # ← แก้ปัญหา ASCII codec กับภาษาไทย
+    EMAIL_HOST_USER     = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL  = os.environ.get('EMAIL_HOST_USER', 'noreply@toursongkhla.com')
+else:
+    # ══ Console backend (dev default) ════════════════════════════
+    EMAIL_BACKEND      = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'noreply@toursongkhla.com'
+
+# URL ฐานของเว็บ — ใช้สร้าง link ใน email
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
 

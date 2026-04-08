@@ -1,0 +1,652 @@
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
+{% load static %}
+{% block title %}{{ pkg.tourname_en|default:pkg.packagename }} – DylanCompany{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Tokens ──────────────────────────────────────────── */
+:root{
+  --green:#16a34a; --green-mid:#22c55e; --green-dark:#14532d; --green-light:#dcfce7;
+  --pink-mid:#ec4899; --pink-dark:#be185d; --pink-light:#fdf2f8;
+  --surface:#f8fafc; --card-r:16px;
+  --shadow:0 4px 24px rgba(22,163,74,.10);
+  --shadow-lg:0 14px 44px rgba(22,163,74,.22);
+}
+
+/* ── Layout ──────────────────────────────────────────── */
+.detail-layout{display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start;max-width:1280px;margin:0 auto;padding:40px 24px 80px;}
+@media(max-width:1024px){.detail-layout{grid-template-columns:1fr;}}
+
+/* ── Left column ─────────────────────────────────────── */
+.left-col{min-width:0;}
+
+/* Hero image + gallery */
+.main-img{border-radius:24px;overflow:hidden;position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#dcfce7,#fce7f3);display:flex;align-items:center;justify-content:center;}
+.main-img img{width:100%;height:100%;object-fit:cover;}
+.gallery-thumbs{display:flex;gap:10px;margin-top:12px;overflow-x:auto;padding-bottom:4px;}
+.gallery-thumb{width:80px;height:56px;border-radius:10px;overflow:hidden;flex-shrink:0;cursor:pointer;border:3px solid transparent;transition:border-color .2s;}
+.gallery-thumb.active,.gallery-thumb:hover{border-color:var(--green);}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.82rem;color:#94a3b8;margin-bottom:20px;flex-wrap:wrap;}
+.breadcrumb a{color:#64748b;text-decoration:none;font-weight:600;}
+.breadcrumb a:hover{color:var(--green);}
+
+/* Section headings */
+.detail-section{margin-top:36px;padding-top:28px;border-top:1px solid #f1f5f9;}
+.sec-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.15rem;font-weight:800;color:#0f172a;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* Highlights pills */
+.highlight-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:.82rem;font-weight:600;color:#16a34a;}
+
+/* Itinerary */
+.itinerary-item{display:flex;gap:16px;padding:16px 0;position:relative;}
+.itinerary-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;bottom:0;width:2px;background:#f1f5f9;}
+.it-dot{width:38px;height:38px;border-radius:50%;background:var(--green-light);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem;font-weight:800;color:var(--green);}
+.it-body{flex:1;}
+.it-time{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:2px;}
+.it-title{font-weight:700;font-size:.95rem;color:#0f172a;margin-bottom:3px;}
+.it-desc{font-size:.83rem;color:#64748b;line-height:1.55;}
+
+/* Schedules table */
+.sched-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+.sched-table th{background:#f8fafc;padding:10px 16px;text-align:left;font-weight:700;color:#64748b;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #f1f5f9;}
+.sched-table td{padding:12px 16px;border-bottom:1px solid #f8fafc;color:#1e293b;}
+.sched-table tr:last-child td{border-bottom:none;}
+.sched-table tr:hover td{background:#f0fdf4;}
+.seats-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;}
+.seats-ok{background:#dcfce7;color:#16a34a;}
+.seats-low{background:#fee2e2;color:#991b1b;}
+
+/* ── Sticky booking widget ────────────────────────────── */
+.sticky-widget{position:sticky;top:88px;}
+.widget-card{background:#fff;border-radius:24px;box-shadow:0 8px 40px rgba(22,163,74,.15);border:1px solid #bbf7d0;overflow:hidden;}
+.widget-header{background:linear-gradient(135deg,#15803d 0%,#16a34a 60%,#22c55e 100%);padding:24px 24px 20px;color:#fff;}
+.widget-header h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:4px;}
+.widget-price{font-size:2rem;font-weight:900;font-family:'Plus Jakarta Sans',sans-serif;color:#4ade80;}
+.widget-price span{font-size:.85rem;font-weight:500;color:#dcfce7;}
+.widget-body{padding:20px 24px 24px;}
+
+/* Form controls */
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748b;margin-bottom:6px;}
+.form-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:.92rem;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;outline:none;transition:border-color .2s;box-sizing:border-box;}
+.form-input:focus{border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.10);}
+
+/* Schedule selector */
+.sched-select{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:.9rem;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") right 14px center no-repeat;appearance:none;outline:none;cursor:pointer;box-sizing:border-box;}
+.sched-select:focus{border-color:#16a34a;}
+
+/* Time slot buttons */
+.time-slots{display:flex;gap:8px;}
+.time-btn{flex:1;border:2px solid #e2e8f0;border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;font-family:'Plus Jakarta Sans',sans-serif;}
+.time-btn input[type="radio"]{display:none;}
+.time-btn:hover{border-color:#16a34a;background:#f0fdf4;}
+.time-btn.selected{border-color:#16a34a;background:#dcfce7;border-width:2.5px;}
+.time-icon{display:flex;justify-content:center;margin-bottom:5px;color:#16a34a;}
+.time-label{font-size:.75rem;font-weight:800;color:#16a34a;display:block;}
+.time-val{font-size:.68rem;color:#64748b;display:block;margin-top:2px;font-weight:600;}
+
+/* Pax counter */
+.pax-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.pax-row+.pax-row{border-top:1px solid #f1f5f9;}
+.pax-info{display:flex;flex-direction:column;}
+.pax-name{font-weight:700;font-size:.9rem;color:#0f172a;}
+.pax-price{font-size:.78rem;color:#94a3b8;}
+.pax-ctrl{display:flex;align-items:center;gap:10px;}
+.pax-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;color:#16a34a;font-weight:700;}
+.pax-btn:hover{background:#dcfce7;color:#16a34a;border-color:#bbf7d0;}
+.pax-count{font-size:1.05rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#0f172a;min-width:24px;text-align:center;}
+
+/* Price breakdown */
+.price-breakdown{background:#f8fafc;border-radius:12px;padding:14px 16px;margin:16px 0;}
+.price-row{display:flex;justify-content:space-between;font-size:.85rem;color:#64748b;margin-bottom:6px;}
+.price-row:last-child{margin-bottom:0;}
+.price-total-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:2px solid #e2e8f0;}
+.price-total-label{font-size:.9rem;font-weight:700;color:#0f172a;}
+.price-total-val{font-size:1.5rem;font-weight:900;font-family:'Plus Jakarta Sans',sans-serif;color:#16a34a;}
+
+/* Book button — VIBRANT PINK as per master plan */
+.btn-book-main{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#be185d,#ec4899);color:#fff;border:none;font-size:1.1rem;font-weight:900;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 24px rgba(236,72,153,.40);letter-spacing:.01em;}
+.btn-book-main:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(236,72,153,.50);background:linear-gradient(135deg,#9d174d,#db2777);}
+.btn-book-main:active{transform:translateY(0);}
+.btn-book-main:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+
+/* Trust badges */
+.trust-mini{display:flex;justify-content:space-around;padding-top:14px;border-top:1px solid #f1f5f9;margin-top:14px;}
+.trust-mini-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;}
+
+/* Alert */
+.alert-error{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:12px 16px;font-size:.85rem;margin-bottom:16px;display:flex;align-items:flex-start;gap:8px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="padding-top:72px;background:var(--surface);min-height:100vh;">
+<div class="detail-layout">
+
+  <!-- ══════════════════════════════════
+       LEFT COLUMN — Tour Info
+  ═══════════════════════════════════════ -->
+  <div class="left-col">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="{% url 'tours' %}">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">home</span> Home
+      </a>
+      <span>›</span>
+      <a href="{% url 'tours' %}">Tours</a>
+      <span>›</span>
+      <span style="color:#0f172a;font-weight:700;">{{ pkg.tourname_en|default:pkg.packagename }}</span>
+    </div>
+
+    <!-- Main image -->
+    <div class="main-img" id="main-img">
+      {% if pkg.imageurl %}
+        <img src="{{ pkg.imageurl }}" alt="{{ pkg.packagename }}" id="hero-img"
+             onerror="this.style.display='none'">
+      {% else %}
+        <span class="material-symbols-outlined" style="font-size:5rem;opacity:.3;color:#16a34a;">travel_explore</span>
+      {% endif %}
+
+      <!-- Duration banner -->
+      {% if pkg.durationdays %}
+      <div style="position:absolute;top:20px;left:20px;background:rgba(22,163,74,.88);backdrop-filter:blur(6px);color:#fff;border-radius:10px;padding:8px 16px;font-weight:800;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:4px;">schedule</span>
+        {{ pkg.durationdays }} Day{% if pkg.durationdays > 1 %}s{% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Category chip -->
+      <div style="position:absolute;top:20px;right:20px;background:rgba(236,72,153,.88);backdrop-filter:blur(6px);color:#fff;border-radius:10px;padding:8px 16px;font-weight:800;font-size:.78rem;letter-spacing:.04em;">
+        Best Seller
+      </div>
+    </div>
+
+    <!-- Thumbnail gallery (static unsplash fallbacks) -->
+    <div class="gallery-thumbs" id="gallery">
+      {% for thumb in gallery_imgs %}
+      <div class="gallery-thumb {% if forloop.first %}active{% endif %}" onclick="switchImg('{{ thumb }}',this)">
+        <img src="{{ thumb }}" alt="Photo {{ forloop.counter }}">
+      </div>
+      {% empty %}
+      <div class="gallery-thumb active" onclick="switchImg('https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=300&q=70',this)">
+        <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=300&q=70" alt="Photo 1">
+      </div>
+      <div class="gallery-thumb" onclick="switchImg('https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300&q=70',this)">
+        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300&q=70" alt="Photo 2">
+      </div>
+      <div class="gallery-thumb" onclick="switchImg('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=300&q=70',this)">
+        <img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=300&q=70" alt="Photo 3">
+      </div>
+      <div class="gallery-thumb" onclick="switchImg('https://images.unsplash.com/photo-1519046904884-53103b34b206?w=300&q=70',this)">
+        <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=300&q=70" alt="Photo 4">
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Title & meta strip -->
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:28px;">
+      <div>
+        <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2rem;font-weight:900;color:#0f172a;line-height:1.2;margin-bottom:8px;">
+          {{ pkg.tourname_en|default:pkg.packagename }}
+        </h1>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:.88rem;color:#64748b;">
+          <span style="display:flex;align-items:center;gap:5px;">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;font-variation-settings:'FILL' 1;">location_on</span>
+            {{ pkg.destination_en|default:pkg.destination }}
+          </span>
+          {% if pkg.durationdays %}
+          <span style="display:flex;align-items:center;gap:5px;">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;font-variation-settings:'FILL' 1;">schedule</span>
+            {{ pkg.durationdays }} Day{% if pkg.durationdays > 1 %}s{% endif %}
+          </span>
+          {% endif %}
+          {% if schedules %}
+          <span style="display:flex;align-items:center;gap:5px;">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;font-variation-settings:'FILL' 1;">calendar_month</span>
+            รอบถัดไป: {{ schedules.0.sched.departuredate|date:"d M Y" }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+      <!-- Price (mobile visible only on small screens) -->
+      <div style="background:var(--pink);border-radius:12px;padding:10px 20px;text-align:right;">
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#831843;">เริ่มต้น</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:900;color:#0f172a;">฿{{ pkg.priceperperson|smart_price }}</div>
+        <div style="font-size:.72rem;color:#9d174d;">ต่อท่าน</div>
+      </div>
+    </div>
+
+    <!-- ── Highlights ──────────────────────── -->
+    <div class="detail-section">
+      <h2 class="sec-title">
+        <span class="material-symbols-outlined" style="color:#16a34a;font-variation-settings:'FILL' 1;">auto_awesome</span>
+        ไฮไลต์ของทัวร์
+      </h2>
+      <div class="highlight-pills">
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">person_pin</span> ไกด์ท้องถิ่นผู้เชี่ยวชาญ</span>
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">directions_bus</span> รถตู้ปรับอากาศ</span>
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">photo_camera</span> แวะจุดถ่ายรูปสวยๆ</span>
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">restaurant</span> รวมอาหารกลางวันท้องถิ่น</span>
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">cancel</span> ยกเลิกฟรีล่วงหน้า 24 ชม.</span>
+        {% if pkg.durationdays and pkg.durationdays > 1 %}
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">hotel</span> Hotel รวมแล้ว</span>
+        {% endif %}
+        <span class="pill"><span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">groups</span> กลุ่มเล็ก (สูงสุด 12 ท่าน)</span>
+      </div>
+    </div>
+
+    <!-- ── Description ─────────────────────── -->
+    {% if pkg.description %}
+    <div class="detail-section">
+      <h2 class="sec-title">
+        <span class="material-symbols-outlined" style="color:#16a34a;font-variation-settings:'FILL' 1;">info</span>
+        เกี่ยวกับทัวร์นี้
+      </h2>
+      <p style="color:#475569;line-height:1.75;font-size:.95rem;">{{ pkg.description }}</p>
+    </div>
+    {% endif %}
+
+    <!-- ── Itinerary ───────────────────────── -->
+    <div class="detail-section">
+      <h2 class="sec-title">
+        <span class="material-symbols-outlined" style="color:#16a34a;font-variation-settings:'FILL' 1;">route</span>
+        แผนการเดินทาง
+      </h2>
+
+      {% if pkg.durationdays == 1 or not pkg.durationdays %}
+      <!-- Single day itinerary (auto-generated from time slots) -->
+      <div class="itinerary-item">
+        <div class="it-dot">1</div>
+        <div class="it-body">
+          <div class="it-time">08:00 – 09:00</div>
+          <div class="it-title">พบไกด์ / รับที่จุดนัดพบ</div>
+          <div class="it-desc">ไกด์รอรับคุณที่จุดนัดพบ พร้อมฟังคำแนะนำด้านความปลอดภัย</div>
+        </div>
+      </div>
+      <div class="itinerary-item">
+        <div class="it-dot">2</div>
+        <div class="it-body">
+          <div class="it-time">09:00 – 12:00</div>
+          <div class="it-title">กิจกรรมช่วงเช้า — {{ pkg.destination_en|default:pkg.destination }}</div>
+          <div class="it-desc">{{ pkg.description|default:"Explore the highlights of the destination with your professional local guide." }}</div>
+        </div>
+      </div>
+      <div class="itinerary-item">
+        <div class="it-dot">3</div>
+        <div class="it-body">
+          <div class="it-time">12:00 – 13:30</div>
+          <div class="it-title">พักรับประทานอาหารกลางวัน</div>
+          <div class="it-desc">ลิ้มรสอาหารท้องถิ่นแท้ๆ (รวมในค่าทัวร์)</div>
+        </div>
+      </div>
+      <div class="itinerary-item">
+        <div class="it-dot">4</div>
+        <div class="it-body">
+          <div class="it-time">13:30 – 16:30</div>
+          <div class="it-title">กิจกรรมช่วงบ่ายและช้อปปิ้ง</div>
+          <div class="it-desc">เดินทางเที่ยวชมตลาดท้องถิ่นและจุดซื้อของฝาก พักผ่อนตามอัธยาศัย</div>
+        </div>
+      </div>
+      <div class="itinerary-item">
+        <div class="it-dot">5</div>
+        <div class="it-body">
+          <div class="it-time">16:30 – 17:00</div>
+          <div class="it-title">เดินทางกลับจุดนัดพบ และจบโปรแกรม</div>
+          <div class="it-desc">เดินทางกลับถึงจุดเริ่มต้นอย่างสวัสดิภาพ</div>
+        </div>
+      </div>
+      {% else %}
+      <!-- Multi-day itinerary -->
+      {% for d in itinerary_days %}
+      <div class="itinerary-item">
+        <div class="it-dot">{{ d }}</div>
+        <div class="it-body">
+          <div class="it-time">Day {{ d }}</div>
+          <div class="it-title">Explore {{ pkg.destination_en|default:pkg.destination }}</div>
+          <div class="it-desc">Activities, sightseeing, and cultural experiences for day {{ d }} of your journey.</div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- ── Available Schedules ─────────────── -->
+    {% if schedules %}
+    <div class="detail-section">
+      <h2 class="sec-title">
+        <span class="material-symbols-outlined" style="color:#16a34a;font-variation-settings:'FILL' 1;">calendar_month</span>
+        รอบการเดินทางที่เปิดรับ
+      </h2>
+      <div style="overflow-x:auto;border-radius:12px;border:1px solid #f1f5f9;">
+        <table class="sched-table">
+          <thead>
+            <tr>
+              <th>วันเดินทาง</th>
+              <th>วันกลับ</th>
+              <th>ไกด์</th>
+              <th>ที่นั่งว่าง</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for item in schedules %}
+          <tr>
+            <td><strong>{{ item.sched.departuredate|date:"D, d M Y" }}</strong></td>
+            <td>{{ item.sched.returndate|date:"d M Y" }}</td>
+            <td>{{ item.sched.guideid.fullname|default:"TBA" }}</td>
+            <td>
+              <span class="seats-badge {% if item.seats_left <= 5 %}seats-low{% else %}seats-ok{% endif %}">
+                {{ item.seats_left }} / {{ item.sched.totalseats }} ที่นั่ง
+              </span>
+            </td>
+            <td>
+              <button onclick="selectSchedule('{{ item.sched.scheduleid }}','{{ item.sched.departuredate|date:'Y-m-d' }}')"
+                      style="background:#f0fdf4;border:1.5px solid #16a34a;color:#16a34a;border-radius:8px;padding:5px 14px;font-size:.8rem;font-weight:700;cursor:pointer;">
+                เลือก →
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ── รวมแล้ว / Not รวมแล้ว ────────── -->
+    <div class="detail-section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+        <div>
+          <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:800;color:#16a34a;margin-bottom:12px;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">check_circle</span> สิ่งที่รวมในแพ็กเกจ</h3>
+          {% for item in "1234567" %}
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:.85rem;color:#374151;">
+            <span style="color:#16a34a;font-weight:700;flex-shrink:0;">✓</span>
+            {% if forloop.counter == 1 %}ไกด์ท้องถิ่นมืออาชีพ{% elif forloop.counter == 2 %}รถตู้ปรับอากาศรับส่ง{% elif forloop.counter == 3 %}ค่าเข้าชมสถานที่ทั้งหมด{% elif forloop.counter == 4 %}อาหารกลางวัน{% elif forloop.counter == 5 %}น้ำดื่ม{% elif forloop.counter == 6 %}ประกันอุบัติเหตุ{% else %}สายด่วนช่วยเหลือ 24 ชม.{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div>
+          <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:800;color:#dc2626;margin-bottom:12px;">✗ สิ่งที่ไม่รวมในแพ็กเกจ</h3>
+          {% for item in "1234" %}
+          <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:.85rem;color:#374151;">
+            <span style="color:#dc2626;font-weight:700;flex-shrink:0;">✗</span>
+            {% if forloop.counter == 1 %}ตั๋วเครื่องบินไป-กลับ{% elif forloop.counter == 2 %}ค่าใช้จ่ายส่วนตัว{% elif forloop.counter == 3 %}ค่าทิปไกด์และคนขับรถ{% else %}กิจกรรมเสริมอื่นๆ{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /left-col -->
+
+
+  <!-- ══════════════════════════════════
+       RIGHT COLUMN — Sticky Widget
+  ═══════════════════════════════════════ -->
+  <div class="sticky-widget">
+    <div class="widget-card">
+
+      <!-- Header -->
+      <div class="widget-header">
+        <h2>จองแพ็กเกจนี้</h2>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px;">
+          <span class="widget-price">฿{{ pkg.priceperperson|smart_price }}</span>
+          <span class="widget-price" style="font-size:.85rem;"> / ท่าน</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:.8rem;color:#dcfce7;">
+          <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1;">verified</span>
+          ยกเลิกฟรี · ยืนยันการจองทันที
+        </div>
+      </div>
+
+      <!-- Body / Form -->
+      <div class="widget-body">
+
+        {% if error_msg %}
+        <div class="alert-error">
+          <span class="material-symbols-outlined" style="font-size:18px;flex-shrink:0;margin-top:1px;">error</span>
+          {{ error_msg }}
+        </div>
+        {% endif %}
+
+        <form method="POST" id="booking-form" action="{% url 'tour_detail' pkg.packageid %}">
+          {% csrf_token %}
+          <input type="hidden" name="schedule_id" id="fld-schedule-id"
+                 value="{% if nearest %}{{ nearest.scheduleid }}{% endif %}">
+
+          <!-- ── Travel Date Picker ─────────── -->
+          <div class="form-group">
+            <label class="form-label">เลือกวันเดินทาง</label>
+            <input type="date" name="travel_date" class="form-input" required 
+                   style="cursor:pointer;" 
+                   onfocus="this.style.borderColor='#16a34a'" 
+                   min="{% now 'Y-m-d' %}">
+          </div>
+
+          <!-- ── Time Slot ──────────────────── -->
+          <div class="form-group">
+            <label class="form-label">เวลาออกเดินทาง</label>
+            <div class="time-slots" id="time-slots">
+              {% for slot in time_slots %}
+              <label class="time-btn {% if forloop.first %}selected{% endif %}" id="slot-{{ slot.key }}">
+                <input type="radio" name="time_slot" value="{{ slot.key }}"
+                       {% if forloop.first %}checked{% endif %}
+                       onchange="selectSlot('{{ slot.key }}')">
+                <span class="time-icon">
+                  <span class="material-symbols-outlined" style="font-size:1.5rem;font-variation-settings:'FILL' 1;">{{ slot.icon }}</span>
+                </span>
+                <span class="time-label">{{ slot.label }}</span>
+                <span class="time-val">{{ slot.time }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- ── Pax Counter ────────────────── -->
+          <div class="form-group">
+            <label class="form-label">จำนวนผู้เดินทาง</label>
+            <div style="border:1.5px solid #e2e8f0;border-radius:12px;padding:4px 16px;">
+
+              <!-- Adults -->
+              <div class="pax-row">
+                <div class="pax-info">
+                  <span class="pax-name">ผู้ใหญ่</span>
+                  <span class="pax-price" style="color:#22c55e; font-weight:700;">฿{{ pkg.priceperperson|smart_price }} / ท่าน</span>
+                </div>
+                <div class="pax-ctrl">
+                  <button type="button" class="pax-btn" onclick="changePax('adults',-1)">−</button>
+                  <span class="pax-count" id="adults-count">1</span>
+                  <button type="button" class="pax-btn" onclick="changePax('adults',1)">+</button>
+                </div>
+              </div>
+              <input type="hidden" name="num_adults" id="fld-adults" value="1">
+
+              <!-- Children -->
+              <div class="pax-row">
+                <div class="pax-info">
+                  <span class="pax-name">เด็ก <small style="font-weight:500;color:#94a3b8;">(อายุต่ำกว่า 12 ปี)</small></span>
+                  <span class="pax-price" style="color:#22c55e; font-weight:700; font-size:0.8rem;">฿{% widthratio pkg.priceperperson 2 1 %} / ท่าน</span>
+                </div>
+                <div class="pax-ctrl">
+                  <button type="button" class="pax-btn" onclick="changePax('children',-1)">−</button>
+                  <span class="pax-count" id="children-count">0</span>
+                  <button type="button" class="pax-btn" onclick="changePax('children',1)">+</button>
+                </div>
+              </div>
+              <input type="hidden" name="num_children" id="fld-children" value="0">
+
+            </div>
+          </div>
+
+          <!-- ── Price Breakdown ────────────── -->
+          <div class="price-breakdown" id="price-breakdown">
+            <div class="price-row">
+              <span id="lbl-adults">1× ผู้ใหญ่</span>
+              <span id="val-adults">฿{{ pkg.priceperperson|smart_price }}</span>
+            </div>
+            <div class="price-row" id="child-row" style="display:none;">
+              <span id="lbl-children">0× เด็ก</span>
+              <span id="val-children">฿0</span>
+            </div>
+            <div class="price-row">
+              <span style="display:flex;align-items:center;gap:4px;color:#16a34a;font-weight:600;">
+                <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1;">check_circle</span>
+                ยกเลิกฟรี
+              </span>
+              <span style="color:#16a34a;">รวมแล้ว</span>
+            </div>
+            <div class="price-total-row">
+              <span class="price-total-label">ยอดรวมทั้งหมด</span>
+              <span class="price-total-val" id="total-price">฿{{ pkg.priceperperson|smart_price }}</span>
+            </div>
+          </div>
+
+          <!-- ── Accommodation & Guide ──────── -->
+          <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">จุดรับ-ส่ง (ที่พัก)</label>
+              <input type="text" name="accommodation" class="form-input bg-gray-100"
+                     value="รับ-ส่งที่พักในตัวเมืองสงขลา/หาดใหญ่" readonly
+                     style="font-size:.85rem;padding:9px 12px; cursor:not-allowed; background:#f1f5f9;">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">ไกด์ประจำทริป</label>
+              <input type="text" name="guide_name" class="form-input bg-gray-100"
+                     value="ไกด์ท้องถิ่นมืออาชีพ (DylanCompany)" readonly
+                     style="font-size:.85rem;padding:9px 12px; cursor:not-allowed; background:#f1f5f9;">
+            </div>
+          </div>
+
+          <!-- ── Hidden Guest Info for Backend compat ─────────────────── -->
+          <input type="hidden" name="full_name" value="{{ user_name|default:'Guest' }}">
+          <input type="hidden" name="email" value="{{ user_email|default:'customer@dylancompany.com' }}">
+          <input type="hidden" name="phone" value="">
+          <div style="border-top:1px solid #f1f5f9;padding-top:16px;margin-bottom:16px;"></div>
+
+          <!-- ── Submit button ──────────────── -->
+          <button type="submit" class="btn-book-main" {% if not schedules %}disabled{% endif %}>
+            <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 1;">confirmation_number</span>
+            จองเลย
+          </button>
+
+          <!-- ── Trust strip ────────────────── -->
+          <div class="trust-mini">
+            <div class="trust-mini-item">
+              <span class="material-symbols-outlined" style="color:#16a34a;font-size:1.4rem;font-variation-settings:'FILL' 1;">security</span>
+              ปลอดภัย
+            </div>
+            <div class="trust-mini-item">
+              <span class="material-symbols-outlined" style="color:#16a34a;font-size:1.4rem;font-variation-settings:'FILL' 1;">cancel</span>
+              ยกเลิกฟรี
+            </div>
+            <div class="trust-mini-item">
+              <span class="material-symbols-outlined" style="color:#16a34a;font-size:1.4rem;font-variation-settings:'FILL' 1;">support_agent</span>
+              ดูแล 24 ชม.
+            </div>
+            <div class="trust-mini-item">
+              <span class="material-symbols-outlined" style="color:#16a34a;font-size:1.4rem;font-variation-settings:'FILL' 1;">verified</span>
+              ได้รับรอง
+            </div>
+          </div>
+
+        </form>
+      </div><!-- /widget-body -->
+    </div><!-- /widget-card -->
+
+    <!-- Helper text below widget -->
+    <p style="text-align:center;font-size:.75rem;color:#94a3b8;margin-top:14px;line-height:1.5;display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;">
+      <span class="material-symbols-outlined" style="font-size:14px;color:#bbf7d0;">lock</span>
+      Your info is secure. No payment required right now.
+    </p>
+
+  </div><!-- /sticky-widget -->
+
+</div><!-- /detail-layout -->
+</div>
+
+<!-- ─── JS ───────────────────────────────────────────────── -->
+<script>
+const PRICE_ADULT = {{ pkg.priceperperson|smart_price }};
+const PRICE_CHILD  = PRICE_ADULT * 0.5;
+
+let paxAdults   = 1;
+let paxChildren = 0;
+
+/* ── Pax counter ─────────────────────── */
+function changePax(type, delta) {
+  if (type === 'adults') {
+    paxAdults = Math.max(1, paxAdults + delta);
+    document.getElementById('adults-count').textContent = paxAdults;
+    document.getElementById('fld-adults').value         = paxAdults;
+  } else {
+    paxChildren = Math.max(0, paxChildren + delta);
+    document.getElementById('children-count').textContent = paxChildren;
+    document.getElementById('fld-children').value         = paxChildren;
+  }
+  updatePrice();
+}
+
+/* ── Price calc ──────────────────────── */
+function fmt(n) { return '฿' + Math.round(n).toLocaleString('en-US'); }
+
+function updatePrice() {
+  const ta = paxAdults   * PRICE_ADULT;
+  const tc = paxChildren * PRICE_CHILD;
+  const total = ta + tc;
+
+  document.getElementById('lbl-adults').textContent   = paxAdults   + '× ผู้ใหญ่';
+  document.getElementById('val-adults').textContent   = fmt(ta);
+  document.getElementById('lbl-children').textContent = paxChildren + '× เด็ก';
+  document.getElementById('val-children').textContent = fmt(tc);
+  document.getElementById('total-price').textContent  = fmt(total);
+
+  const childRow = document.getElementById('child-row');
+  childRow.style.display = paxChildren > 0 ? '' : 'none';
+}
+
+/* ── Time slot selection ─────────────── */
+function selectSlot(key) {
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+  const lbl = document.getElementById('slot-' + key);
+  if (lbl) lbl.classList.add('selected');
+}
+
+/* ── Schedule change ────────────────── */
+function onSchedChange(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  document.getElementById('fld-schedule-id').value = opt.value;
+}
+
+/* ── "เลือก →" buttons in table ────── */
+function selectSchedule(id, dateStr) {
+  const sel = document.getElementById('sched-select');
+  if (sel) {
+    for (let i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value == id) { sel.selectedIndex = i; break; }
+    }
+  }
+  document.getElementById('fld-schedule-id').value = id;
+  // Smooth scroll to widget
+  document.querySelector('.sticky-widget').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ── Gallery thumbs ──────────────────── */
+function switchImg(url, el) {
+  const hero = document.getElementById('hero-img') || document.querySelector('.main-img img');
+  if (hero) hero.src = url;
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Init
+updatePrice();
+</script>
+{% endblock %}

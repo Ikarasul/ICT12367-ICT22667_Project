@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Print Ticket #{{ booking.reference_code }}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#0f172a',
+              'navy-light': '#1e293b',
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Google Font Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ── Global Typography ──────────────────────────────────────── */
+        body {
+            font-family: 'Sarabun', sans-serif !important;
+            background-color: #f1f5f9; 
+            margin: 0;
+            padding: 0;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Aggressive Print CSS ───────────────────────────────────── */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                background-color: white !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 0 !important; /* Anti-Browser Header/Footer */
+            }
+            .shadow-2xl, .shadow-lg, .shadow-sm {
+                box-shadow: none !important;
+            }
+            .a4-container {
+                padding: 0 !important;
+            }
+        }
+
+        /* ── Force One Page Constraints ─────────────────────────────── */
+        .a4-container {
+            width: 210mm; 
+            height: 297mm;
+            overflow: hidden; /* strictly prevents leaking to a second page */
+            margin: 0 auto;
+            position: relative;
+            background: white;
+            box-sizing: border-box;
+            /* Inner padding to simulate the print margin so edges aren't cut off */
+            padding: 10mm; 
+        }
+
+        /* ── Official Stamp Overlay ─────────────────────────────────── */
+        .official-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            border: 6px solid rgba(13, 148, 136, 0.4);
+            color: rgba(13, 148, 136, 0.4);
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 1rem 3rem;
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        /* ── Realistic Tear-Line Effect ─────────────────────────────── */
+        .tear-line {
+            border-top: 2px dashed #cbd5e1;
+            position: relative;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .tear-line::before,
+        .tear-line::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 24px;
+            height: 24px;
+            background: white; 
+            border-radius: 50%;
+        }
+        .tear-line::before { 
+            left: -32px; 
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            transform: rotate(-45deg);
+        }
+        .tear-line::after  { 
+            right: -32px; 
+            border-left: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- STRICTLY ONE A4 PAGE CONTAINER -->
+    <div class="a4-container">
+
+        <!-- Physical Boarding Pass Wrapper -->
+        <!-- Used flex flex-col to keep internal elements structurally sound within the h-full 297mm bounds -->
+        <div class="relative border border-slate-200 rounded-[28px] overflow-hidden shadow-2xl bg-white w-full h-full flex flex-col">
+            
+            <!-- CSS Overlay Stamp (Visible if CONFIRMED) -->
+            <!-- We will check standard outputs such as CONFIRMED or Confirmed natively -->
+            {% if booking.status == 'CONFIRMED' or booking.status == 'Confirmed' %}
+                <div class="official-stamp">OFFICIAL VERIFIED</div>
+            {% endif %}
+
+            <!-- Navy Blue Branding Header -->
+            <div class="bg-navy text-white px-8 py-7 flex justify-between items-center relative z-20 shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-white/10 rounded-xl flex flex-col items-center justify-center border border-white/20 shrink-0 shadow-inner">
+                        <!-- Plane Icon -->
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.3em] text-slate-300 font-extrabold mb-1">DylanCompany Agency</p>
+                        <h1 class="text-3xl font-black tracking-tight leading-none uppercase">Boarding Pass</h1>
+                    </div>
+                </div>
+                <!-- Boxed Booking Ref Widget -->
+                <div class="bg-white/10 border border-white/20 rounded-xl px-5 py-2.5 text-center">
+                    <p class="text-[9px] uppercase tracking-[0.25em] text-slate-300 mb-0.5 font-bold">Ticket No.</p>
+                    <!-- Django Tag: Ticket ID Mapping -->
+                    <p class="text-2xl font-black text-white leading-none tracking-widest">{{ booking.reference_code }}</p>
+                </div>
+            </div>
+
+            <!-- Body Two-Column Master Layout Frame -->
+            <div class="flex-1 flex bg-white relative z-20 overflow-hidden">
+                
+                <!-- Left Column (Itinerary & Passengers mapping directly to prompt tags) -->
+                <div class="flex-[3] border-r border-slate-200 border-dashed p-8 pr-12 flex flex-col justify-between">
+                    
+                    <!-- Passenger Summary Widget -->
+                    <div>
+                        <div class="flex items-center gap-3 mb-5">
+                            <h2 class="text-[11px] uppercase tracking-widest font-black text-slate-800">Passenger Information</h2>
+                            <div class="h-px bg-slate-200 flex-1"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-5 mb-6">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold mb-0.5">Booked By</p>
+                                <p class="text-sm font-black text-slate-800">{{ booking.customer_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold mb-0.5">Passengers Overview</p>
+                                <p class="text-sm font-black text-slate-800">{{ booking.pax_summary }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Tour Blueprint Route Box -->
+                    <div class="bg-slate-50 border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col flex-1 mt-2 justify-center">
+                        <p class="text-[10px] uppercase tracking-widest font-black text-navy mb-5">Tour Operational Blueprint</p>
+                        
+                        <!-- Timeline Matrix UI -->
+                        <div class="flex items-start gap-4">
+                            <!-- Departure -->
+                            <div class="flex-1">
+                                <p class="text-[10px] text-teal-600 font-extrabold uppercase mb-0.5 tracking-wider">Departure</p>
+                                <p class="text-[18px] font-black text-navy leading-tight mt-1">{{ booking.departure_date }}</p>
+                            </div>
+
+                            <!-- Decorative Center Arrow line -->
+                            <div class="w-16 flex flex-col items-center justify-center shrink-0 pt-3 opacity-60">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 mb-0.5 tracking-widest">To</span>
+                                <div class="w-full h-[2px] bg-slate-300 relative rounded">
+                                    <div class="absolute right-0 top-1/2 -mt-[3px] w-[6px] h-[6px] border-r-[2px] border-t-[2px] border-slate-300 transform rotate-45"></div>
+                                </div>
+                            </div>
+
+                            <!-- Arrival / Return -->
+                            <div class="flex-1 text-right">
+                                <p class="text-[10px] text-teal-600 font-extrabold uppercase mb-0.5 tracking-wider">Return</p>
+                                <p class="text-[18px] font-black text-navy leading-tight mt-1">{{ booking.return_date }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Target Package Identifiers -->
+                        <div class="mt-8 pt-5 border-t border-slate-200">
+                            <p class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider mb-1">Assigned Package Identity</p>
+                            <p class="text-xl font-black text-slate-800 leading-tight">{{ booking.tour_name }}</p>
+                            <p class="text-xs text-slate-500 font-bold mt-1.5 uppercase tracking-wider">Location Code: {{ booking.location }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column (Payment Ledger Node & Embedded Status Tagging) -->
+                <div class="flex-[1.2] p-8 px-6 flex flex-col items-center justify-center relative bg-slate-50/40">
+                    
+                    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-5 text-center">Scan to Verify</p>
+                    
+                    <!-- Live Hardware QR Code fetched natively through QR Server API using {{ reference_code }}-->
+                    <div class="w-32 h-32 bg-white border border-slate-200 rounded-xl p-2.5 mb-8 flex items-center justify-center shadow-sm shrink-0">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ booking.reference_code }}" alt="Verification QR Code" class="w-full h-full object-contain">
+                    </div>
+
+                    <!-- Payment Ledger Readouts -->
+                    <div class="w-full text-center">
+                        <p class="text-[9px] uppercase tracking-wider text-slate-400 font-black mb-1.5">Booking Status</p>
+                        
+                        <!-- Status color logic embedded directly -> Confirmed logic defaults into a green hue, otherwise slate -->
+                        <div class="{% if booking.status == 'CONFIRMED' or booking.status == 'Confirmed' %}bg-teal-50 text-teal-600 border-teal-200{% else %}bg-slate-100 text-slate-600 border-slate-300{% endif %} border py-2 px-4 rounded-xl flex items-center justify-center gap-1.5 mx-auto w-full shadow-sm">
+                            <span class="text-[12px] font-black uppercase tracking-widest">{{ booking.status }}</span>
+                        </div>
+                        
+                        <div class="mt-8 border-t border-slate-200 pt-5">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-black mb-1">Total Transaction Amount</p>
+                            <p class="text-2xl font-black text-navy border-b-2 border-slate-300 inline-block pb-1">{{ booking.total }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tear-off Separator -->
+            <!-- Ensure it holds structure firmly spanning horizontal width -->
+            <div class="px-8 z-30 bg-white shrink-0">
+                <div class="tear-line"></div>
+            </div>
+
+            <!-- Functional Root Footer -->
+            <div class="px-8 pb-7 flex bg-white items-center justify-between text-[10px] text-slate-500 font-semibold relative z-20 shrink-0">
+                <div class="flex-1 pr-6">
+                    <p class="text-slate-800 font-extrabold mb-1.5 uppercase tracking-widest text-[10px]">Terms & Conditions Overview:</p>
+                    <p class="leading-relaxed mb-0.5"><span class="font-bold text-slate-400 mr-1">01</span>Bring this Boarding Pass and a valid government-issued ID to the terminal check-in counter.</p>
+                    <p class="leading-relaxed mb-0.5"><span class="font-bold text-slate-400 mr-1">02</span>Gate check-in operations close firmly 30 minutes prior to scheduled departure time.</p>
+                    <p class="leading-relaxed"><span class="font-bold text-slate-400 mr-1">03</span>Boarding passes are strictly non-refundable entirely and non-transferable.</p>
+                </div>
+                <div class="text-right flex-[0.5] border-l border-slate-200 pl-6 ml-2">
+                    <p class="text-[11px] font-black text-navy uppercase tracking-widest mb-1.5 leading-tight">DylanCompany Co., Ltd.</p>
+                    <p>Phone: +66 12 345 6789</p>
+                    <p>Email: HQ@dylancompany.com</p>
+                </div>
+            </div>
+
+        </div> <!-- End physical ticket card border -->
+
+    </div> <!-- End strict width constraint -->
+
+    <!-- Automation Handlers -->
+    <script>
+        window.addEventListener('load', function() {
+            // Buffer precisely 800ms allowing external QR API generation and Sarabun google font cache loading to stabilize.
+            setTimeout(function() {
+                window.print();
+            }, 800);
+        });
+
+        // Close isolated print tab natively upon exit of local printer dialog natively.
+        window.onafterprint = function() {
+            window.close();
+        };
+    </script>
+</body>
+</html>

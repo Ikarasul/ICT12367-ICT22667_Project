@@ -1,0 +1,155 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticket Verification — DylanCompany</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .gradient-header { background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); }
+</style>
+</head>
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+
+{% if error %}
+{# ── Error state ─────────────────────────────────────────── #}
+<div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden">
+  <div class="bg-red-500 px-8 py-6 text-white text-center">
+    <span class="material-symbols-outlined text-5xl" style="font-variation-settings:'FILL' 1;">error</span>
+    <h1 class="text-xl font-extrabold mt-2">Not Found</h1>
+  </div>
+  <div class="p-8 text-center">
+    <p class="text-slate-600 font-semibold">{{ error }}</p>
+    <a href="/" class="mt-6 inline-block text-primary font-bold text-sm hover:underline">← Go Home</a>
+  </div>
+</div>
+
+{% else %}
+{# ── Main verify card ─────────────────────────────────────── #}
+<div class="w-full max-w-md">
+
+  {# Header #}
+  <div class="gradient-header rounded-t-3xl px-8 py-6 text-white text-center">
+    <span class="material-symbols-outlined text-4xl mb-2"
+          style="font-variation-settings:'FILL' 1;">
+      {% if is_confirmed %}verified{% else %}qr_code_scanner{% endif %}
+    </span>
+    <h1 class="text-xl font-extrabold tracking-tight">
+      {% if is_confirmed %}Ticket Verified ✓{% else %}Ticket Verification{% endif %}
+    </h1>
+    <p class="text-teal-100 text-xs mt-1 font-semibold">DylanCompany · Official Check</p>
+  </div>
+
+  {# Card body #}
+  <div class="bg-white rounded-b-3xl shadow-xl overflow-hidden">
+
+    {# Status badge #}
+    <div class="{% if is_confirmed %}bg-emerald-50 border-b border-emerald-100{% else %}bg-amber-50 border-b border-amber-100{% endif %} px-8 py-3 flex items-center justify-center gap-2">
+      <span class="material-symbols-outlined text-base {% if is_confirmed %}text-emerald-500{% else %}text-amber-500{% endif %}"
+            style="font-variation-settings:'FILL' 1;">
+        {% if is_confirmed %}check_circle{% else %}pending{% endif %}
+      </span>
+      <span class="text-xs font-extrabold uppercase tracking-widest
+                   {% if is_confirmed %}text-emerald-700{% else %}text-amber-700{% endif %}">
+        {% if is_confirmed %}Payment Confirmed{% else %}{{ booking.status }} — Awaiting Verification{% endif %}
+      </span>
+    </div>
+
+    <div class="px-8 py-6 space-y-4">
+
+      {# Booking ID #}
+      <div class="text-center mb-2">
+        <span class="text-3xl font-extrabold text-slate-800 tracking-wider">
+          #TC-{% with bid=booking.booking_id|stringformat:'06d' %}{{ bid }}{% endwith %}
+        </span>
+      </div>
+
+      {# Detail rows #}
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 py-2 border-b border-slate-100">
+          <span class="material-symbols-outlined text-slate-300 text-sm">person</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Customer</p>
+            <p class="text-sm font-bold text-slate-800">{{ booking.customer_name }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 py-2 border-b border-slate-100">
+          <span class="material-symbols-outlined text-slate-300 text-sm">flight_takeoff</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Tour</p>
+            <p class="text-sm font-bold text-slate-800">{{ booking.tour_name }}</p>
+            <p class="text-xs text-slate-400">{{ booking.destination }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 py-2 border-b border-slate-100">
+          <span class="material-symbols-outlined text-slate-300 text-sm">calendar_today</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Dates</p>
+            <p class="text-sm font-bold text-slate-800">
+              {{ booking.departure|date:"d M Y" }} → {{ booking.return_date|date:"d M Y" }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 py-2 border-b border-slate-100">
+          <span class="material-symbols-outlined text-slate-300 text-sm">group</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Passengers</p>
+            <p class="text-sm font-bold text-slate-800">
+              {{ booking.adults }} Adult{{ booking.adults|pluralize }}
+              {% if booking.children > 0 %}+ {{ booking.children }} Child{% endif %}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 py-2">
+          <span class="material-symbols-outlined text-slate-300 text-sm">payments</span>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Total</p>
+            <p class="text-lg font-extrabold text-primary">฿{{ booking.total_price|smart_price }}</p>
+          </div>
+        </div>
+      </div>
+
+      {# Staff approve form #}
+      {% if is_staff and not is_confirmed %}
+      <form method="POST" class="mt-4">
+        {% csrf_token %}
+        {% with bid=booking.booking_id|stringformat:"06d" %}
+        <button type="submit"
+                onclick="return confirm('Verify payment and confirm Booking #TC-{{ bid }}?')"
+                class="w-full inline-flex items-center justify-center gap-2
+                       bg-primary hover:bg-primary/90 text-white
+                       py-3.5 rounded-2xl font-extrabold text-sm
+                       transition-all hover:-translate-y-0.5 shadow-lg shadow-primary/20 active:scale-95">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">verified</span>
+          Instant Confirm
+        </button>
+        {% endwith %}
+      </form>
+      {% elif not is_staff %}
+      <div class="bg-slate-50 rounded-2xl px-4 py-3 text-center text-xs text-slate-400 font-semibold mt-4">
+        For verification actions, please log in as staff.
+      </div>
+      {% else %}
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3
+                  text-center text-xs text-emerald-700 font-bold mt-4">
+        ✓ This booking is already confirmed. No action required.
+      </div>
+      {% endif %}
+
+    </div>
+
+    <div class="px-8 py-4 bg-slate-50 border-t border-slate-100 text-center
+                text-[10px] text-slate-400 font-semibold">
+      DylanCompany.com · Secure Ticket Verification
+    </div>
+  </div>
+
+</div>
+{% endif %}
+
+</body>
+</html>

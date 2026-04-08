@@ -1,125 +1,361 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
 {% load static %}
-{% block title %}My_Tickets - TourCompanyDB{% endblock %}
+
+{% block title %}My Tickets — DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/my_tickets.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmAction(e, form, title, text, confirmText, confirmColor) {
+    if (e) e.preventDefault();
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: confirmColor,
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: confirmText,
+        reverseButtons: true,
+        customClass: {
+            title: 'font-headline text-slate-800 text-xl font-extrabold',
+            confirmButton: 'rounded-xl font-bold px-6 shadow-md',
+            cancelButton: 'rounded-xl font-bold px-6 text-white'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+</script>
 {% endblock %}
 
 {% block content %}
-<main class="pt-32 pb-32 px-6 max-w-[840px] mx-auto min-h-screen">
-  <!-- User Identity Banner -->
+<main class="pt-28 pb-24 px-5 max-w-[860px] mx-auto min-h-screen">
+
+  {# ── User identity banner ──────────────────────────────────── #}
   {% if user_name %}
-  <div class="flex items-center gap-3 mb-6 px-5 py-3.5 bg-primary/5 rounded-2xl border border-primary/10 w-fit">
+  <div class="flex items-center gap-3 mb-6 px-5 py-3 bg-primary/5 rounded-2xl
+              border border-primary/10 w-fit">
     <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
       <span class="material-symbols-outlined text-white text-lg">person</span>
     </div>
     <div>
-      <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold leading-none mb-0.5">Tickets for</p>
+      <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold leading-none mb-0.5">
+        Tickets for
+      </p>
       <p class="text-slate-800 font-extrabold text-sm leading-none">{{ user_name }}</p>
     </div>
   </div>
   {% endif %}
 
-  <!-- Title Row -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+  {# ── Title row ─────────────────────────────────────────────── #}
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
     <div>
-      <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">
-        ตั๋วของฉัน <span class="text-primary">/</span> <span class="text-slate-900">My Tickets</span>
+      <h1 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight
+                 text-on-surface mb-1.5">
+        ตั๋วของฉัน <span class="text-primary">/</span>
+        <span class="text-slate-800">My Tickets</span>
       </h1>
-      <p class="text-slate-400 text-sm font-medium">จัดการรายการจองและตั๋วเดินทางทั้งหมดของคุณ</p>
+      <p class="text-slate-400 text-sm font-medium">
+        จัดการรายการจองและตั๋วเดินทางทั้งหมดของคุณ
+        {% if tickets %}
+        <span class="ml-2 px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">
+          {{ tickets|length }} รายการ
+        </span>
+        {% endif %}
+      </p>
     </div>
-    <a href="{% url 'tours' %}" class="flex items-center justify-center gap-2 bg-secondary text-white px-8 py-4 rounded-3xl font-bold hover:translate-y-[-2px] transition-all shadow-xl shadow-secondary/20 active:scale-95">
-      <span class="material-symbols-outlined text-xl">add</span>
-      <span>จองเพิ่ม / Book More</span>
+    <a href="{% url 'tours' %}"
+       class="inline-flex items-center justify-center gap-2 bg-secondary text-white
+              px-7 py-3.5 rounded-3xl font-bold text-sm
+              hover:-translate-y-0.5 transition-all shadow-xl shadow-secondary/20 active:scale-95 shrink-0">
+      <span class="material-symbols-outlined">add</span>
+      จองเพิ่ม / Book More
     </a>
   </div>
 
-  {% if error_message %}
-  <div class="mb-8 bg-red-50 border border-red-200 text-red-700 rounded-2xl p-5 text-sm font-semibold flex items-start gap-3">
-    <span class="material-symbols-outlined text-xl shrink-0">error</span>
-    <div><strong>DB Error (แจ้ง Admin):</strong> {{ error_message }}</div>
+  {# ── Flash messages (success / warning / error) ───────────── #}
+  {% if messages %}
+  <div class="flex flex-col gap-3 mb-6">
+    {% for message in messages %}
+    <div class="flex items-start gap-3 px-5 py-4 rounded-2xl text-sm font-semibold
+      {% if message.tags == 'success' %}bg-emerald-50 border border-emerald-200 text-emerald-700
+      {% elif message.tags == 'warning' %}bg-amber-50 border border-amber-200 text-amber-700
+      {% elif message.tags == 'error' %}bg-red-50 border border-red-200 text-red-700
+      {% else %}bg-slate-50 border border-slate-200 text-slate-700{% endif %}">
+      <span class="material-symbols-outlined shrink-0 mt-0.5 text-lg">
+        {% if message.tags == 'success' %}check_circle
+        {% elif message.tags == 'warning' %}warning
+        {% elif message.tags == 'error' %}error
+        {% else %}info{% endif %}
+      </span>
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
   </div>
   {% endif %}
 
+  {# ── Error banner ──────────────────────────────────────────── #}
+  {% if error_message %}
+  <div class="mb-8 bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4
+              text-sm font-semibold flex items-start gap-3">
+    <span class="material-symbols-outlined shrink-0 mt-0.5">error</span>
+    <div><strong>DB Error:</strong> {{ error_message }}</div>
+  </div>
+  {% endif %}
+
+  {# ── Ticket cards ──────────────────────────────────────────── #}
   {% if tickets %}
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6">
     {% for t in tickets %}
-    <!-- FIX #2: เปลี่ยน trans "N" → t.N ทุกจุด (สคริปต์ refactor แปลงผิด) -->
-    <div class="group relative bg-white/80 border border-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden flex transition-all duration-500 hover:shadow-[0_20px_50px_rgba(32,178,170,0.12)] hover:-translate-y-1 {% if t.7 == 'Cancelled' %}opacity-60 grayscale hover:grayscale-0 hover:opacity-100{% endif %}">
-      <div class="w-2.5 {% if t.7 == 'Confirmed' %}bg-primary{% elif t.7 == 'Pending' %}bg-secondary{% else %}bg-slate-300{% endif %} self-stretch"></div>
-      <div class="flex-1 p-8 flex flex-col md:flex-row gap-8">
-        <div class="flex-1">
-          <div class="flex justify-between items-start mb-4">
-            <span class="text-xs font-bold {% if t.7 == 'Confirmed' %}text-primary bg-primary/5{% elif t.7 == 'Pending' %}text-secondary bg-secondary/5{% else %}text-slate-400 bg-slate-100{% endif %} tracking-widest uppercase px-3 py-1 rounded-lg">
-              #TC-{{ t.0|stringformat:"06d" }}
+    <div class="group relative bg-white border border-slate-100 rounded-[1.75rem]
+                shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex
+                transition-all duration-400
+                hover:shadow-[0_12px_40px_rgba(32,178,170,0.1)] hover:-translate-y-1
+                {% if t.status == 'Cancelled' %}opacity-60{% endif %}">
+
+      {# Status colour bar #}
+      <div class="w-2 shrink-0
+        {% if t.status == 'Approved' or t.status == 'Confirmed' %}bg-primary
+        {% elif t.status == 'Pending' %}bg-amber-400
+        {% elif t.status == 'PayLater' %}bg-amber-400
+        {% else %}bg-slate-300{% endif %}">
+      </div>
+
+      {# Card body #}
+      <div class="flex-1 p-6 sm:p-8 flex flex-col sm:flex-row gap-6">
+
+        {# ── Left: Tour info ─────────────────────────────── #}
+        <div class="flex-1 min-w-0">
+
+          {# Booking ID + mobile status badge #}
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-lg
+              {% if t.status == 'Confirmed' %}text-primary   bg-primary/5
+              {% elif t.status == 'Pending' %}text-secondary bg-secondary/5
+              {% else %}text-slate-400 bg-slate-100{% endif %}">
+              #TC-{{ t.booking_id|stringformat:"06d" }}
             </span>
-            <!-- FIX: trans "7" → t.7 (status badge, mobile) -->
-            <div class="md:hidden px-3 py-1 rounded-full {% if t.7 == 'Confirmed' %}bg-primary/10 text-primary{% elif t.7 == 'Pending' %}bg-secondary/10 text-secondary{% else %}bg-slate-100 text-slate-400{% endif %} text-[10px] font-extrabold uppercase tracking-widest">
-              {{ t.7 }}
-            </div>
+            <span class="sm:hidden text-[10px] font-extrabold uppercase tracking-widest
+                         px-3 py-1 rounded-full
+              {% if t.status == 'Confirmed' %}bg-primary/10  text-primary
+              {% elif t.status == 'Pending' %}bg-secondary/10 text-secondary
+              {% elif t.status == 'PayLater' %}bg-amber-50 text-amber-600
+              {% elif t.status == 'PendingReview' %}bg-orange-50 text-orange-600
+              {% else %}bg-slate-100 text-slate-400{% endif %}">
+              {% if t.status == 'PayLater' %}⏳ ค้างชำระ
+              {% elif t.status == 'PendingReview' %}🕐 รอตรวจสอบ
+              {% else %}{{ t.status }}{% endif %}
+            </span>
           </div>
-          <!-- FIX: trans "3" → t.3 (tour name) -->
-          <h2 class="font-headline text-2xl font-extrabold text-on-surface mb-2">{{ t.3 }}</h2>
-          <div class="flex items-center gap-2 text-slate-400 text-sm mb-6">
-            <span class="material-symbols-outlined text-base">location_on</span>
-            <!-- FIX: trans "4" → t.4 (destination) -->
-            <span class="font-medium">{{ t.4 }}</span>
+
+          {# Customer name #}
+          <div class="flex items-center gap-1.5 mb-2">
+            <span class="material-symbols-outlined text-slate-300 text-sm">person</span>
+            <span class="text-xs font-semibold text-slate-400">{{ t.customer_name }}</span>
           </div>
-          <div class="grid grid-cols-2 gap-8 pt-6 border-t border-slate-50">
+
+          {# Tour name #}
+          <h2 class="font-headline text-xl sm:text-2xl font-extrabold text-slate-800
+                     mb-1.5 leading-tight truncate">
+            {{ t.tour_name }}
+          </h2>
+
+          {# Destination #}
+          <div class="flex items-center gap-1.5 text-slate-400 text-sm mb-5">
+            <span class="material-symbols-outlined text-sm">location_on</span>
+            <span class="font-medium">{{ t.destination }}</span>
+          </div>
+
+          {# Travel dates + passengers grid #}
+          <div class="grid grid-cols-2 gap-5 pt-5 border-t border-slate-50">
             <div>
-              <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-extrabold mb-1">Travel Date</p>
-              <p class="text-base font-bold text-on-surface">{{ t.5|date:"d M Y" }}</p>
+              <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400
+                        font-extrabold mb-1">Travel Date</p>
+              <p class="text-sm font-bold text-slate-700">
+                {{ t.departure|date:"d M Y" }}
+              </p>
+              {% if t.return_date != t.departure %}
+              <p class="text-xs text-slate-400 mt-0.5">
+                → {{ t.return_date|date:"d M Y" }}
+              </p>
+              {% endif %}
             </div>
             <div>
-              <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-extrabold mb-1">Passengers</p>
-              <!-- FIX: trans "8" → t.8, trans "9" → t.9 -->
-              <p class="text-base font-bold text-on-surface">
-                {{ t.8 }} Adult{{ t.8|pluralize }}{% if t.9 > 0 %}, {{ t.9 }} Child{{ t.9|pluralize:"ren" }}{% endif %}
+              <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400
+                        font-extrabold mb-1">Passengers</p>
+              <p class="text-sm font-bold text-slate-700">
+                {{ t.adults }} Adult{{ t.adults|pluralize }}
+                {% if t.children > 0 %}
+                + {{ t.children }} Child{{ t.children|pluralize:"ren" }}
+                {% endif %}
+              </p>
+              <p class="text-[10px] text-slate-400 mt-0.5">
+                ฿{{ t.price_pp|smart_price }}/person
               </p>
             </div>
           </div>
         </div>
-        <div class="flex flex-row md:flex-col justify-between md:items-end md:justify-between border-t md:border-t-0 md:border-l border-slate-50 pt-6 md:pt-0 md:pl-8 md:min-w-[160px]">
-          <div class="hidden md:block">
-            <!-- FIX: trans "7" → t.7 (status badge, desktop) -->
-            <span class="px-4 py-1.5 rounded-full {% if t.7 == 'Confirmed' %}bg-primary/10 text-primary{% elif t.7 == 'Pending' %}bg-secondary/10 text-secondary{% else %}bg-slate-100 text-slate-400{% endif %} text-[10px] font-extrabold uppercase tracking-widest">
-              {{ t.7 }}
+
+        {# ── Right: Status + Price ────────────────────────── #}
+        <div class="flex sm:flex-col justify-between sm:items-end
+                    border-t sm:border-t-0 sm:border-l border-slate-50
+                    pt-5 sm:pt-0 sm:pl-7 sm:min-w-[150px]">
+
+          {# Desktop status badge #}
+          <div class="hidden sm:block mb-auto">
+            <span class="px-3 py-1.5 rounded-full text-[10px] font-extrabold
+                         uppercase tracking-widest
+              {% if t.status == 'Confirmed' %}bg-primary/10  text-primary
+              {% elif t.status == 'Pending' %}bg-secondary/10 text-secondary
+              {% elif t.status == 'PayLater' %}bg-amber-50 text-amber-600
+              {% elif t.status == 'PendingReview' %}bg-orange-50 text-orange-600
+              {% else %}bg-slate-100 text-slate-400{% endif %}">
+              {% if t.status == 'PayLater' %}⏳ ค้างชำระ
+              {% elif t.status == 'PendingReview' %}🕐 รอตรวจสอบ
+              {% else %}{{ t.status }}{% endif %}
             </span>
           </div>
-          <div class="text-right">
-            <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-extrabold mb-1">Total Price</p>
-            {% if t.10 and t.10 != 0 %}
-            <p class="text-3xl font-headline font-extrabold {% if t.7 == 'Cancelled' %}text-slate-300{% else %}text-primary{% endif %}">
-              ฿{{ t.10|floatformat:0 }}
+
+          {# Total price #}
+          <div class="text-right mb-4">
+            <p class="text-[10px] uppercase tracking-[0.15em] text-slate-400
+                      font-extrabold mb-1">Total Price</p>
+            {% if t.total_price %}
+            <p class="text-2xl sm:text-3xl font-headline font-extrabold
+              {% if t.status == 'Cancelled' %}text-slate-300{% else %}text-primary{% endif %}">
+              ฿{{ t.total_price|smart_price }}
             </p>
             {% else %}
-            <p class="text-base font-bold text-slate-400 italic">ยังไม่ระบุ</p>
+            <p class="text-sm font-bold text-slate-400 italic">—</p>
             {% endif %}
             <p class="text-[10px] text-slate-400 mt-1">
-              {{ t.8 }} Adult{% if t.9 and t.9 > 0 %} + {{ t.9 }} Child{% endif %}
+              {{ t.adults }}A{% if t.children > 0 %} + {{ t.children }}C{% endif %}
             </p>
           </div>
+
+          {# Action buttons by status #}
+          {% if t.status == 'Pending' %}
+          {# ── Pay Now + Pay Later ─────────────────────── #}
+          <div class="flex flex-col gap-2 w-full">
+            <a href="{% url 'checkout' t.booking_id %}"
+               class="inline-flex items-center justify-center gap-1.5 w-full
+                      bg-emerald-500 hover:bg-emerald-600 text-white
+                      px-4 py-2.5 rounded-2xl font-bold text-xs
+                      shadow-lg shadow-emerald-500/20
+                      hover:-translate-y-0.5 transition-all active:scale-95">
+              <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+              ชำระเงินเลย
+            </a>
+            <form id="payLaterForm-{{ t.booking_id }}"
+                  method="POST"
+                  action="{% url 'pay_later' t.booking_id %}">
+              {% csrf_token %}
+              <button type="button"
+                      onclick="confirmAction(event,
+                        document.getElementById('payLaterForm-{{ t.booking_id }}'),
+                        'ชำระภายหลัง?',
+                        'กรุณาชำระเงินภายใน 24 ชั่วโมง มิฉะนั้นการจองจะถูกยกเลิกอัตโนมัติ',
+                        '⏳ ยืนยัน', '#f59e0b')"
+                      class="inline-flex items-center justify-center gap-1.5 w-full
+                             bg-white hover:bg-amber-50 text-amber-600
+                             border-2 border-amber-300 hover:border-amber-400
+                             px-4 py-2.5 rounded-2xl font-bold text-xs
+                             hover:-translate-y-0.5 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-base">schedule</span>
+                ชำระภายหลัง
+              </button>
+            </form>
+          </div>
+
+          {% elif t.status == 'PayLater' %}
+          {# ── ยังค้างชำระ — แสดงปุ่มไปชำระเงินได้เลย ── #}
+          <div class="flex flex-col gap-2 w-full">
+            <div class="text-center text-[10px] text-amber-600 font-bold
+                        bg-amber-50 rounded-xl px-3 py-1.5 border border-amber-200">
+              ⏳ กรุณาชำระภายใน 24 ชม.
+            </div>
+            <a href="{% url 'checkout' t.booking_id %}"
+               class="inline-flex items-center justify-center gap-1.5 w-full
+                      bg-amber-500 hover:bg-amber-600 text-white
+                      px-4 py-2.5 rounded-2xl font-bold text-xs
+                      shadow-lg shadow-amber-500/20
+                      hover:-translate-y-0.5 transition-all active:scale-95">
+              <span class="material-symbols-outlined text-base">payments</span>
+              ชำระเงินเดี๋ยวนี้
+            </a>
+          </div>
+
+          {% elif t.status == 'PendingReview' %}
+          <div class="flex flex-col gap-2 w-full">
+            <div class="text-center text-[10px] text-orange-600 font-bold
+                        bg-orange-50 rounded-xl px-3 py-2 border border-orange-200 leading-relaxed">
+              🕐 รอเจ้าหน้าที่ตรวจสอบ<br>
+              <span class="font-normal text-orange-400">ภายใน 1–2 ชั่วโมง</span>
+            </div>
+          </div>
+
+          {% endif %}
+
+          {# Universal Action Buttons #}
+          <div class="flex flex-col gap-2 w-full mt-4 border-t border-dashed border-slate-100 pt-4">
+            <a href="{% url 'ticket_view' t.booking_id %}"
+               class="inline-flex items-center justify-center gap-1.5 w-full
+                      bg-slate-100 hover:bg-slate-200 text-slate-700
+                      px-4 py-2.5 rounded-2xl font-bold text-xs
+                      transition-colors active:scale-95">
+              <span class="material-symbols-outlined text-base">print</span>
+              📥 Print/Save for Offline
+            </a>
+            
+            {% if t.status != 'Confirmed' and t.status != 'Cancelled' %}
+            {% with bid=t.booking_id|stringformat:'06d' %}
+            <form method="POST" action="{% url 'cancel_booking' t.booking_id %}">
+              {% csrf_token %}
+              <button type="submit"
+                      onclick="confirmAction(event, this.form, 'Cancel Booking?', 'ต้องการยกเลิกการจองรายการ #TC-{{ bid }} นี้ใช่หรือไม่?', 'Yes, Cancel', '#ef4444')"
+                      class="inline-flex items-center justify-center gap-1.5 w-full
+                             bg-white hover:bg-red-50 text-red-500
+                             border border-red-200 hover:border-red-300
+                             px-4 py-2.5 rounded-2xl font-bold text-xs
+                             transition-all active:scale-95">
+                <span class="material-symbols-outlined text-base">cancel</span>
+                ยกเลิก / Cancel
+              </button>
+            </form>
+            {% endwith %}
+            {% endif %}
+          </div>
+
         </div>
-      </div>
-    </div>
+      </div>{# end card body #}
+    </div>{# end card #}
     {% endfor %}
   </div>
 
+  {# ── Empty state ───────────────────────────────────────────── #}
   {% else %}
-  <!-- Empty State (แสดงเมื่อไม่มีตั๋ว) -->
   <div class="flex flex-col items-center justify-center py-24 text-center">
-    <div class="w-64 h-64 mb-10 relative">
-      <div class="absolute inset-0 bg-primary/5 rounded-full blur-[80px]"></div>
-      <img alt="Empty state" class="w-full h-full object-contain relative z-10 opacity-80"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDc8UJQfiplVV5n6gjzYrub-4_9sIfdIXfjV1kroI7l_NAXYctagbxHJ02ZrOQB82Q7xYNQ0KBVLB1YSvzDCgOGFlNlndr1lZsTCbZ5R6L_kwWk6aHYNUzJ31GhwKAPjc1RqzqL83vYgBDKCSRtxnB8mkaoN5l-iioON_IydggCJ9g0fDm8NGkW2iGhe1S6vl53WvX9r4pFctAVCZy6a1G2quHp1IvdHBOHWYkquVpxq_kJ2JV8iZIAsUddf8OdDOlYUkvqMZTeiRw"/>
+    <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+      <span class="material-symbols-outlined text-primary text-4xl">confirmation_number</span>
     </div>
-    <h3 class="font-headline text-3xl font-extrabold text-on-surface mb-3">ยังไม่มีตั๋ว / No Tickets Yet</h3>
-    <p class="text-slate-400 mb-10 max-w-sm mx-auto leading-relaxed">ดูเหมือนว่าคุณยังไม่มีการจองทัวร์ในขณะนี้ เริ่มออกเดินทางสำรวจโลกไปกับเราเลย!</p>
-    <a href="{% url 'tours' %}" class="bg-primary text-white px-10 py-4 rounded-3xl font-extrabold flex items-center gap-3 hover:shadow-2xl hover:shadow-primary/30 transition-all active:scale-95 inline-flex">
+    <h3 class="font-headline text-3xl font-extrabold text-slate-800 mb-3">
+      ยังไม่มีตั๋ว / No Tickets Yet
+    </h3>
+    <p class="text-slate-400 mb-10 max-w-sm mx-auto leading-relaxed text-sm">
+      ดูเหมือนว่าคุณยังไม่มีการจองทัวร์ในขณะนี้<br>
+      เริ่มออกเดินทางสำรวจโลกไปกับเราเลย!
+    </p>
+    <a href="{% url 'tours' %}"
+       class="inline-flex items-center gap-2 bg-primary text-white px-10 py-4
+              rounded-3xl font-extrabold hover:shadow-2xl hover:shadow-primary/30
+              hover:-translate-y-0.5 transition-all active:scale-95">
       <span class="material-symbols-outlined">explore</span>
-      <span class="text-lg">ดูทัวร์ทั้งหมด / Browse Tours</span>
+      <span>ดูทัวร์ทั้งหมด / Browse Tours</span>
     </a>
   </div>
   {% endif %}

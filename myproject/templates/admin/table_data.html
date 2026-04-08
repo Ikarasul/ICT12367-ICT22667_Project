@@ -1,137 +1,151 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Admin/{{ table_name }} - TourCompanyDB{% endblock %}
+
+{% block title %}{{ table_name }} — DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/admin_table_data.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-<main class="ml-64 p-12 min-h-screen">
-  <div class="max-w-7xl mx-auto">
+<div class="p-8 max-w-7xl mx-auto">
 
-    <!-- FIX: Breadcrumb ใช้ {{ table_name }} แทน hardcode "TourPackages" -->
-    <nav class="flex items-center gap-2 mb-4 text-sm font-medium">
-      <a href="{% url 'manage_tables' %}" class="text-slate-400 hover:text-emerald-600 transition-colors">Database</a>
-      <span class="material-symbols-outlined text-slate-300 text-sm">chevron_right</span>
-      <span class="text-emerald-600 font-bold">{{ table_name }}</span>
-    </nav>
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-3 font-medium">
+    <a href="{% url 'manage_tables' %}" class="hover:text-primary transition-colors flex items-center gap-1">
+      <span class="material-symbols-outlined text-base">database</span>
+      Database
+    </a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-primary font-bold">{{ table_name }}</span>
+  </nav>
 
-    <div class="flex justify-between items-end mb-10">
-      <div>
-        <!-- FIX: ชื่อตารางจาก context -->
-        <h2 class="text-5xl font-extrabold text-emerald-700 font-headline tracking-tight">{{ table_name }}</h2>
-        <p class="text-slate-500 mt-2 font-medium">จัดการรายการข้อมูล<span class="text-slate-300 mx-2">|</span>Manage all records</p>
+  <!-- Header row -->
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div>
+      <h2 class="text-4xl font-extrabold text-primary font-headline tracking-tight">{{ table_name }}</h2>
+      <p class="text-slate-500 mt-1 text-sm font-medium">
+        จัดการรายการข้อมูล <span class="text-slate-300 mx-1">|</span> Manage all records
+      </p>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0 w-full sm:w-auto shrink-0">
+      <div class="relative w-full sm:w-64">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size: 20px;">search</span>
+        <input type="text" id="tableSearchInput" placeholder="Search records..." class="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm text-[#111827]">
       </div>
-      <!-- FIX: URL ใช้ url tag + table_name แทน hardcode -->
       <a href="{% url 'crud_create' table_name %}"
-         class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3.5 rounded-xl font-bold flex items-center gap-2 transition-all hover:translate-y-[-3px] shadow-lg active:scale-95">
-        <span class="material-symbols-outlined">add_circle</span>
-        <span>เพิ่มรายการ / Add New</span>
+         class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90
+                text-white px-6 py-3 rounded-xl font-bold text-sm
+                transition-all hover:-translate-y-0.5 shadow-md active:scale-95">
+        <span class="material-symbols-outlined text-base">add_circle</span>
+        Add New
       </a>
     </div>
-
-    <!-- Table Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <!-- FIX: เปลี่ยน bg-mint-bg/text-mint-dark → Tailwind มาตรฐาน emerald -->
-            <tr class="bg-emerald-50 border-b border-emerald-100">
-              {% for col in columns %}
-              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider">
-                {{ col }}
-              </th>
-              {% endfor %}
-              <th class="px-8 py-5 text-emerald-700 font-headline font-bold text-sm uppercase tracking-wider text-right">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-50">
-            {% for row in rows %}
-            <!-- FIX: bg-orchid-light → bg-pink-50 -->
-            <tr class="bg-white hover:bg-pink-50 transition-colors group">
-              {% for val in row %}
-              <td class="px-8 py-6 text-slate-600 font-medium">{{ val|truncatechars:50 }}</td>
-              {% endfor %}
-              <td class="px-8 py-6 text-right">
-                <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <a href="{% url 'crud_edit' table_name row.0 %}"
-                     class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors inline-block" title="Edit">
-                    <span class="material-symbols-outlined">edit</span>
-                  </a>
-                  <a href="{% url 'crud_delete' table_name row.0 %}"
-                     onclick="return confirm('Are you sure you want to delete this record (ID: {{ row.0 }})?');"
-                     class="p-2 text-pink-500 hover:bg-pink-50 rounded-lg transition-colors inline-block" title="Delete">
-                    <span class="material-symbols-outlined">delete</span>
-                  </a>
-                </div>
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="100%" class="px-8 py-10 text-center text-slate-500">
-                ไม่มีข้อมูล / No records found
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination (static UI — pagination logic ต้องเพิ่มใน views.py) -->
-      <div class="px-8 py-5 border-t border-slate-50 flex items-center justify-between">
-        <p class="text-sm text-slate-400 font-medium">
-          Showing {{ rows|length }} record{{ rows|length|pluralize }}
-        </p>
-        <div class="flex items-center gap-1">
-          <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all">
-            <span class="material-symbols-outlined">first_page</span>
-          </button>
-          <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-          <button class="w-10 h-10 flex items-center justify-center bg-pink-500 text-white rounded-lg font-bold shadow-md">1</button>
-          <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-          <button class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-50 rounded-lg transition-all">
-            <span class="material-symbols-outlined">last_page</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stats Footer -->
-    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-600 border-y border-r border-slate-100">
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Records</p>
-        <h4 class="text-3xl font-extrabold text-emerald-700 font-headline">{{ rows|length }}</h4>
-        <p class="text-xs text-emerald-600 mt-2 flex items-center gap-1 font-bold">
-          <span class="material-symbols-outlined text-sm">table_rows</span>
-          <span>in {{ table_name }}</span>
-        </p>
-      </div>
-      <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-pink-500 border-y border-r border-slate-100">
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Columns</p>
-        <h4 class="text-3xl font-extrabold text-emerald-700 font-headline">{{ columns|length }}</h4>
-        <p class="text-xs text-pink-500 mt-2 flex items-center gap-1 font-bold">
-          <span class="material-symbols-outlined text-sm">view_column</span>
-          <span>fields</span>
-        </p>
-      </div>
-      <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-400 border-y border-r border-slate-100">
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Table</p>
-        <h4 class="text-xl font-extrabold text-emerald-700 font-headline truncate">{{ table_name }}</h4>
-        <p class="text-xs text-amber-600 mt-2 flex items-center gap-1 font-bold">
-          <span class="material-symbols-outlined text-sm">database</span>
-          <span>TourCompanyDB</span>
-        </p>
-      </div>
-    </div>
-
   </div>
-</main>
+
+  <!-- Table card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-sm">
+        <thead>
+          <tr class="bg-primary/5 border-b border-primary/10">
+            {% for col in columns %}
+            <th class="px-6 py-4 text-primary font-bold text-xs uppercase tracking-wider whitespace-nowrap">
+              {{ col }}
+            </th>
+            {% endfor %}
+            <th class="px-6 py-4 text-primary font-bold text-xs uppercase tracking-wider text-right">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          {% for row in rows %}
+          <tr class="bg-white hover:bg-slate-50/80 transition-colors group">
+            {% for val in row %}
+            <td class="px-6 py-4 text-slate-600 font-medium whitespace-nowrap">
+              {{ val|default:"—"|truncatechars:60 }}
+            </td>
+            {% endfor %}
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <a href="{% url 'crud_edit' table_name row.0 %}"
+                   class="bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-widest transition-all hover:shadow-md active:scale-95 inline-flex items-center gap-1 min-h-[44px]">
+                  <span class="material-symbols-outlined text-[14px]">edit</span>
+                  Edit
+                </a>
+                <a href="{% url 'crud_delete' table_name row.0 %}"
+                   onclick="return confirm('ลบรายการ ID: {{ row.0 }} ?\nDelete record ID: {{ row.0 }}?');"
+                   class="bg-[#fce7f3] hover:bg-[#fbcfe8] text-[#be185d] px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-widest transition-all hover:shadow-md active:scale-95 inline-flex items-center gap-1 min-h-[44px]">
+                  <span class="material-symbols-outlined text-[14px]">delete</span>
+                  Delete
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="100%" class="px-6 py-16 text-center text-slate-400">
+              <span class="material-symbols-outlined text-4xl mb-2 block">inbox</span>
+              ไม่มีข้อมูล / No records found
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer bar -->
+    <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between bg-slate-50/50">
+      <p class="text-xs text-slate-400 font-medium">
+        แสดง {{ rows|length }} รายการ / Showing {{ rows|length }} record{{ rows|length|pluralize }}
+      </p>
+      <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+        DylanCompany &rsaquo; {{ table_name }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Stats footer -->
+  <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-primary border-y border-r border-slate-100">
+      <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Total Records</p>
+      <h4 class="text-3xl font-extrabold text-primary font-headline">{{ rows|length }}</h4>
+      <p class="text-xs text-primary mt-1 flex items-center gap-1 font-bold">
+        <span class="material-symbols-outlined text-sm">table_rows</span>
+        in {{ table_name }}
+      </p>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-secondary border-y border-r border-slate-100">
+      <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Columns</p>
+      <h4 class="text-3xl font-extrabold text-primary font-headline">{{ columns|length }}</h4>
+      <p class="text-xs text-secondary mt-1 flex items-center gap-1 font-bold">
+        <span class="material-symbols-outlined text-sm">view_column</span>
+        fields
+      </p>
+    </div>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-amber-400 border-y border-r border-slate-100">
+      <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Table</p>
+      <h4 class="text-xl font-extrabold text-primary font-headline truncate">{{ table_name }}</h4>
+      <p class="text-xs text-amber-600 mt-1 flex items-center gap-1 font-bold">
+        <span class="material-symbols-outlined text-sm">database</span>
+        DylanCompany
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Real-time table search
+  document.getElementById('tableSearchInput')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr:not(.no-results-row)');
+    
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(term) ? '' : 'none';
+    });
+  });
+</script>
 {% endblock %}

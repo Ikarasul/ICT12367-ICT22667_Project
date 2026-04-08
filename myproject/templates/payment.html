@@ -1,0 +1,520 @@
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
+{% load static %}
+
+{% block title %}ชำระเงิน — Booking #{{ booking.booking_id|stringformat:"06d" }} — DylanCompany{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body, .pay-page, .pay-page * {
+    font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+  }
+
+  /* ── Mermaid + Glassmorphism Background ──────────────────── */
+  .pay-bg {
+    min-height: 100vh;
+    padding-top: 92px;
+    padding-bottom: 80px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, #0a2e1a 0%, #0d3b22 35%, #0b2d2d 65%, #0e1f3d 100%);
+  }
+
+  /* ── Animated Mermaid SVG ──────────────────────────────────── */
+  .mermaid-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .mermaid-svg {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    min-width: 900px;
+    opacity: 0.18;
+    animation: float-mermaid 8s ease-in-out infinite;
+  }
+  @keyframes float-mermaid {
+    0%, 100% { transform: translateX(-50%) translateY(0px); }
+    50%       { transform: translateX(-50%) translateY(-18px); }
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(90px);
+    pointer-events: none; z-index: 0;
+  }
+  .orb-1 { width: 560px; height: 560px; background: rgba(34,197,94,0.22);  top:-200px;  left:-180px;  animation: drift1 14s ease-in-out infinite; }
+  .orb-2 { width: 440px; height: 440px; background: rgba(236,72,153,0.18); bottom:-150px; right:-140px; animation: drift2 11s ease-in-out infinite; }
+  .orb-3 { width: 320px; height: 320px; background: rgba(56,189,248,0.14); top:38%; left:55%;          animation: drift1 18s ease-in-out infinite reverse; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-25px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,20px)} }
+
+  /* Bubble particles */
+  .bubble {
+    position: fixed; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    pointer-events: none; z-index: 0;
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(100vh) scale(0.5); opacity:0; }
+    10%  { opacity:.8; }
+    90%  { opacity:.3; }
+    100% { transform: translateY(-10vh) scale(1.1); opacity:0; }
+  }
+
+  /* ── Step bar ───────────────────────────────────────────── */
+  .step-bar { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:36px; position:relative; z-index:2; }
+  .step-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .step-circle {
+    width:40px; height:40px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; font-weight:900; font-size:.88rem;
+    transition:all .3s;
+  }
+  .step-done   { background:#22c55e; color:#fff; box-shadow:0 4px 18px rgba(34,197,94,.45); }
+  .step-active { background:linear-gradient(135deg,#16a34a,#22c55e); color:#fff; box-shadow:0 6px 24px rgba(34,197,94,.55); transform:scale(1.14); }
+  .step-idle   { background:rgba(255,255,255,.5); color:rgba(0,0,0,.4); border:2px solid rgba(255,255,255,.8); }
+  .step-label  { font-size:.68rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .step-label-done   { color:#4ade80; }
+  .step-label-active { color:#22c55e; }
+  .step-label-idle   { color:rgba(255,255,255,.6); }
+  .step-line      { width:64px; height:2px; background:linear-gradient(90deg,#22c55e,#4ade80); margin-top:-20px; }
+  .step-line-idle { background:rgba(255,255,255,.3); }
+
+  /* ── Glass cards (Light Frosted for Dark Text) ────────────── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-radius: 26px;
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(34,197,94,0.15) inset;
+    overflow: hidden;
+    position: relative; z-index: 2;
+  }
+  .glass-card-inner {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(22,163,74,0.15);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    overflow: hidden;
+    position: relative; z-index: 2;
+  }
+  .card-stripe { height: 5px; background: linear-gradient(90deg,#16a34a 0%,#22c55e 50%,#f472b6 100%); }
+
+  /* ── Price rows ──────────────────────────────────────────── */
+  .price-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-label { font-weight:800; color:#111827; font-size:.95rem; }
+  .price-sub   { font-size:.8rem; color:#4b5563; margin-top:2px; font-weight:600; }
+  .price-amount{ font-weight:900; color:#16a34a; font-size:1.15rem; }
+  .price-total-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 0 6px; margin-top:8px;
+    border-top: 2px dashed rgba(34,197,94,0.3);
+  }
+  .price-total-label  { font-weight:900; color:#064e3b; font-size:1.1rem; }
+  .price-total-amount { font-weight:900; color:#15803d; font-size:2.1rem; letter-spacing:-.02em; }
+
+  /* ── QR frame ─────────────────────────────────────────────── */
+  .qr-frame {
+    background:#fff; border-radius:18px; padding:14px;
+    border: 3px solid #16a34a;
+    box-shadow:0 8px 32px rgba(34,197,94,0.25), 0 0 0 4px rgba(34,197,94,0.1);
+    display:inline-flex; align-items:center; justify-content:center;
+    width:210px; height:210px;
+    position:relative; overflow:hidden;
+  }
+  .qr-frame::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,rgba(34,197,94,0.05),transparent);
+    border-radius:16px;
+  }
+
+  /* ── Tour info row ──────────────────────────────────────────── */
+  .info-chip {
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25);
+    color:#15803d; border-radius:99px; padding:5px 14px;
+    font-size:.78rem; font-weight:800; letter-spacing:.02em;
+  }
+
+  /* ── Note box ──────────────────────────────────────────────── */
+  .pay-note {
+    background:#f0fdf4; border:1px solid #bbf7d0;
+    border-radius:16px; padding:16px 20px;
+    display:flex; gap:14px; align-items:flex-start;
+  }
+  .pay-note-text { font-size:.9rem; color:#374151; line-height:1.6; font-weight:600; }
+  .pay-note-title { font-weight:900; color:#15803d; margin-bottom:4px; font-size:1rem; }
+
+  /* ── Confirm button ─────────────────────────────────────────── */
+  .btn-confirm {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    background:linear-gradient(135deg,#15803d 0%,#16a34a 55%,#22c55e 100%);
+    color:#fff; font-weight:900; font-size:1.15rem;
+    padding:18px 32px; border-radius:16px; border:none;
+    cursor:pointer; width:100%;
+    box-shadow:0 8px 32px rgba(34,197,94,0.45);
+    transition:all .25s;
+    letter-spacing:.02em;
+    position:relative; overflow:hidden;
+  }
+  .btn-confirm::before {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(135deg,transparent,rgba(255,255,255,0.15));
+  }
+  .btn-confirm:hover  { transform:translateY(-3px); box-shadow:0 12px 40px rgba(34,197,94,.55); background:linear-gradient(135deg,#16a34a 0%,#22c55e 55%,#4ade80 100%);}
+  .btn-confirm:active { transform:scale(.98); }
+  .btn-confirm:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+  /* ── Pulse ring on QR ──────────────────────────────────────── */
+  .qr-pulse {
+    position:absolute; border-radius:50%;
+    border:2px solid rgba(34,197,94,.35);
+    animation:pulse-ring 2.5s ease-out infinite;
+    pointer-events:none;
+  }
+  @keyframes pulse-ring {
+    0%   { width:200px; height:200px; opacity:.9; }
+    100% { width:290px; height:290px; opacity:0; }
+  }
+
+  @media (max-width:768px) {
+    .pay-grid { grid-template-columns:1fr !important; }
+    .qr-frame { width:160px; height:160px; }
+    .price-total-amount { font-size:1.7rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pay-bg pay-page">
+
+  <!-- ── Mermaid background SVG ──────────────────────────── -->
+  <div class="mermaid-bg">
+    <svg class="mermaid-svg" viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+      <!-- Wave layers -->
+      <path d="M0,200 C150,120 300,280 450,200 C600,120 750,280 900,200 C1050,120 1150,200 1200,180 L1200,400 L0,400 Z"
+            fill="rgba(34,197,94,0.4)"/>
+      <path d="M0,240 C120,160 280,310 480,240 C680,170 820,300 1000,240 C1100,200 1160,250 1200,230 L1200,400 L0,400 Z"
+            fill="rgba(22,163,74,0.3)"/>
+      <path d="M0,270 C100,220 250,330 500,270 C750,210 900,330 1100,270 L1200,400 L0,400 Z"
+            fill="rgba(16,122,58,0.5)"/>
+
+      <!-- Mermaid silhouette -->
+      <g transform="translate(580,50)" opacity="0.5">
+        <!-- Body -->
+        <ellipse cx="40" cy="100" rx="20" ry="50" fill="#4ade80"/>
+        <!-- Tail -->
+        <path d="M20,145 Q10,180 -10,195 Q5,200 20,185 Q30,200 45,188 Q55,175 40,145 Z" fill="#22c55e"/>
+        <!-- Fins -->
+        <path d="M-10,195 Q-30,210 -25,220 Q-15,215 -10,200 Z" fill="#86efac"/>
+        <path d="M45,188 Q65,205 62,215 Q52,208 47,196 Z" fill="#86efac"/>
+        <!-- Head -->
+        <circle cx="40" cy="55" r="22" fill="#4ade80"/>
+        <!-- Hair waves -->
+        <path d="M24,40 Q18,25 22,15 Q30,30 28,40 Z" fill="#86efac"/>
+        <path d="M35,38 Q32,20 38,12 Q42,28 42,38 Z" fill="#86efac"/>
+        <path d="M46,40 Q50,22 55,16 Q55,32 50,42 Z" fill="#86efac"/>
+        <!-- Arms -->
+        <path d="M22,90 Q0,75 -5,65 Q10,75 20,85 Z" fill="#4ade80"/>
+        <path d="M58,90 Q78,75 82,63 Q68,74 60,84 Z" fill="#4ade80"/>
+        <!-- Shell -->
+        <ellipse cx="32" cy="88" rx="8" ry="6" fill="#f472b6" opacity="0.8"/>
+        <ellipse cx="48" cy="88" rx="8" ry="6" fill="#f472b6" opacity="0.8"/>
+      </g>
+      <!-- Bubbles -->
+      <circle cx="200" cy="180" r="6" fill="rgba(134,239,172,0.3)"/>
+      <circle cx="220" cy="150" r="4" fill="rgba(134,239,172,0.2)"/>
+      <circle cx="240" cy="170" r="8" fill="rgba(134,239,172,0.15)"/>
+      <circle cx="900" cy="200" r="5" fill="rgba(134,239,172,0.25)"/>
+      <circle cx="920" cy="170" r="7" fill="rgba(134,239,172,0.18)"/>
+      <circle cx="960" cy="190" r="4" fill="rgba(134,239,172,0.22)"/>
+    </svg>
+  </div>
+
+  <!-- Glow orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Floating bubbles -->
+  <div class="bubble" style="width:12px;height:12px;left:8%;animation-duration:12s;animation-delay:0s;"></div>
+  <div class="bubble" style="width:8px;height:8px;left:18%;animation-duration:9s;animation-delay:2s;"></div>
+  <div class="bubble" style="width:16px;height:16px;left:32%;animation-duration:14s;animation-delay:4s;"></div>
+  <div class="bubble" style="width:10px;height:10px;left:55%;animation-duration:11s;animation-delay:1s;"></div>
+  <div class="bubble" style="width:6px;height:6px;left:72%;animation-duration:8s;animation-delay:3s;"></div>
+  <div class="bubble" style="width:14px;height:14px;left:85%;animation-duration:13s;animation-delay:5s;"></div>
+
+  <div class="max-w-[900px] mx-auto px-5 relative z-10">
+
+    <!-- Step Bar -->
+    <div class="step-bar">
+      <div class="step-item">
+        <div class="step-circle step-done">
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1;">check</span>
+        </div>
+        <span class="step-label step-label-done">เลือกทัวร์</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item">
+        <div class="step-circle step-active">2</div>
+        <span class="step-label step-label-active">ชำระเงิน</span>
+      </div>
+      <div class="step-line step-line-idle"></div>
+      <div class="step-item">
+        <div class="step-circle step-idle">3</div>
+        <span class="step-label step-label-idle">รับตั๋ว</span>
+      </div>
+    </div>
+
+    <!-- Headline -->
+    <div class="text-center mb-8">
+      <p class="text-[10px] font-black uppercase tracking-widest mb-2" style="color:#4ade80;">ขั้นตอนที่ 2 จาก 3</p>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2.2rem;font-weight:900;color:#fff;line-height:1.2;">
+        ชำระเงิน <span style="color:#f472b6;">/</span> Payment
+      </h1>
+      <p style="color:rgba(255,255,255,0.8);font-size:.95rem;font-weight:700;margin-top:8px;">
+        Booking <span style="color:#4ade80;font-weight:900;">#TC-{{ booking.booking_id|stringformat:"06d" }}</span>
+      </p>
+    </div>
+
+    {% if error_message %}
+    <div class="mb-5 rounded-2xl p-4 flex items-start gap-3" style="background:rgba(220,38,38,0.15);border:1px solid rgba(252,165,165,0.3);color:#fca5a5;font-size:.88rem;font-weight:600;">
+      <span class="material-symbols-outlined shrink-0 mt-0.5">error</span>
+      <div>{{ error_message }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Main grid -->
+    <div class="pay-grid grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+
+      <!-- LEFT: Summary (3 cols) -->
+      <div class="lg:col-span-3 flex flex-col gap-5">
+
+        <!-- Tour info card -->
+        <div class="glass-card">
+          <div class="card-stripe"></div>
+          <div class="p-7">
+            <div class="flex items-center gap-2 mb-5">
+              <div style="width:38px;height:38px;background:rgba(34,197,94,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                <span class="material-symbols-outlined" style="color:#15803d;font-size:20px;font-variation-settings:'FILL' 1;">travel_explore</span>
+              </div>
+              <span style="font-weight:900;color:#16a34a;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">รายละเอียดทัวร์</span>
+            </div>
+
+            <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:900;color:#064e3b;line-height:1.3;margin-bottom:6px;">
+              {{ booking.tour_name }}
+            </h2>
+            <div class="flex items-center gap-2 mb-6">
+              <span class="material-symbols-outlined" style="color:#db2777;font-size:16px;font-variation-settings:'FILL' 1;">location_on</span>
+              <span style="color:#4b5563;font-size:.95rem;font-weight:700;">{{ booking.destination }}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4" style="border-top:1px solid rgba(0,0,0,0.06);padding-top:18px;">
+              <div>
+                <p style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;margin-bottom:4px;">วันเดินทาง</p>
+                <p style="font-weight:800;color:#111827;">{{ booking.departure|date:"d M Y" }}</p>
+              </div>
+              <div>
+                <p style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#6b7280;margin-bottom:4px;">วันกลับ</p>
+                <p style="font-weight:800;color:#111827;">{{ booking.return_date|date:"d M Y" }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price breakdown card -->
+        <div class="glass-card-inner">
+          <div class="card-stripe" style="background:linear-gradient(90deg,#f472b6,#22c55e);"></div>
+          <div class="p-7">
+            <div class="flex items-center gap-2 mb-5">
+              <div style="width:38px;height:38px;background:rgba(244,114,182,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                <span class="material-symbols-outlined" style="color:#db2777;font-size:20px;">receipt_long</span>
+              </div>
+              <span style="font-weight:900;color:#be185d;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;">สรุปยอดชำระ</span>
+            </div>
+
+            <!-- Adults -->
+            <div class="price-row">
+              <div>
+                <p class="price-label">
+                  <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">person</span>
+                  ผู้ใหญ่ × {{ booking.adults }} ท่าน
+                </p>
+                <p class="price-sub">฿{{ booking.price_pp|smart_price }} / ท่าน</p>
+              </div>
+              <span class="price-amount">฿{{ booking.adult_total|smart_price }}</span>
+            </div>
+
+            {% if booking.children > 0 %}
+            <!-- Children -->
+            <div class="price-row">
+              <div>
+                <p class="price-label">
+                  <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;font-variation-settings:'FILL' 1;">child_care</span>
+                  เด็ก × {{ booking.children }} ท่าน
+                </p>
+                <p class="price-sub">
+                  เด็ก (ส่วนลดพิเศษ 50%)
+                </p>
+              </div>
+              <span class="price-amount">฿{{ booking.child_total|smart_price }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Total -->
+            <div class="price-total-row">
+              <span class="price-total-label">ยอดรวมทั้งหมด</span>
+              <span class="price-total-amount">฿{{ booking.total_price|smart_price }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instruction note -->
+        <div class="pay-note shadow-sm">
+          <span class="material-symbols-outlined shrink-0 mt-0.5" style="color:#16a34a;font-size:28px;font-variation-settings:'FILL' 1;">info</span>
+          <div>
+            <p class="pay-note-title">วิธีชำระเงิน พร้อมเพย์</p>
+            <p class="pay-note-text">
+              1. เปิดแอปพลิเคชันธนาคารของคุณ → <strong style="color:#15803d;">สแกน QR Code เพื่อชำระเงิน</strong> ตรงส่วนขวา<br>
+              2. ยืนยันยอดชำระ <strong style="color:#16a34a;">฿{{ booking.total_price|smart_price }}</strong> แล้วทำการโอนเงิน<br>
+              3. หลังจากโอนเงิน กดปุ่ม <strong style="color:#db2777;">"ยืนยันการชำระเงิน"</strong> ด้านล่าง QR Code เพื่อแจ้งระบบ
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /LEFT -->
+
+      <!-- RIGHT: QR + Confirm (2 cols) -->
+      <div class="lg:col-span-2">
+        <div class="glass-card sticky top-28">
+          <div class="card-stripe" style="background:linear-gradient(90deg,#4ade80,#22c55e,#f472b6);"></div>
+          <div class="p-7 flex flex-col items-center gap-6">
+
+            <!-- Amount header -->
+            <div class="text-center w-full">
+              <p style="font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#6b7280;margin-bottom:4px;">PromptPay · พร้อมเพย์</p>
+              <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2.4rem;font-weight:900;color:#15803d;line-height:1;">
+                ฿{{ booking.total_price|smart_price }}
+              </p>
+              {% if phone_number %}
+              <p style="font-size:.85rem;color:#4b5563;margin-top:6px;font-weight:700;">สแกนโอนเข้าบัญชี: บริษัท ดีแลน คอมพานี</p>
+              {% endif %}
+            </div>
+
+            <!-- QR Code with pulse ring -->
+            <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+              <div class="qr-pulse" style="top:50%;left:50%;margin-left:-100px;margin-top:-100px;"></div>
+              <div class="qr-frame">
+                {% if qr_code %}
+                <img src="data:image/png;base64,{{ qr_code }}"
+                     alt="PromptPay QR Code"
+                     style="width:100%;height:100%;object-fit:contain;border-radius:12px;"/>
+                {% else %}
+                <div class="text-center p-3">
+                  <span class="material-symbols-outlined" style="font-size:4rem;color:rgba(34,197,94,0.35);display:block;margin-bottom:8px;">qr_code_2</span>
+                  <p style="font-size:.72rem;color:rgba(0,0,0,0.5);font-weight:700;line-height:1.4;">สแกนผ่าน<br>แอปธนาคาร</p>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div style="background:#22c55e;width:100%;text-align:center;padding:6px 0;border-radius:8px;margin-top:-6px;">
+              <span style="color:#fff;font-size:.85rem;font-weight:800;letter-spacing:.02em;">สแกนเพื่อชำระเงินผ่านพร้อมเพย์</span>
+            </div>
+
+            <!-- Confirm Form -->
+            <div class="w-full mt-2" style="border-top:1px dashed rgba(0,0,0,0.1);padding-top:24px;">
+              <form method="POST" id="paymentForm" action="">
+                {% csrf_token %}
+                <button type="button" id="confirmPayBtn" class="btn-confirm shadow-lg">
+                  <span class="material-symbols-outlined" id="confirmIcon" style="font-size:24px;font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span id="confirmText">ยืนยันการชำระเงิน</span>
+                </button>
+                <p style="font-size:.75rem;text-align:center;color:#6b7280;margin-top:10px;font-weight:700;">
+                  (กรุณากดหลังจากโอนเงินเสร็จแล้วเท่านั้น)
+                </p>
+              </form>
+            </div>
+
+            <!-- Cancel link -->
+            <form method="POST" action="{% url 'cancel_booking' booking.booking_id %}" id="cancelPayForm">
+              {% csrf_token %}
+              <button type="button" id="cancelPayBtn"
+                      style="background:transparent;border:none;cursor:pointer;font-size:.85rem;font-weight:800;color:#9ca3af;display:flex;align-items:center;gap:5px;transition:color .2s;margin-top:10px;"
+                      onmouseover="this.style.color='#ef4444';"
+                      onmouseout="this.style.color='#9ca3af';">
+                <span class="material-symbols-outlined" style="font-size:16px;">cancel</span>
+                ยกเลิกการจองนี้
+              </button>
+            </form>
+
+          </div>
+        </div>
+      </div><!-- /RIGHT -->
+
+    </div><!-- /grid -->
+  </div><!-- /container -->
+</div><!-- /pay-bg -->
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('confirmPayBtn').addEventListener('click', function () {
+  Swal.fire({
+    title: 'ยืนยันการชำระเงิน?',
+    html: `โอนเงิน <b style="color:#22c55e;">฿{{ booking.total_price|smart_price }}</b> ผ่านพร้อมเพย์เรียบร้อยแล้วใช่ไหม?<br>
+           <small style="color:#94a3b8;font-size:.82rem;">ระบบจะบันทึกและนำคุณไปยังหน้าตั๋ว</small>`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#22c55e',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: '✅ ใช่ ยืนยันแล้ว',
+    cancelButtonText: 'ยังไม่ได้โอน',
+    reverseButtons: true,
+    background: '#0a2e1a',
+    color: '#fff',
+  }).then(result => {
+    if (result.isConfirmed) {
+      const btn = document.getElementById('confirmPayBtn');
+      btn.disabled = true;
+      document.getElementById('confirmIcon').textContent = 'hourglass_top';
+      document.getElementById('confirmText').textContent  = 'กำลังดำเนินการ...';
+      document.getElementById('paymentForm').submit();
+    }
+  });
+});
+
+// Cancel booking confirm
+document.getElementById('cancelPayBtn').addEventListener('click', function () {
+  Swal.fire({
+    title: 'ยืนยันการยกเลิก?',
+    html: 'Booking <b>#TC-{{ booking.booking_id|stringformat:"06d" }}</b><br>จะถูก<b style="color:#ef4444;">ยกเลิก</b>ทันที',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'ยืนยันยกเลิก',
+    cancelButtonText: 'ไม่, เก็บไว้ก่อน',
+    reverseButtons: true,
+    background: '#0a2e1a',
+    color: '#fff',
+  }).then(r => { if (r.isConfirmed) document.getElementById('cancelPayForm').submit(); });
+});
+</script>
+{% endblock %}

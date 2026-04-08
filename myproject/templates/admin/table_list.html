@@ -1,57 +1,135 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Admin/Table_List - TourCompanyDB{% endblock %}
+
+{% block title %}จัดการข้อมูล — DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/admin_table_list.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-
 {% endblock %}
 
 {% block content %}
-<main class="ml-64 min-h-screen">
-<!-- Page Canvas -->
-<div class="p-12 max-w-7xl mx-auto">
-<!-- Breadcrumbs & Header -->
-<div class="mb-12">
-<nav class="flex items-center gap-2 text-sm text-slate-400 mb-4 font-medium">
-<span>Admin</span>
-<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
-<span class="text-primary font-bold">Database</span>
-</nav>
-<div class="flex flex-col gap-1">
-<h2 class="text-4xl font-extrabold font-headline text-primary leading-tight tracking-tight">
-                        จัดการฐานข้อมูล <span class="text-slate-300 font-light mx-2">/</span> Database Management
-                    </h2>
-<p class="text-slate-500 font-medium">เลือกตารางที่ต้องการจัดการ — Select a table to view or edit records</p>
+<div class="p-8 max-w-7xl mx-auto">
+
+  {# ── Breadcrumb ───────────────────────────────────────────── #}
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-3 font-medium">
+    <span class="material-symbols-outlined text-base">home</span>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-primary font-bold">จัดการข้อมูล</span>
+  </nav>
+
+  {# ── Page header ──────────────────────────────────────────── #}
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+    <div>
+      <h2 class="text-4xl font-extrabold font-headline text-primary leading-tight tracking-tight mb-1">
+        จัดการข้อมูล
+        <span class="text-slate-300 font-light mx-2">/</span>
+        <span class="text-slate-700">Data Management</span>
+      </h2>
+      <p class="text-slate-400 font-medium text-sm">
+        เลือกหมวดข้อมูลที่ต้องการดูหรือแก้ไข — Select a category to view or edit records
+      </p>
+    </div>
+
+    {# Stats pill #}
+    <div class="flex items-center gap-3 px-5 py-2.5 bg-primary/5 rounded-2xl
+                border border-primary/10 shrink-0 w-fit">
+      <span class="material-symbols-outlined text-primary text-lg">database</span>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold leading-none mb-0.5">
+          DylanCompany
+        </p>
+        <p class="text-sm font-extrabold text-slate-700 leading-none">
+          <span class="text-primary">{{ tables|length }}</span> หมวดข้อมูล
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {# ── Table cards grid ─────────────────────────────────────── #}
+  {% if tables %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for t in tables %}
+    <a href="{% url 'crud_list' t.name %}"
+       class="block group relative bg-white rounded-2xl border border-slate-100
+              shadow-sm transition-all duration-300 overflow-hidden
+              hover:shadow-xl hover:-translate-y-1.5 hover:border-slate-200
+              cursor-pointer">
+
+      {# Top colour bar #}
+      <div class="h-1 {{ t.css_bar }}"></div>
+
+      <div class="p-6">
+
+        {# Icon + badge row #}
+        <div class="flex items-start justify-between mb-5">
+          <div class="w-12 h-12 rounded-xl {{ t.css_icon }} flex items-center justify-center
+                      shrink-0 transition-all duration-300">
+            <span class="material-symbols-outlined text-2xl transition-all duration-300
+                         group-hover:scale-110">
+              {{ t.icon }}
+            </span>
+          </div>
+
+          {# Raw SQL name — subtle technical reference, visible on hover #}
+          <span class="text-[9px] font-bold tracking-wider px-2 py-1
+                       {{ t.css_badge }} rounded-lg font-mono
+                       opacity-40 group-hover:opacity-90 transition-opacity">
+            {{ t.name }}
+          </span>
+        </div>
+
+        {# Thai name (primary) #}
+        <h3 class="font-headline font-extrabold text-slate-800 text-lg
+                   leading-tight tracking-tight mb-0.5">
+          {{ t.thai }}
+        </h3>
+
+        {# English name #}
+        <p class="text-xs font-bold mb-3" style="color: inherit;">
+          <span class="{{ t.css_badge }} px-1.5 py-0.5 rounded-md text-[10px] font-bold
+                       uppercase tracking-wider">
+            {{ t.en }}
+          </span>
+        </p>
+
+        {# Description #}
+        <p class="text-slate-400 text-xs leading-relaxed min-h-[2.25rem] mb-5">
+          {{ t.desc }}
+        </p>
+
+        {# Footer action row #}
+        <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+          <span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold
+                       flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">edit_note</span>
+            จัดการ / Manage
+          </span>
+          <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center
+                      {{ t.css_arrow }} transition-all duration-300 group-hover:rotate-45">
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          </div>
+        </div>
+
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  {# ── Empty state ─────────────────────────────────────────── #}
+  <div class="flex flex-col items-center justify-center py-28 text-center">
+    <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+      <span class="material-symbols-outlined text-primary text-4xl">storage</span>
+    </div>
+    <h3 class="font-headline text-2xl font-extrabold text-slate-800 mb-2">ไม่พบตาราง</h3>
+    <p class="text-slate-400 text-sm mb-1">
+      กรุณารัน
+      <code class="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-xs">setup_db.py</code>
+      เพื่อสร้างฐานข้อมูล
+    </p>
+    <p class="text-slate-300 text-xs">No tables found — run setup_db.py to initialise the database</p>
+  </div>
+  {% endif %}
+
 </div>
-</div>
-<!-- Bento-style Grid for Tables -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-{% for t in tables %}
-<a href="/manage/{{ t }}/" class="block group relative bg-surface-container-lowest p-6 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:ring-2 hover:ring-tertiary/30 overflow-hidden cursor-pointer">
-<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
-<span class="material-symbols-outlined text-tertiary text-4xl" data-icon="table">table</span>
-</div>
-<div class="flex items-center gap-5 mb-8">
-<div class="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center transition-colors group-hover:bg-secondary">
-<span class="material-symbols-outlined text-primary group-hover:text-primary-fixed-dim transition-colors" data-icon="database">database</span>
-</div>
-<div class="flex flex-col">
-<span class="text-primary font-extrabold text-xl font-headline tracking-tight">{{ t }}</span>
-</div>
-</div>
-<div class="flex justify-between items-end">
-<div class="flex flex-col">
-<span class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Manage</span>
-</div>
-<div class="w-10 h-10 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center transition-all group-hover:bg-tertiary group-hover:text-white group-hover:rotate-45">
-<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
-</div>
-</div>
-</a>
-{% endfor %}
-</div>
-</div>
-</main>
 {% endblock %}

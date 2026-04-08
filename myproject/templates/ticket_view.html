@@ -1,0 +1,635 @@
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
+{% load static %}
+
+{% block title %}
+  {% if is_confirmed %}E-Ticket #TC-{{ booking.booking_id|stringformat:'06d' }}
+  {% elif booking.status == 'Cancelled' %}Cancelled #TC-{{ booking.booking_id|stringformat:'06d' }}
+  {% else %}Booking #TC-{{ booking.booking_id|stringformat:'06d' }}
+  {% endif %} — DylanCompany
+{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── Font ─────────────────────────────────────────────────── */
+body, #ticket-card, #ticket-card * {
+  font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* ── Print ────────────────────────────────────────────────── */
+@media print {
+  @page { size: auto; margin: 5mm; }
+  
+  .no-print, nav, footer, .navbar, .sidebar, #sidebar { display: none !important; }
+  
+  html, body, main, .ticket-page { 
+    height: auto !important; min-height: none !important;
+    position: static !important;
+    background: #fff !important; 
+    display: block !important;
+    overflow: visible !important;
+    margin: 0; padding: 0;
+  }
+  
+  * { 
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important; 
+    color: #000 !important; 
+  }
+  
+  #ticket-card {
+    position: relative !important; 
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    width: 100% !important; max-width: 100% !important; 
+    margin: 0 !important; padding: 0 !important;
+    box-shadow: none !important; border: none !important; border-radius: 0 !important;
+    display: flex !important; flex-direction: column !important;
+    page-break-inside: avoid !important;
+    min-height: 100vh !important;
+  }
+  
+  .watermark-overlay, .watermark-overlay * { visibility: visible !important; }
+  
+  /* Force Central Details to be visible */
+  .ticket-body, .ticket-left, .ticket-right { 
+    display: flex !important; 
+    visibility: visible !important; 
+    opacity: 1 !important; 
+  }
+  .ticket-body { flex: 1 !important; flex-direction: row !important; }
+  
+  .ticket-header { padding: 24px 32px !important; }
+  .ticket-left { padding: 24px 32px !important; flex: 1 !important; flex-direction: column !important; }
+  .ticket-right { padding: 24px 16px !important; width: 190px !important; border-left: 2px dashed #94a3b8 !important; flex-direction: column !important; align-items: center !important; justify-content: flex-start !important; }
+  
+  /* Tighten Spacing */
+  .detail-section { margin-bottom: 20px !important; display: block !important; }
+  .detail-grid { gap: 16px 20px !important; margin-bottom: 20px !important; display: grid !important; }
+  .tear-line { margin: 20px 0 !important; border-top: 2px dashed #94a3b8 !important; display: block !important; }
+  .ticket-id { font-size: 2.2rem !important; display: block !important; }
+  
+  /* Two-column layout for the bottom sections */
+  .print-row-group { display: flex !important; gap: 24px !important; align-items: flex-start !important; }
+  .print-col-half { flex: 1 !important; min-width: 0 !important; }
+
+  /* Gradient Footer anchored at bottom */
+  .ticket-footer {
+    position: absolute !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+    background: linear-gradient(90deg, #22c55e, #f472b6) !important; color: #fff !important;
+    border-top: none !important; padding: 16px 32px !important;
+  }
+  /* Override forcing black text inside the footer so the white text persists over the gradient */
+  .ticket-footer * { color: #fff !important; }
+}
+
+/* ── Page bg ──────────────────────────────────────────────── */
+.ticket-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #fdf2f8 100%);
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+.toolbar {
+  max-width: 760px; margin: 0 auto 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; gap: 12px; flex-wrap: wrap;
+}
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: #64748b; font-weight: 700; font-size: .85rem;
+  text-decoration: none; transition: color .2s;
+}
+.btn-back:hover { color: #16a34a; }
+.btn-print {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #16a34a; color: #fff; border: none;
+  padding: 10px 22px; border-radius: 12px;
+  font-weight: 800; font-size: .85rem; cursor: pointer;
+  transition: all .2s; box-shadow: 0 4px 16px rgba(22,163,74,.28);
+}
+.btn-print:hover { background: #14532d; transform: translateY(-1px); }
+
+/* ── Ticket card ──────────────────────────────────────────── */
+#ticket-card {
+  max-width: 760px; margin: 0 auto 28px;
+  background: #fff; border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(22,163,74,.13), 0 4px 16px rgba(0,0,0,.06);
+  overflow: hidden; position: relative;
+  border: 1px solid rgba(22,163,74,.09);
+}
+
+/* ── Watermark ────────────────────────────────────────────── */
+.watermark-overlay {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  pointer-events: none; z-index: 9999; overflow: hidden;
+}
+.watermark-text {
+  font-weight: 900; letter-spacing: .18em; text-transform: uppercase;
+  white-space: nowrap; transform: rotate(-35deg); user-select: none;
+}
+
+/* ── Header band ──────────────────────────────────────────── */
+.ticket-header {
+  padding: 28px 36px 24px; color: #fff; position: relative; z-index: 2;
+}
+.ticket-header.confirmed { background: linear-gradient(135deg, #15803d 0%, #16a34a 60%, #22c55e 100%); }
+.ticket-header.pending   { background: linear-gradient(135deg, #b45309 0%, #d97706 100%); }
+.ticket-header.cancelled { background: linear-gradient(135deg, #475569 0%, #64748b 100%); }
+
+.ticket-ref {
+  font-size: .7rem; font-weight: 800; letter-spacing: .22em;
+  text-transform: uppercase; opacity: .75; margin-bottom: 6px;
+}
+.ticket-id {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2.2rem; font-weight: 900; line-height: 1;
+  letter-spacing: -.02em;
+}
+.verified-seal {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.2); backdrop-filter: blur(8px);
+  color: #fff; font-weight: 800; font-size: .72rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.3);
+}
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
+  color: #fff; font-weight: 800; font-size: .72rem;
+  text-transform: uppercase; letter-spacing: .1em;
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+}
+
+/* ── BODY: left + right ───────────────────────────────────── */
+.ticket-body { display: flex; position: relative; z-index: 2; }
+.ticket-left { flex: 1; padding: 28px 32px; min-width: 0; }
+.ticket-right {
+  width: 200px; flex-shrink: 0;
+  border-left: 2px dashed #e2e8f0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 28px 20px;
+  background: #fafafa;
+  position: relative;
+}
+/* Notch circles at dashed line */
+.ticket-right::before,
+.ticket-right::after {
+  content: ''; position: absolute;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, #f0fdf4, #fdf2f8);
+  border: 1px solid #e2e8f0; left: -13px;
+}
+.ticket-right::before { top: -12px; }
+.ticket-right::after  { bottom: -12px; }
+
+/* ── Detail rows / Grid ───────────────────────────────────── */
+.detail-section { margin-bottom: 20px; }
+.detail-label {
+  font-size: .65rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .15em; color: #94a3b8; margin-bottom: 4px;
+}
+.detail-value {
+  font-size: .97rem; font-weight: 700; color: #0f172a; line-height: 1.3;
+}
+.detail-sub { font-size: .78rem; color: #94a3b8; margin-top: 2px; }
+
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px;
+}
+.detail-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── Divider ──────────────────────────────────────────────── */
+.tear-line {
+  border: none; border-top: 2px dashed #e2e8f0;
+  margin: 20px 0; position: relative;
+}
+.tear-line::before, .tear-line::after {
+  content: ''; position: absolute; top: -12px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, #f0fdf4, #fdf2f8);
+}
+.tear-line::before { left: -32px; }
+.tear-line::after  { right: -32px; }
+
+/* ── Time slot badge ──────────────────────────────────────── */
+.time-slot-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #f0fdf4; border: 1.5px solid #bbf7d0;
+  color: #16a34a; font-weight: 800; font-size: .88rem;
+  padding: 8px 16px; border-radius: 10px;
+}
+
+/* ── Amount box ───────────────────────────────────────────── */
+.amount-box {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+  border-radius: 14px; padding: 14px 18px; text-align: center;
+  box-shadow: 0 4px 16px rgba(236,72,153,.25);
+}
+.amount-label { font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.85); }
+.amount-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.8rem; font-weight: 900; color: #fff;
+  line-height: 1.1; margin-top: 2px;
+}
+
+/* ── QR block ─────────────────────────────────────────────── */
+.qr-wrap {
+  background: #fff; border-radius: 14px; padding: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.qr-wrap img { display: block; width: 140px; height: 140px; }
+
+/* ── Footer bar ───────────────────────────────────────────── */
+.ticket-footer {
+  border-top: 1px solid #f1f5f9;
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fafafa;
+  font-size: .72rem; font-weight: 600; color: #94a3b8;
+  gap: 16px; flex-wrap: wrap;
+}
+
+/* ── Action panels ────────────────────────────────────────── */
+.action-panel {
+  max-width: 760px; margin: 0 auto 16px; padding: 0 16px;
+}
+.panel-box {
+  border-radius: 16px; padding: 18px 22px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px;
+}
+.panel-body { display: flex; align-items: center; gap: 12px; }
+.panel-title { font-weight: 800; font-size: .9rem; margin-bottom: 2px; }
+.panel-sub   { font-size: .78rem; }
+.btn-action {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 22px; border-radius: 12px;
+  font-weight: 800; font-size: .85rem; cursor: pointer;
+  transition: all .2s; border: none;
+}
+.btn-verify { background: #16a34a; color: #fff; box-shadow: 0 4px 16px rgba(22,163,74,.28); }
+.btn-verify:hover { background: #14532d; transform: translateY(-1px); }
+.btn-cancel { background: #fff; color: #dc2626; border: 2px solid #fca5a5; }
+.btn-cancel:hover { background: #fef2f2; }
+
+@media (max-width: 600px) {
+  .ticket-body { flex-direction: column; }
+  .ticket-right { width: 100%; border-left: none; border-top: 2px dashed #e2e8f0; }
+  .ticket-right::before, .ticket-right::after { display: none; }
+  .detail-grid.three { grid-template-columns: 1fr 1fr; }
+  .ticket-header { padding: 22px 20px 18px; }
+  .ticket-left { padding: 20px; }
+  .ticket-id { font-size: 1.7rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ticket-page">
+
+  <!-- ── TOOLBAR ─────────────────────────────────── -->
+  <div class="toolbar no-print">
+    {% if is_staff %}
+    <a href="{% url 'dashboard' %}" class="btn-back">
+      <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+      Back to Dashboard
+    </a>
+    {% else %}
+    <a href="/" class="btn-back">
+      <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+      Back to Tours
+    </a>
+    {% endif %}
+    <button class="btn-print" onclick="window.print()">
+      <span class="material-symbols-outlined" style="font-size:17px;font-variation-settings:'FILL' 1;">print</span>
+      Print / Save as PDF
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       E-TICKET CARD
+  ══════════════════════════════════════════════ -->
+  <div id="ticket-card">
+
+    <!-- Watermark -->
+    {% if booking.status == 'Cancelled' %}
+    <div class="watermark-overlay">
+      <span class="watermark-text" style="font-size:2.8rem;color:rgba(220,38,38,.18);">ยกเลิก / VOID</span>
+    </div>
+    {% elif booking.status == 'Pending' or booking.status == 'PayLater' %}
+    <div class="watermark-overlay">
+      <span class="watermark-text" style="font-size:2.6rem;color:rgba(180,83,9,.14);">ยังไม่ชำระเงิน / UNPAID</span>
+    </div>
+    {% elif booking.status == 'PendingReview' %}
+    <div class="watermark-overlay">
+      <span class="watermark-text" style="font-size:2.4rem;color:rgba(180,83,9,.14);">รอตรวจสอบ / UNVERIFIED</span>
+    </div>
+    {% elif is_confirmed %}
+    <div class="watermark-overlay">
+      <span class="watermark-text" style="font-size:3.5rem;color:rgba(34,197,94,.12);border:5px solid rgba(34,197,94,.12);padding:10px 30px;border-radius:12px;transform:rotate(-30deg);">ชำระเงินแล้ว / PAID</span>
+    </div>
+    {% endif %}
+
+    <!-- ── Header ───────────────────────── -->
+    <div class="ticket-header {% if is_confirmed %}confirmed{% elif booking.status == 'Cancelled' %}cancelled{% else %}pending{% endif %}">
+
+      {% if not is_confirmed and booking.status != 'Cancelled' %}
+      <div style="background:rgba(0,0,0,.25);border-radius:8px;padding:7px 14px;font-size:.68rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;text-align:center;margin-bottom:18px;border:1px solid rgba(255,255,255,.15);">
+        <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">warning</span>
+        NOT A VALID BOARDING PASS UNTIL PAYMENT IS CONFIRMED
+        <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;">warning</span>
+      </div>
+      {% endif %}
+
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+        <div>
+          <div class="ticket-ref">DylanCompany · Official E-Ticket</div>
+          <div class="ticket-id">#TC-{{ booking.booking_id|stringformat:'06d' }}</div>
+        </div>
+        <div>
+          {% if is_confirmed %}
+          <div class="verified-seal">
+            <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">verified</span>
+            OFFICIAL VERIFIED
+          </div>
+          {% elif booking.status == 'Cancelled' %}
+          <div class="status-pill">
+            <span class="material-symbols-outlined" style="font-size:15px;font-variation-settings:'FILL' 1;">cancel</span>
+            CANCELLED
+          </div>
+          {% else %}
+          <div class="status-pill">
+            <span class="material-symbols-outlined" style="font-size:15px;">pending</span>
+            {{ booking.status }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div><!-- /header -->
+
+    <!-- ── Body ─────────────────────────── -->
+    <div class="ticket-body">
+
+      <!-- Left column -->
+      <div class="ticket-left {% if booking.status == 'Cancelled' %}" style="filter:grayscale(1);opacity:.6;{% else %}"{% endif %}>
+
+        <!-- Tour & Destination -->
+        <div class="detail-section">
+          <div class="detail-label">Tour Package</div>
+          <div class="detail-value" style="font-size:1.2rem;color:#0f172a;">{{ booking.tour_name }}</div>
+          <div class="detail-sub">
+            <span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle;color:#16a34a;font-variation-settings:'FILL' 1;">location_on</span>
+            {{ booking.destination }}
+          </div>
+        </div>
+
+        <hr class="tear-line">
+
+        <!-- Date + Time + Duration row -->
+        <div class="detail-grid" style="margin-bottom:18px;">
+          <div>
+            <div class="detail-label">Travel Date</div>
+            <div class="detail-value">{{ booking.departure|date:"d M Y" }}</div>
+            <div class="detail-sub">{{ booking.departure|date:"l" }}</div>
+          </div>
+          <div>
+            <div class="detail-label">Return Date</div>
+            <div class="detail-value">{{ booking.return_date|date:"d M Y" }}</div>
+            <div class="detail-sub">{{ booking.return_date|date:"l" }}</div>
+          </div>
+        </div>
+
+        <!-- Time slot -->
+        <div class="detail-section">
+          <div class="detail-label">Departure Time</div>
+          <div class="time-slot-badge">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">{{ time_slot.icon }}</span>
+            {{ time_slot.label }} — {{ time_slot.time }}
+          </div>
+        </div>
+
+        <hr class="tear-line">
+
+        <!-- Guide + Duration -->
+        <div class="detail-grid three" style="margin-bottom:18px;">
+          <div>
+            <div class="detail-label">Assigned Guide</div>
+            <div class="detail-value">{{ booking.guide_name|default:"TBA" }}</div>
+            <div class="detail-sub">Local Expert</div>
+          </div>
+          <div>
+            <div class="detail-label">Duration</div>
+            <div class="detail-value">
+              {% if booking.duration_days %}{{ booking.duration_days }} Day{% if booking.duration_days > 1 %}s{% endif %}{% else %}1 Day{% endif %}
+            </div>
+            <div class="detail-sub">Tour Package</div>
+          </div>
+          <div>
+            <div class="detail-label">Accommodation</div>
+            <div class="detail-value">{{ booking.accommodation|default:"Day Trip" }}</div>
+            <div class="detail-sub">{% if booking.accommodation and booking.accommodation != "Day Trip" %}Confirmed{% else %}No overnight stay{% endif %}</div>
+          </div>
+        </div>
+
+        <hr class="tear-line">
+
+        <!-- Two-Column Group for Print Output -->
+        <div class="print-row-group">
+          
+          <!-- Passenger Info -->
+          <div class="print-col-half">
+            <div class="detail-grid" style="margin-bottom:18px;">
+              <div style="grid-column: span 2;">
+                <div class="detail-label">Passengers</div>
+                <div class="detail-value">{{ booking.adults }} Adult{% if booking.adults != 1 %}s{% endif %}{% if booking.children > 0 %} + {{ booking.children }} Child{% if booking.children != 1 %}ren{% endif %}{% endif %}</div>
+                <div class="detail-sub">฿{{ booking.price_pp|smart_price }} per adult · 50% child</div>
+              </div>
+            </div>
+            
+            <div class="amount-box" style="margin-bottom:18px;">
+              <div class="amount-label">Total Amount</div>
+              <div class="amount-value">฿{{ booking.total_price|smart_price }}</div>
+            </div>
+          </div>
+          
+          <!-- Booked By Info -->
+          <div class="print-col-half">
+            <div style="background:#f8fafc;border-radius:14px;padding:14px 18px;border:1px solid #f1f5f9;display:flex;align-items:center;gap:14px;height:100%;box-sizing:border-box;">
+              <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#15803d,#22c55e);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span class="material-symbols-outlined" style="color:#fff;font-size:20px;font-variation-settings:'FILL' 1;">person</span>
+              </div>
+              <div>
+                <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#94a3b8;margin-bottom:3px;">Booked By</div>
+                <div style="font-weight:800;color:#0f172a;">{{ booking.customer_name }}</div>
+                <div style="font-size:.8rem;color:#94a3b8;">{{ booking.customer_email }}<br>{% if booking.customer_phone %}{{ booking.customer_phone }}{% endif %}</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /print-row-group -->
+
+      </div><!-- /ticket-left -->
+
+      <!-- Right column: QR -->
+      <div class="ticket-right">
+
+        {% if qr_b64 %}
+        <div class="qr-wrap">
+          <img src="data:image/png;base64,{{ qr_b64 }}" alt="Verification QR">
+        </div>
+        {% else %}
+        <!-- Fallback: Google Charts QR -->
+        <div class="qr-wrap">
+          <img src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl={{ verify_url|urlencode }}&choe=UTF-8"
+               width="140" height="140" alt="QR Code">
+        </div>
+        {% endif %}
+
+        <div style="text-align:center;">
+          <p style="font-size:.8rem;font-weight:800;color:#16a34a;letter-spacing:.03em;margin-bottom:2px;">สแกนเพื่อตรวจสอบ</p>
+          <p style="font-size:.65rem;color:#94a3b8;max-width:130px;line-height:1.4;font-weight:600;">
+            {% if is_confirmed %}Scan to verify this official ticket{% else %}Scan to check booking status{% endif %}
+          </p>
+        </div>
+
+        <div style="width:100%;border-top:1px dashed #e2e8f0;"></div>
+
+        <!-- Status indicator -->
+        <div style="text-align:center;">
+          <span style="display:inline-flex;align-items:center;gap:5px;border-radius:99px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;
+            {% if is_confirmed %}background:#dcfce7;color:#16a34a;border:1px solid #4ade80;
+            {% elif booking.status == 'Cancelled' %}background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;
+            {% else %}background:#fef3c7;color:#92400e;border:1px solid #fde68a;{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1;">
+              {% if is_confirmed %}check_circle{% elif booking.status == 'Cancelled' %}cancel{% else %}pending{% endif %}
+            </span>
+            {% if is_confirmed %}Confirmed{% elif booking.status == 'PendingReview' %}Reviewing{% elif booking.status == 'PayLater' %}Pay Later{% else %}{{ booking.status }}{% endif %}
+          </span>
+          {% if not is_confirmed and booking.status != 'Cancelled' %}
+          <p style="font-size:.62rem;color:#b45309;font-weight:700;margin-top:6px;text-align:center;display:flex;align-items:center;justify-content:center;gap:3px;">
+            <span class="material-symbols-outlined" style="font-size:12px;">warning</span> NOT VALID YET
+          </p>
+          {% endif %}
+        </div>
+
+      </div><!-- /ticket-right -->
+    </div><!-- /ticket-body -->
+
+    <!-- ── Footer bar ────────────────────── -->
+    <div class="ticket-footer">
+      <span style="display:flex;align-items:center;gap:6px;">
+        <span class="material-symbols-outlined" style="font-size:13px;">language</span>
+        DylanCompany.com · Travel with Confidence
+      </span>
+      <span>Booking ID: TC-{{ booking.booking_id|stringformat:'06d' }}</span>
+      <span>Issued for: {{ booking.departure|date:"d M Y" }}</span>
+    </div>
+
+  </div><!-- /#ticket-card -->
+
+  <!-- ══════════════════════════════════════════
+       ACTION PANELS  (no-print)
+  ══════════════════════════════════════════════ -->
+
+  <!-- Staff verify panel -->
+  {% if is_staff and not is_confirmed and booking.status != 'Cancelled' %}
+  <div class="action-panel no-print">
+    <div class="panel-box" style="background:#f0fdf4;border:1px solid #4ade80;">
+      <div class="panel-body">
+        <span class="material-symbols-outlined" style="color:#16a34a;font-size:26px;font-variation-settings:'FILL' 1;">admin_panel_settings</span>
+        <div>
+          <div class="panel-title" style="color:#16a34a;">Staff Action Available</div>
+          <div class="panel-sub" style="color:#15803d;">Booking #TC-{{ booking.booking_id|stringformat:'06d' }} is awaiting payment verification.</div>
+        </div>
+      </div>
+      <form id="verifyForm" method="POST" action="{% url 'verify_payment' booking.booking_id %}">
+        {% csrf_token %}
+        <button type="button" id="verifyBtn" class="btn-action btn-verify">
+          <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">verified</span>
+          Verify Payment
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Customer cancel panel -->
+  {% if not is_staff and booking.status != 'Cancelled' and not is_confirmed %}
+  <div class="action-panel no-print" style="margin-bottom:40px;">
+    <div class="panel-box" style="background:#fff7f9;border:2px solid #fbcfe8;border-radius:20px;padding:20px 28px;">
+      <div class="panel-body">
+        <div style="width:42px;height:42px;border-radius:50%;background:#fce7f3;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-outlined" style="color:#db2777;font-size:22px;">cancel</span>
+        </div>
+        <div>
+          <div class="panel-title" style="color:#be185d;font-size:.95rem;">ต้องการยกเลิกการจอง?</div>
+          <div class="panel-sub" style="color:#9d174d;font-size:.8rem;">
+            การยกเลิกจะนำคุณกลับหน้าหลัก · ยกเลิกได้เฉพาะ Booking ที่ยังไม่ถูกยืนยัน
+          </div>
+        </div>
+      </div>
+      <form id="cancelForm" method="POST" action="{% url 'cancel_booking' booking.booking_id %}">
+        {% csrf_token %}
+        <button type="button" id="cancelBtn"
+                style="display:inline-flex;align-items:center;gap:7px;padding:11px 26px;border-radius:14px;
+                       font-weight:900;font-size:.88rem;cursor:pointer;transition:all .2s;
+                       background:transparent;color:#db2777;border:2px solid transparent;"
+                onmouseover="this.style.background='#fdf2f8';this.style.borderColor='#f9a8d4';"
+                onmouseout="this.style.background='transparent';this.style.borderColor='transparent';">
+          <span class="material-symbols-outlined" style="font-size:17px;">cancel</span>
+          ยกเลิกการจอง
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- /.ticket-page -->
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+const verifyBtn = document.getElementById('verifyBtn');
+if (verifyBtn) {
+  verifyBtn.addEventListener('click', () => {
+    Swal.fire({
+      title: 'ยืนยันการชำระเงิน?',
+      html: 'Booking <b>#TC-{{ booking.booking_id|stringformat:"06d" }}</b><br>จะถูกเปลี่ยนเป็น <b style="color:#16a34a">Confirmed</b>',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: '✅ Verify Now',
+      cancelButtonText: 'ยกเลิก',
+      reverseButtons: true,
+    }).then(r => { if (r.isConfirmed) document.getElementById('verifyForm').submit(); });
+  });
+}
+
+const cancelBtn = document.getElementById('cancelBtn');
+if (cancelBtn) {
+  cancelBtn.addEventListener('click', () => {
+    Swal.fire({
+      title: 'ยืนยันการยกเลิก?',
+      html: 'Booking <b>#TC-{{ booking.booking_id|stringformat:"06d" }}</b><br>จะถูก<b style="color:#ef4444">ยกเลิก</b>ทันที',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'ยืนยันยกเลิก',
+      cancelButtonText: 'ไม่, เก็บไว้ก่อน',
+      reverseButtons: true,
+    }).then(r => { if (r.isConfirmed) document.getElementById('cancelForm').submit(); });
+  });
+}
+</script>
+{% endblock %}

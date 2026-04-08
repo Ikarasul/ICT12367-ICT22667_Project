@@ -1,214 +1,466 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
 {% load static %}
-{% block title %}Dashboard - TourCompanyDB{% endblock %}
+{% block title %}Dashboard — DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+/**
+ * Global SweetAlert2 confirmation wrapper.
+ * Called from inline onclick — passes the native event so we
+ * can preventDefault() on the form submit before asking.
+ */
+function confirmAction(e, form, title, text, confirmText, confirmColor) {
+    if (e) e.preventDefault();
+    Swal.fire({
+        title:              title,
+        text:               text,
+        icon:               'question',
+        showCancelButton:   true,
+        confirmButtonColor: confirmColor  || '#0d9488',
+        cancelButtonColor:  '#94a3b8',
+        confirmButtonText:  confirmText   || 'Confirm',
+        cancelButtonText:   'ยกเลิก',
+        reverseButtons:     true,
+        customClass: {
+            confirmButton: 'rounded-xl font-bold px-6 shadow-md',
+            cancelButton:  'rounded-xl font-bold px-6 text-white',
+        }
+    }).then(result => {
+        if (result.isConfirmed) form.submit();
+    });
+}
+</script>
 {% endblock %}
 
 {% block content %}
 <div class="flex flex-col min-h-full overflow-y-auto bg-surface-container-low">
 
-  <!-- Page Title Bar -->
-  <div class="px-8 pt-8 pb-4 flex items-center justify-between">
+  <!-- ═══════════════════════════════════════════════════════════
+     PAGE TITLE BAR
+  ═══════════════════════════════════════════════════════════ -->
+  <div class="px-8 pt-8 pb-4 flex items-center justify-between gap-4">
     <div>
-      <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">Executive Dashboard</h2>
-      <p class="text-on-surface-variant text-sm font-medium">{{ request.session.user_name|default:"Staff" }} &mdash; {{ request.session.user_role|default:"Staff" }}</p>
+      <h2 class="text-2xl font-extrabold text-on-surface tracking-tight">
+        Executive Dashboard
+      </h2>
+      <p class="text-on-surface-variant text-sm font-medium mt-0.5">
+        <span class="material-symbols-outlined text-sm align-middle mr-1 text-primary">account_circle</span>
+        {{ request.session.user_name|default:"Staff" }}
+        <span class="text-slate-300 mx-1">·</span>
+        {{ request.session.user_role|default:"Staff" }}
+      </p>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 shrink-0">
       <a href="{% url 'manage_tables' %}"
-         class="text-sm font-bold text-primary hover:underline flex items-center gap-1">
+         class="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline">
         <span class="material-symbols-outlined text-base">database</span>
         Manage DB
       </a>
+      <span class="text-slate-200">|</span>
       <a href="{% url 'audit_log' %}"
-         class="text-sm font-bold text-secondary hover:underline flex items-center gap-1">
+         class="inline-flex items-center gap-1.5 text-sm font-bold text-secondary hover:underline">
         <span class="material-symbols-outlined text-base">history_edu</span>
         Audit Log
       </a>
     </div>
   </div>
 
-  <div class="px-8 pb-10 space-y-10">
+  <div class="px-8 pb-12 space-y-10">
 
-    <!-- Bento Stats Grid -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Stat Card 1 (Revenue) -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+    <!-- ═══════════════════════════════════════════════════════════
+       BENTO STAT CARDS
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Total Bookings -->
+      <div class="bg-white p-6 rounded-xl shadow-sm
+                  hover:shadow-md transition-shadow group border border-slate-100">
         <div class="flex justify-between items-start mb-4">
           <div class="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">payments</span>
+            <span class="material-symbols-outlined text-primary"
+                  style="font-variation-settings:'FILL' 1;">confirmation_number</span>
           </div>
-          <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">Revenue</span>
+          <span class="text-[10px] font-extrabold text-primary px-2.5 py-1
+                       bg-primary/10 rounded-full uppercase tracking-widest">+8%</span>
         </div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-1">Total Revenue</p>
-        <h3 class="text-2xl font-extrabold text-on-surface">฿{{ stats.total_revenue|floatformat:0 }}</h3>
+        <p class="text-[#111827] text-xs font-semibold mb-1">Total Bookings</p>
+        <h3 class="text-3xl font-extrabold text-[#111827]">{{ stats.total_bookings }}</h3>
       </div>
-      <!-- Stat Card 2 (Bookings) -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+
+      <!-- Revenue -->
+      <div class="bg-white p-6 rounded-xl shadow-sm
+                  hover:shadow-md transition-shadow group border border-slate-100">
         <div class="flex justify-between items-start mb-4">
-          <div class="p-3 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">confirmation_number</span>
+          <div class="p-3 bg-emerald-100 rounded-xl group-hover:bg-emerald-200 transition-colors">
+            <span class="material-symbols-outlined text-emerald-600"
+                  style="font-variation-settings:'FILL' 1;">payments</span>
           </div>
-          <span class="text-xs font-bold text-primary px-2 py-1 bg-primary/10 rounded-full">+8%</span>
+          <span class="text-[10px] font-extrabold text-emerald-600 px-2.5 py-1
+                       bg-emerald-50 rounded-full uppercase tracking-widest">+12%</span>
         </div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-1">Active Bookings</p>
-        <h3 class="text-2xl font-extrabold text-on-surface">{{ stats.total_bookings }}</h3>
+        <p class="text-[#111827] text-xs font-semibold mb-1">Total Revenue</p>
+        <h3 class="text-3xl font-extrabold text-[#111827]">
+          ฿{{ stats.total_revenue|smart_price }}
+        </h3>
       </div>
-      <!-- Stat Card 3 (Rating) -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+
+      <!-- New Customers -->
+      <div class="bg-white p-6 rounded-xl shadow-sm
+                  hover:shadow-md transition-shadow group border border-slate-100">
         <div class="flex justify-between items-start mb-4">
-          <div class="p-3 bg-secondary/10 rounded-xl group-hover:bg-secondary/20 transition-colors">
-            <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">star</span>
+          <div class="p-3 bg-cyan-100 rounded-xl group-hover:bg-cyan-200 transition-colors">
+            <span class="material-symbols-outlined text-cyan-600"
+                  style="font-variation-settings:'FILL' 1;">group_add</span>
           </div>
-          <span class="text-xs font-bold text-secondary px-2 py-1 bg-secondary/10 rounded-full">4.9/5</span>
+          <span class="text-[10px] font-extrabold text-cyan-600 px-2.5 py-1
+                       bg-cyan-50 rounded-full uppercase tracking-widest">Active</span>
         </div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-1">Customer Rating</p>
-        <h3 class="text-2xl font-extrabold text-on-surface">Excellent</h3>
+        <p class="text-[#111827] text-xs font-semibold mb-1">New Customers</p>
+        <h3 class="text-3xl font-extrabold text-[#111827]">{{ stats.new_customers }}</h3>
       </div>
-      <!-- Stat Card 4 (Schedules) -->
-      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+
+      <!-- Pending Payments -->
+      <div class="bg-white p-6 rounded-xl shadow-sm
+                  hover:shadow-md transition-shadow group border border-slate-100">
         <div class="flex justify-between items-start mb-4">
-          <div class="p-3 bg-secondary/10 rounded-xl group-hover:bg-secondary/20 transition-colors">
-            <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">campaign</span>
+          <div class="p-3 bg-amber-100 rounded-xl group-hover:bg-amber-200 transition-colors">
+            <span class="material-symbols-outlined text-amber-600"
+                  style="font-variation-settings:'FILL' 1;">pending_actions</span>
           </div>
-          <span class="text-xs font-bold text-secondary px-2 py-1 bg-secondary/10 rounded-full">Active</span>
+          {% if pending_approvals %}
+          <span class="text-[10px] font-extrabold text-amber-600 px-2.5 py-1
+                       bg-amber-50 rounded-full uppercase tracking-widest border border-amber-200">
+            Action Required
+          </span>
+          {% else %}
+          <span class="text-[10px] font-extrabold text-slate-500 px-2.5 py-1
+                       bg-slate-100 rounded-full uppercase tracking-widest">Clear</span>
+          {% endif %}
         </div>
-        <p class="text-on-surface-variant text-sm font-semibold mb-1">Tour Schedules</p>
-        <h3 class="text-2xl font-extrabold text-on-surface">{{ stats.total_schedules }}</h3>
+        <p class="text-[#111827] text-xs font-semibold mb-1">Pending Payments</p>
+        <h3 class="text-3xl font-extrabold text-[#111827]">{{ stats.pending_payments }}</h3>
       </div>
+
     </section>
 
-    <!-- Main Content: Bookings & Sidebar -->
+
+
+    <!-- ═══════════════════════════════════════════════════════════
+       PENDING APPROVALS (shown only when there are items)
+    ═══════════════════════════════════════════════════════════ -->
+    {% if pending_approvals %}
+    <section class="space-y-4">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-amber-500 text-xl"
+              style="font-variation-settings:'FILL' 1;">pending_actions</span>
+        <h3 class="text-xl font-extrabold tracking-tight">รอตรวจสอบการชำระเงิน</h3>
+        <span class="inline-flex items-center justify-center bg-amber-100 text-amber-700
+                     text-[10px] font-black px-2.5 py-1 rounded-full border border-amber-200">
+          {{ pending_approvals|length }} รายการ
+        </span>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden
+                  border border-amber-200">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-amber-50/80">
+              <th class="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600">Booking</th>
+              <th class="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600">ลูกค้า</th>
+              <th class="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600">ทัวร์</th>
+              <th class="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600">ยอด</th>
+              <th class="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-amber-50">
+            {% for b in pending_approvals %}
+            {% with bid=b.0|stringformat:'06d' %}
+            <tr class="hover:bg-amber-50/50 transition-colors">
+              <td class="px-5 py-3.5">
+                <span class="text-sm font-extrabold text-primary">#TC-{{ bid }}</span>
+              </td>
+              <td class="px-5 py-3.5 text-sm font-semibold">{{ b.1 }}</td>
+              <td class="px-5 py-3.5 text-sm text-slate-500">{{ b.2 }}</td>
+              <td class="px-5 py-3.5 text-sm font-extrabold text-primary">฿{{ b.3|smart_price }}</td>
+              <td class="px-5 py-3.5">
+                <div class="flex items-center gap-2">
+                  <form method="POST" action="{% url 'verify_payment' b.0 %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            onclick="confirmAction(event, this.form,
+                              'Verify Payment?',
+                              'ยืนยันการชำระเงิน Booking #TC-{{ bid }}?',
+                              '✅ Confirm', '#10b981')"
+                            class="inline-flex items-center gap-1.5
+                                   bg-emerald-500 hover:bg-emerald-600 active:scale-95
+                                   text-white text-[10px] font-extrabold px-4 py-2 rounded-xl
+                                   transition-all hover:-translate-y-0.5 shadow-sm
+                                   uppercase tracking-widest">
+                      <span class="material-symbols-outlined text-sm"
+                            style="font-variation-settings:'FILL' 1;">verified</span>
+                      Verify
+                    </button>
+                  </form>
+                  <a href="{% url 'ticket_view' b.0 %}"
+                     class="inline-flex items-center gap-1.5
+                            bg-slate-100 hover:bg-slate-200 active:scale-95
+                            text-slate-600 text-[10px] font-extrabold px-3 py-2 rounded-xl
+                            transition-all uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-sm">receipt_long</span>
+                    View
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ═══════════════════════════════════════════════════════════
+       MAIN CONTENT: Bookings Table (2/3) + Side Panel (1/3)
+    ═══════════════════════════════════════════════════════════ -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-      <!-- Recent Bookings Table (2/3) -->
+      <!-- ─── RECENT BOOKINGS TABLE ─────────────────────────────── -->
       <section class="lg:col-span-2 space-y-4">
-        <div class="flex justify-between items-end">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xl font-extrabold tracking-tight">Recent Bookings</h3>
-          <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1"
-             href="{% url 'manage_tables' %}">
-            View All
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </a>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <!-- Real-time search input -->
+            <div class="relative flex-1 sm:flex-none">
+              <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+                <span class="material-symbols-outlined text-sm">search</span>
+              </span>
+              <input id="bookingSearch"
+                     type="text"
+                     placeholder="ค้นหา TC-xxxxxx..."
+                     autocomplete="off"
+                     oninput="filterBookings(this.value)"
+                     class="pl-9 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl
+                            focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary
+                            w-full sm:w-52 transition-all">
+            </div>
+            <a href="{% url 'manage_tables' %}"
+               class="inline-flex items-center gap-1 text-primary font-bold text-sm hover:underline shrink-0">
+              View All
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+          </div>
         </div>
-        <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/10">
+
+        <div class="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden
+                    border border-outline-variant/10">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-primary/5">
-                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Customer</th>
-                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Tour Package</th>
-                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Date</th>
-                <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-on-surface">Status</th>
+              <tr class="bg-primary/5 border-b border-primary/10">
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface">Customer</th>
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface">Tour Package</th>
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface">Date</th>
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface">Status</th>
+                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-on-surface text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-surface-container">
+
               {% for b in recent_bookings %}
-              <tr class="hover:bg-secondary/5 transition-colors cursor-pointer">
+              <!-- data-* attributes drive the JS real-time filter -->
+              <tr class="booking-row hover:bg-slate-100 transition-colors even:bg-slate-50"
+                  data-id="tc-{{ b.0|stringformat:'06d' }}"
+                  data-customer="{{ b.1|lower }}"
+                  data-tour="{{ b.2|lower }}">
+
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">{{ b.1|slice:":2"|upper }}</div>
-                    <span class="font-bold text-sm">{{ b.1 }}</span>
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center
+                                text-xs font-extrabold text-primary shrink-0">
+                      {{ b.1|slice:":2"|upper }}
+                    </div>
+                    <span class="font-bold text-sm text-[#111827]">{{ b.1 }}</span>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-sm font-medium">{{ b.2 }}</td>
-                <td class="px-6 py-4 text-sm text-on-surface-variant">{{ b.3|date:"d M, Y" }}</td>
+
+                <td class="px-6 py-4 text-sm font-medium text-[#111827] max-w-[180px] truncate">
+                  {{ b.2 }}
+                </td>
+
+                <td class="px-6 py-4 text-sm text-[#111827]">
+                  {{ b.3|date:"d M, Y" }}
+                </td>
+
                 <td class="px-6 py-4">
-                  <span class="px-3 py-1 {% if b.4 == 'Confirmed' %}bg-primary/10 text-primary{% elif b.4 == 'Pending' %}bg-secondary/20 text-secondary{% else %}bg-slate-100 text-slate-500{% endif %} text-[10px] font-black uppercase tracking-widest rounded-full">{{ b.4 }}</span>
+                  <span class="px-2.5 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest
+                    {% if b.4 == 'Confirmed'     %}bg-emerald-100 text-emerald-700
+                    {% elif b.4 == 'PendingReview'%}bg-amber-100   text-amber-700
+                    {% elif b.4 == 'Pending'     %}bg-amber-100   text-amber-700
+                    {% elif b.4 == 'Cancelled'   %}bg-[#fce7f3]   text-[#be185d]
+                    {% else                       %}bg-slate-100   text-slate-500{% endif %}">
+                    {{ b.4 }}
+                  </span>
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    {% with bid=b.0|stringformat:'06d' %}
+                    <!-- Verify button for unconfirmed -->
+                    {% if b.4 == 'PendingReview' or b.4 == 'Pending' %}
+                    <form method="POST" action="{% url 'verify_payment' b.0 %}" class="inline-block">
+                      {% csrf_token %}
+                      <button type="submit"
+                              onclick="confirmAction(event, this.form,
+                                'Verify Payment?',
+                                'ยืนยันการชำระเงิน Booking #TC-{{ bid }}?',
+                                '✅ Confirm', '#10b981')"
+                              class="inline-flex items-center gap-1
+                                     bg-emerald-50 hover:bg-emerald-100 active:scale-95
+                                     text-emerald-600 border border-emerald-200
+                                     px-2.5 py-1.5 rounded-lg font-extrabold text-[9px]
+                                     uppercase tracking-widest transition-colors">
+                        <span class="material-symbols-outlined text-[13px]"
+                              style="font-variation-settings:'FILL' 1;">verified</span>
+                        Verify
+                      </button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Ticket link for confirmed -->
+                    {% if b.4 == 'Confirmed' %}
+                    <a href="{% url 'ticket_view' b.0 %}"
+                       class="inline-flex items-center gap-1
+                              bg-cyan-50 hover:bg-cyan-100 active:scale-95
+                              text-cyan-700 border border-cyan-200
+                              px-2.5 py-1.5 rounded-lg font-extrabold text-[9px]
+                              uppercase tracking-widest transition-colors">
+                      <span class="material-symbols-outlined text-[13px]">confirmation_number</span>
+                      Ticket
+                    </a>
+                    {% endif %}
+
+                    <!-- View link always -->
+                    <a href="{% url 'ticket_view' b.0 %}"
+                       class="inline-flex items-center gap-1
+                              bg-slate-50 hover:bg-slate-100 active:scale-95
+                              text-slate-500 border border-slate-200
+                              px-2.5 py-1.5 rounded-lg font-extrabold text-[9px]
+                              uppercase tracking-widest transition-colors">
+                      <span class="material-symbols-outlined text-[13px]">visibility</span>
+                      View
+                    </a>
+                    {% endwith %}
+                  </div>
                 </td>
               </tr>
               {% empty %}
-              <tr>
-                <td colspan="4" class="px-6 py-8 text-center text-slate-500">
+              <tr id="emptyRow">
+                <td colspan="5" class="px-6 py-10 text-center text-slate-400 text-sm">
                   ไม่มีรายการจองล่าสุด / No recent bookings
                 </td>
               </tr>
               {% endfor %}
+
+              <!-- No-results row (hidden by default, shown by JS) -->
+              <tr id="noSearchResult" style="display:none">
+                <td colspan="5"
+                    class="px-6 py-8 text-center text-slate-400 text-sm">
+                  <span class="material-symbols-outlined text-slate-300 text-3xl block mb-2">search_off</span>
+                  ไม่พบรายการ / No results found
+                </td>
+              </tr>
+
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- Side Panel -->
-      <section class="space-y-4">
-        <h3 class="text-xl font-extrabold tracking-tight">Staff Spotlight</h3>
-        <div class="relative overflow-hidden rounded-2xl group cursor-pointer h-[240px]">
-          <img alt="Thailand Temple"
-               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-               src="https://lh3.googleusercontent.com/aida-public/AB6AXuARaNf5MgRMv-_JG9I_TWKIuGIRtMG0kAr-Mq7fA9zlxDoxNugtcRhx37ygV45o09W8hGcvU1lnB6iafuEiKPl5JnZ0-SVt22di3BrbfKGAQ8kDDkcnyX5vRN5GnMo_o_qgu_NITFEISj7KpOTBZURJM6MWjK3dEtQ8NyzLfOpcS-51WMpWSUWe8OR-IEyrNynLwnSku0XXGJVO9jN7f0FSsV4N6lkbd61zciTJJE6v0K32z6_OXgGSHEw5GFSdJNKpYj8XkCnREa4"/>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-0 left-0 p-6 w-full">
-            <span class="bg-secondary text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full mb-3 inline-block">Best Seller</span>
-            <h4 class="text-white text-xl font-extrabold mb-1">Bangkok Culture Tour</h4>
-            <div class="flex items-center gap-4 text-white/80 text-xs">
-              <span class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">timer</span>8 Hours
-              </span>
-              <span class="flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">person</span>24 Booked today
-              </span>
-            </div>
-          </div>
-        </div>
+      <!-- ─── SIDE PANEL ─────────────────────────────────────────── -->
+      <section class="space-y-5">
 
-        <!-- Inventory Alert -->
-        <div class="bg-surface-container p-5 rounded-2xl border-l-4 border-secondary shadow-sm">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="material-symbols-outlined text-secondary">warning</span>
-            <h4 class="font-bold text-sm">Inventory Alert</h4>
-          </div>
-          <p class="text-on-surface-variant text-xs mb-3 leading-relaxed">
-            "Koh Samui Sunset Sail" is nearly at capacity for next weekend. Consider adding a second vessel.
-          </p>
-          <a href="{% url 'crud_list' 'TourSchedules' %}"
-             class="text-secondary font-bold text-xs uppercase tracking-widest hover:underline">
-            Update Inventory
-          </a>
-        </div>
 
-        <!-- Task List -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm space-y-4">
-          <h4 class="font-bold text-sm">Today's Tasks</h4>
-          <div class="space-y-3">
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 rounded border-2 border-primary flex items-center justify-center">
-                <span class="material-symbols-outlined text-primary text-[14px]" style="font-variation-settings:'wght' 700;">check</span>
-              </div>
-              <span class="text-xs font-medium line-through text-on-surface-variant/50">Confirm group bus for Phi Phi</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 rounded border-2 border-outline cursor-pointer"></div>
-              <span class="text-xs font-medium">Review customer feedback from Sunday</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 rounded border-2 border-outline cursor-pointer"></div>
-              <span class="text-xs font-medium">Update pricing for High Season</span>
-            </div>
-          </div>
-        </div>
 
-        <!-- Audit Log Quick View (Admin only) -->
+        <!-- ── Audit Log Quick View (Admin only) ────────────────────── -->
         {% if request.session.user_role == 'Admin' %}
-        <div class="bg-white p-5 rounded-2xl shadow-sm">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="flex justify-between items-center mb-3">
-            <h4 class="font-bold text-sm">Recent Audit Activity</h4>
-            <a href="{% url 'audit_log' %}" class="text-xs text-primary font-bold hover:underline">View All</a>
+            <h4 class="font-extrabold text-sm flex items-center gap-2">
+              <span class="material-symbols-outlined text-slate-400 text-base">history_edu</span>
+              Recent Audit Activity
+            </h4>
+            <a href="{% url 'audit_log' %}"
+               class="text-xs text-primary font-bold hover:underline">View All</a>
           </div>
           {% for log in audit_logs %}
           <div class="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded {% if log.2 == 'INSERT' %}bg-green-100 text-green-700{% elif log.2 == 'UPDATE' %}bg-blue-100 text-blue-700{% elif log.2 == 'DELETE' %}bg-red-100 text-red-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ log.2 }}</span>
+            <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full
+              {% if log.2 == 'INSERT' %}bg-green-100 text-green-700
+              {% elif log.2 == 'UPDATE' %}bg-blue-100 text-blue-700
+              {% elif log.2 == 'DELETE' %}bg-red-100  text-red-700
+              {% else %}bg-gray-100 text-gray-600{% endif %}
+              uppercase tracking-widest">{{ log.2 }}</span>
             <span class="text-xs text-slate-500 truncate flex-1">{{ log.1 }}</span>
           </div>
           {% empty %}
-          <p class="text-xs text-slate-400">No recent activity.</p>
+          <p class="text-xs text-slate-400 italic">No recent activity.</p>
           {% endfor %}
         </div>
         {% endif %}
 
-      </section>
-    </div>
+      </section><!-- end side panel -->
+
+    </div><!-- end main grid -->
 
   </div>
 </div>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════
+   REAL-TIME SEARCH JS
+═══════════════════════════════════════════════════════════ -->
+<script>
+/**
+ * filterBookings(query)
+ * Filters .booking-row elements in the recent bookings table
+ * by Ticket ID (#TC-xxxxxx), customer name, or tour name.
+ * Runs on every keypress — no server round-trip.
+ */
+function filterBookings(query) {
+  const q    = query.trim().toLowerCase().replace(/\s/g, '');
+  const rows = document.querySelectorAll('.booking-row');
+  let   vis  = 0;
+
+  rows.forEach(row => {
+    // normalise each data attribute
+    const id       = (row.dataset.id       || '').replace(/\s/g, '');   // "tc-000012"
+    const customer = (row.dataset.customer || '');
+    const tour     = (row.dataset.tour     || '');
+
+    // also match without the "tc-" prefix so typing "12" finds TC-000012
+    const idNumeric = id.replace('tc-', '');
+
+    const match = !q
+      || id.includes(q)
+      || idNumeric.includes(q)
+      || customer.includes(q)
+      || tour.includes(q);
+
+    row.style.display = match ? '' : 'none';
+    if (match) vis++;
+  });
+
+  // Toggle the no-results placeholder row
+  const noResult = document.getElementById('noSearchResult');
+  if (noResult) {
+    noResult.style.display = (vis === 0 && q) ? '' : 'none';
+  }
+}
+</script>
 {% endblock %}

@@ -1,0 +1,363 @@
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}ชำระเงิน — Booking #{{ booking.booking_id|stringformat:"06d" }} — DylanCompany{% endblock %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body, .payment-page, .payment-page * {
+    font-family: 'Sarabun', 'Plus Jakarta Sans', sans-serif;
+  }
+  /* ── Glass Page Background ─────────────────────────────── */
+  .payment-bg {
+    min-height: 100vh;
+    padding-top: 88px;
+    padding-bottom: 80px;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(34,197,94,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(244,114,182,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(187,247,208,0.10) 0%, transparent 70%),
+      linear-gradient(135deg, #f0fdf4 0%, #faf5ff 50%, #fdf2f8 100%);
+  }
+  /* Floating blobs */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(80px);
+    opacity: .22; pointer-events: none; z-index: 0;
+  }
+  .blob-1 { width: 520px; height: 520px; background: #4ade80; top: -180px; left: -160px; }
+  .blob-2 { width: 400px; height: 400px; background: #f9a8d4; bottom: -120px; right: -120px; }
+  .blob-3 { width: 300px; height: 300px; background: #a7f3d0; top: 40%; left: 60%; }
+
+  /* ── Step bar ───────────────────────────────────────────── */
+  .step-bar { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 36px; position: relative; z-index: 2; }
+  .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .step-circle {
+    width: 38px; height: 38px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-weight: 900; font-size: .85rem;
+    transition: all .3s;
+  }
+  .step-done { background: #22c55e; color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,.35); }
+  .step-active { background: linear-gradient(135deg,#22c55e,#4ade80); color: #fff; box-shadow: 0 6px 20px rgba(34,197,94,.45); transform: scale(1.12); }
+  .step-idle { background: rgba(255,255,255,.5); color: #94a3b8; border: 2px solid #e2e8f0; }
+  .step-label { font-size: .68rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+  .step-label-done { color: #22c55e; }
+  .step-label-active { color: #16a34a; }
+  .step-label-idle { color: #94a3b8; }
+  .step-line { width: 60px; height: 2px; background: linear-gradient(90deg,#22c55e,#bbf7d0); margin-top: -20px; }
+  .step-line-idle { background: #e2e8f0; }
+
+  /* ── Glass card ─────────────────────────────────────────── */
+  .glass-card {
+    background: rgba(255,255,255,.72);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: 0 20px 60px rgba(22,163,74,.09), 0 8px 24px rgba(0,0,0,.05);
+    overflow: hidden;
+    position: relative; z-index: 2;
+  }
+  .glass-card-sm {
+    background: rgba(255,255,255,.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,.85);
+    box-shadow: 0 12px 40px rgba(0,0,0,.06);
+    overflow: hidden;
+    position: relative; z-index: 2;
+  }
+  .card-stripe { height: 4px; background: linear-gradient(90deg, #22c55e 0%, #4ade80 50%, #f472b6 100%); }
+
+  /* ── Price breakdown ────────────────────────────────────── */
+  .price-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid rgba(34,197,94,.08);
+  }
+  .price-row:last-child { border-bottom: none; }
+  .price-label { font-weight: 700; color: #374151; font-size: .95rem; }
+  .price-sub { font-size: .75rem; color: #6b7280; margin-top: 2px; }
+  .price-amount { font-weight: 900; color: #15803d; font-size: 1.1rem; }
+  .price-total-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 0 6px; margin-top: 8px; border-top: 2px solid rgba(34,197,94,.15);
+  }
+  .price-total-label { font-weight: 900; color: #111827; font-size: 1.05rem; }
+  .price-total-amount { font-weight: 900; color: #22c55e; font-size: 2rem; letter-spacing: -.02em; }
+
+  /* ── QR wrapper ─────────────────────────────────────────── */
+  .qr-frame {
+    background: #fff; border-radius: 18px; padding: 14px;
+    border: 2px solid rgba(34,197,94,.2);
+    box-shadow: 0 4px 24px rgba(34,197,94,.12);
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 200px; height: 200px;
+  }
+
+  /* ── Confirm button ─────────────────────────────────────── */
+  .btn-confirm {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 60%, #4ade80 100%);
+    color: #fff; font-weight: 900; font-size: 1.05rem;
+    padding: 16px 32px; border-radius: 16px; border: none;
+    cursor: pointer; width: 100%;
+    box-shadow: 0 6px 24px rgba(22,163,74,.38);
+    transition: all .25s;
+    letter-spacing: .01em;
+  }
+  .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(22,163,74,.45); }
+  .btn-confirm:active { transform: scale(.98); }
+  .btn-confirm:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+
+  /* ── Info note ──────────────────────────────────────────── */
+  .info-note {
+    background: rgba(240,253,244,.9); border: 1px solid #bbf7d0;
+    border-radius: 14px; padding: 14px 18px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    .payment-grid { grid-template-columns: 1fr !important; }
+    .qr-frame { width: 160px; height: 160px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-bg relative">
+  <!-- Background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="max-w-[880px] mx-auto px-5 relative z-10">
+
+    <!-- Step Progress Bar -->
+    <div class="step-bar">
+      <div class="step-item">
+        <div class="step-circle step-done">
+          <span class="material-symbols-outlined" style="font-size:18px;font-variation-settings:'FILL' 1;">check</span>
+        </div>
+        <span class="step-label step-label-done">จอง</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item">
+        <div class="step-circle step-active">2</div>
+        <span class="step-label step-label-active">ชำระเงิน</span>
+      </div>
+      <div class="step-line step-line-idle"></div>
+      <div class="step-item">
+        <div class="step-circle step-idle">3</div>
+        <span class="step-label step-label-idle">ตั๋ว</span>
+      </div>
+    </div>
+
+    <!-- Page headline -->
+    <div class="text-center mb-8">
+      <p class="text-[10px] font-black uppercase tracking-widest text-[#22c55e] mb-2">Step 2 of 3</p>
+      <h1 class="font-headline text-3xl md:text-4xl font-black text-[#166534] leading-tight">
+        ชำระเงิน <span style="color:#f472b6;">/</span> Payment
+      </h1>
+      <p class="text-[#4b5563] text-sm font-semibold mt-2">
+        Booking <span class="text-[#22c55e] font-extrabold">#TC-{{ booking.booking_id|stringformat:"06d" }}</span>
+      </p>
+    </div>
+
+    {% if error_message %}
+    <div class="mb-5 bg-red-50/80 backdrop-blur border border-red-200 text-red-700 rounded-2xl p-4
+                text-sm font-semibold flex items-start gap-3">
+      <span class="material-symbols-outlined shrink-0 mt-0.5">error</span>
+      <div>{{ error_message }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Main grid -->
+    <div class="payment-grid grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+
+      <!-- LEFT: Booking Summary (3 cols) -->
+      <div class="lg:col-span-3 flex flex-col gap-5">
+
+        <!-- Tour info glass card -->
+        <div class="glass-card">
+          <div class="card-stripe"></div>
+          <div class="p-7">
+            <div class="flex items-center gap-2 mb-5">
+              <div class="w-9 h-9 bg-[#dcfce7] rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#22c55e] text-lg" style="font-variation-settings:'FILL' 1;">travel_explore</span>
+              </div>
+              <h2 class="font-extrabold text-[#166534] text-sm uppercase tracking-widest">รายละเอียดทัวร์</h2>
+            </div>
+
+            <h3 class="font-black text-[#0f172a] text-2xl leading-tight mb-1">{{ booking.tour_name }}</h3>
+            <p class="flex items-center gap-1 text-[#6b7280] text-sm mb-6">
+              <span class="material-symbols-outlined text-[#f472b6] text-sm" style="font-variation-settings:'FILL' 1;">location_on</span>
+              {{ booking.destination }}
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 pt-5 border-t border-[#f0fdf4]">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-[#94a3b8] mb-1">วันเดินทาง</p>
+                <p class="font-extrabold text-[#1f2937]">{{ booking.departure|date:"d M Y" }}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-widest text-[#94a3b8] mb-1">วันกลับ</p>
+                <p class="font-extrabold text-[#1f2937]">{{ booking.return_date|date:"d M Y" }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price breakdown glass card -->
+        <div class="glass-card-sm">
+          <div class="p-7">
+            <div class="flex items-center gap-2 mb-5">
+              <div class="w-9 h-9 bg-[#fce7f3] rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#f472b6] text-lg">receipt_long</span>
+              </div>
+              <h2 class="font-extrabold text-[#166534] text-sm uppercase tracking-widest">สรุปยอดชำระ</h2>
+            </div>
+
+            <!-- Adult row -->
+            <div class="price-row">
+              <div>
+                <p class="price-label">
+                  <span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1;">person</span>
+                  ผู้ใหญ่ × {{ booking.adults }} ท่าน
+                </p>
+                <p class="price-sub">฿{{ booking.price_pp|smart_price }} / ท่าน</p>
+              </div>
+              <span class="price-amount">฿{{ booking.adult_total|smart_price }}</span>
+            </div>
+
+            {% if booking.children > 0 %}
+            <!-- Child row -->
+            <div class="price-row">
+              <div>
+                <p class="price-label">
+                  <span class="material-symbols-outlined text-sm align-middle" style="font-variation-settings:'FILL' 1;">child_care</span>
+                  เด็ก × {{ booking.children }} ท่าน
+                </p>
+                <p class="price-sub">
+                  ฿{% widthratio booking.price_pp 2 1 %} / ท่าน
+                  <span class="inline-flex items-center gap-0.5 bg-pink-50 text-pink-600 text-[10px] font-black px-2 py-0.5 rounded-full ml-1 border border-pink-100">50% off</span>
+                </p>
+              </div>
+              <span class="price-amount">฿{{ booking.child_total|smart_price }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Total -->
+            <div class="price-total-row">
+              <span class="price-total-label">ยอดรวมทั้งหมด</span>
+              <span class="price-total-amount">฿{{ booking.total_price|smart_price }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info note -->
+        <div class="info-note">
+          <span class="material-symbols-outlined text-[#22c55e] text-xl shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1;">info</span>
+          <div class="text-sm text-[#374151]">
+            <p class="font-extrabold text-[#166534] mb-1">วิธีชำระเงิน</p>
+            <p class="leading-relaxed">สแกน QR Code ด้านขวา → โอนเงินจำนวน
+              <strong class="text-[#22c55e]">฿{{ booking.total_price|smart_price }}</strong>
+              ผ่านพร้อมเพย์ → กดปุ่ม <strong>"ยืนยันการชำระเงิน"</strong>
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /LEFT -->
+
+      <!-- RIGHT: QR + Confirm (2 cols) -->
+      <div class="lg:col-span-2">
+        <div class="glass-card sticky top-28">
+          <div class="card-stripe" style="background: linear-gradient(90deg, #4ade80, #22c55e, #f472b6);"></div>
+          <div class="p-7 flex flex-col items-center gap-6">
+
+            <div class="text-center">
+              <p class="text-[10px] font-black uppercase tracking-widest text-[#94a3b8] mb-1">PromptPay · พร้อมเพย์</p>
+              <p class="font-black text-[#22c55e] text-2xl leading-none">฿{{ booking.total_price|smart_price }}</p>
+              {% if phone_number %}
+              <p class="text-[11px] text-[#6b7280] mt-1 font-semibold">เบอร์: {{ phone_number }}</p>
+              {% endif %}
+            </div>
+
+            <!-- QR Code -->
+            <div class="qr-frame">
+              {% if qr_code %}
+              <img src="data:image/png;base64,{{ qr_code }}"
+                   alt="PromptPay QR Code"
+                   class="w-full h-full object-contain rounded-xl"/>
+              {% else %}
+              <div class="text-center p-3">
+                <span class="material-symbols-outlined text-5xl text-[#bbf7d0] block mb-2">qr_code_2</span>
+                <p class="text-xs text-[#94a3b8] font-semibold leading-snug">
+                  สแกนผ่าน<br>แอปธนาคาร
+                </p>
+              </div>
+              {% endif %}
+            </div>
+
+            <p class="text-[11px] text-center text-[#6b7280] font-semibold leading-relaxed">
+              เปิดแอปธนาคาร → กดสแกน QR<br>
+              โอนเงินแล้วกดยืนยันด้านล่าง
+            </p>
+
+            <div class="w-full border-t border-[#f0fdf4] pt-2">
+              <form method="POST" id="paymentForm">
+                {% csrf_token %}
+                <button type="button" id="confirmPayBtn" class="btn-confirm">
+                  <span class="material-symbols-outlined text-xl" id="confirmIcon" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                  <span id="confirmText">ยืนยันการชำระเงิน</span>
+                </button>
+                <p class="text-[10px] text-center text-[#94a3b8] mt-2 font-semibold">
+                  กดหลังจากโอนเงินเสร็จแล้ว
+                </p>
+              </form>
+            </div>
+
+            <a href="{% url 'my_tickets' %}"
+               class="text-xs text-[#94a3b8] hover:text-[#374151] transition-colors font-semibold">
+              ← กลับหน้าตั๋วของฉัน
+            </a>
+
+          </div>
+        </div>
+      </div><!-- /RIGHT -->
+
+    </div><!-- /grid -->
+  </div><!-- /container -->
+</div><!-- /payment-bg -->
+
+<!-- SweetAlert2 Confirm Dialog -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('confirmPayBtn').addEventListener('click', function() {
+  Swal.fire({
+    title: 'ยืนยันการชำระเงิน?',
+    html: `โอนเงิน <b style="color:#22c55e;">฿{{ booking.total_price|smart_price }}</b> เรียบร้อยแล้วใช่ไหม?<br>
+           <small style="color:#6b7280;">ระบบจะบันทึกการชำระและพาคุณไปหน้าตั๋ว</small>`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#22c55e',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: '✅ ใช่ ยืนยันแล้ว',
+    cancelButtonText: 'ยังไม่ได้โอน',
+    reverseButtons: true,
+    customClass: { popup: 'swal-rounded' },
+  }).then(result => {
+    if (result.isConfirmed) {
+      const btn = document.getElementById('confirmPayBtn');
+      btn.disabled = true;
+      document.getElementById('confirmIcon').textContent = 'hourglass_top';
+      document.getElementById('confirmText').textContent = 'กำลังดำเนินการ...';
+      document.getElementById('paymentForm').submit();
+    }
+  });
+});
+</script>
+{% endblock %}

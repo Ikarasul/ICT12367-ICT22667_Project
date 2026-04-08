@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face {
+    font-family: THSarabunNew;
+    src: url("/static/fonts/Sarabun-Regular.ttf");
+  }
+  @font-face {
+    font-family: THSarabunNew;
+    src: url("/static/fonts/Sarabun-Bold.ttf");
+    font-weight: bold;
+  }
+  @page {
+    size: A4;
+    margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+  }
+  body {
+    font-family: THSarabunNew, Arial, sans-serif;
+    font-size: 12pt;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  /* ── Header band ── */
+  .header {
+    background: #0d9488;
+    color: #ffffff;
+    padding: 18pt 24pt 14pt 24pt;
+    border-radius: 8pt 8pt 0 0;
+  }
+  .header-top {
+    display: block;
+    margin-bottom: 6pt;
+  }
+  .brand-name {
+    font-size: 22pt;
+    font-weight: bold;
+    letter-spacing: 1pt;
+    color: #ffffff;
+  }
+  .brand-sub {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 2pt;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 2pt;
+  }
+  .ticket-title {
+    font-size: 11pt;
+    letter-spacing: 4pt;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-top: 8pt;
+    display: block;
+  }
+
+  /* ── Booking ID bar ── */
+  .booking-bar {
+    background: #f0fdf9;
+    border-left: 5pt solid #0d9488;
+    padding: 10pt 20pt;
+    margin: 0;
+    display: block;
+  }
+  .booking-id-label {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    color: #64748b;
+    display: block;
+  }
+  .booking-id-value {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #0d9488;
+    letter-spacing: 2pt;
+  }
+
+  /* ── Section title ── */
+  .section-title {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+    color: #94a3b8;
+    font-weight: bold;
+    margin-bottom: 6pt;
+    margin-top: 14pt;
+    border-bottom: 1pt solid #e2e8f0;
+    padding-bottom: 4pt;
+    display: block;
+  }
+
+  /* ── Info table ── */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10pt;
+  }
+  .info-table td {
+    padding: 5pt 8pt;
+    vertical-align: top;
+    font-size: 11pt;
+    border-bottom: 1pt solid #f1f5f9;
+  }
+  .info-table td.label {
+    color: #64748b;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 1pt;
+    width: 35%;
+    font-weight: bold;
+  }
+  .info-table td.value {
+    color: #1e293b;
+    font-weight: bold;
+  }
+  .info-table td.value-primary {
+    color: #0d9488;
+    font-weight: bold;
+    font-size: 13pt;
+  }
+
+  /* ── Price summary box ── */
+  .price-box {
+    background: #f8fafc;
+    border: 1pt solid #e2e8f0;
+    border-radius: 6pt;
+    padding: 12pt 16pt;
+    margin-top: 10pt;
+  }
+  .price-row {
+    display: block;
+    margin-bottom: 5pt;
+    font-size: 11pt;
+  }
+  .price-label {
+    color: #64748b;
+    display: inline;
+  }
+  .price-value {
+    font-weight: bold;
+    color: #1e293b;
+    float: right;
+  }
+  .price-total-row {
+    border-top: 1.5pt solid #0d9488;
+    margin-top: 8pt;
+    padding-top: 8pt;
+    display: block;
+  }
+  .price-total-label {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #1e293b;
+    display: inline;
+  }
+  .price-total-value {
+    font-size: 18pt;
+    font-weight: bold;
+    color: #0d9488;
+    float: right;
+  }
+
+  /* ── PAID stamp ── */
+  .stamp-container {
+    text-align: center;
+    margin: 16pt 0 8pt 0;
+  }
+  .stamp {
+    display: inline-block;
+    border: 3pt solid #16a34a;
+    color: #16a34a;
+    font-size: 20pt;
+    font-weight: bold;
+    letter-spacing: 5pt;
+    padding: 6pt 18pt;
+    border-radius: 4pt;
+    text-transform: uppercase;
+    transform: rotate(-5deg);
+  }
+
+  /* ── Footer ── */
+  .footer {
+    background: #f8fafc;
+    border-top: 1pt solid #e2e8f0;
+    padding: 10pt 20pt;
+    margin-top: 14pt;
+    text-align: center;
+    font-size: 8pt;
+    color: #94a3b8;
+    border-radius: 0 0 8pt 8pt;
+  }
+
+  /* ── Outer wrapper ── */
+  .ticket-wrapper {
+    border: 1pt solid #e2e8f0;
+    border-radius: 8pt;
+    overflow: hidden;
+    box-shadow: 0 2pt 8pt rgba(0,0,0,0.08);
+  }
+  .ticket-body {
+    padding: 6pt 24pt 16pt 24pt;
+  }
+
+  .clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+</style>
+</head>
+<body>
+
+<div class="ticket-wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-top">
+      <span class="brand-name">DylanCompany</span>
+      <span class="brand-sub">Tour &amp; Travel Services — สงขลา ไทยแลนด์</span>
+    </span>
+    <span class="ticket-title">&#9992; Tour Confirmation Ticket</span>
+  </div>
+
+  <!-- Booking ID bar -->
+  <div class="booking-bar">
+    <span class="booking-id-label">Booking Reference / หมายเลขการจอง</span>
+    <span class="booking-id-value">
+      #TC-{{ booking.booking_id|stringformat:"06d" }}
+    </span>
+  </div>
+
+  <!-- Body -->
+  <div class="ticket-body">
+
+    <!-- Tour Info -->
+    <span class="section-title">&#9992; Tour Information / รายละเอียดทัวร์</span>
+    <table class="info-table">
+      <tr>
+        <td class="label">ชื่อทัวร์ / Tour</td>
+        <td class="value-primary">{{ booking.tour_name }}</td>
+      </tr>
+      <tr>
+        <td class="label">ปลายทาง / Destination</td>
+        <td class="value">{{ booking.destination }}</td>
+      </tr>
+      <tr>
+        <td class="label">วันเดินทาง / Departure</td>
+        <td class="value">{{ booking.departure|date:"d F Y" }}</td>
+      </tr>
+      <tr>
+        <td class="label">วันกลับ / Return</td>
+        <td class="value">{{ booking.return_date|date:"d F Y" }}</td>
+      </tr>
+    </table>
+
+    <!-- Passenger Info -->
+    <span class="section-title">&#128101; Passenger Information / ข้อมูลผู้โดยสาร</span>
+    <table class="info-table">
+      <tr>
+        <td class="label">ชื่อผู้จอง / Booked by</td>
+        <td class="value">{{ booking.customer_name }}</td>
+      </tr>
+      <tr>
+        <td class="label">อีเมล / Email</td>
+        <td class="value">{{ booking.customer_email }}</td>
+      </tr>
+      <tr>
+        <td class="label">ผู้ใหญ่ / Adults</td>
+        <td class="value">{{ booking.adults }} ท่าน</td>
+      </tr>
+      {% if booking.children > 0 %}
+      <tr>
+        <td class="label">เด็ก / Children</td>
+        <td class="value">{{ booking.children }} ท่าน (ลด 50%)</td>
+      </tr>
+      {% endif %}
+    </table>
+
+    <!-- Price Summary -->
+    <span class="section-title">&#128176; Payment Summary / สรุปการชำระเงิน</span>
+    <div class="price-box">
+      <div class="price-row clearfix">
+        <span class="price-label">
+          ผู้ใหญ่ {{ booking.adults }} ท่าน × {{ booking.price_pp|smart_price }} บาท
+        </span>
+        <span class="price-value">{{ booking.adult_total|smart_price }} บาท</span>
+      </div>
+      {% if booking.children > 0 %}
+      <div class="price-row clearfix">
+        <span class="price-label">
+          เด็ก {{ booking.children }} ท่าน × {{ booking.price_pp|smart_price }} บาท × 50%
+        </span>
+        <span class="price-value">{{ booking.child_total|smart_price }} บาท</span>
+      </div>
+      {% endif %}
+      <div class="price-total-row clearfix">
+        <span class="price-total-label">ยอดรวม / Total</span>
+        <span class="price-total-value">฿{{ booking.total_price|smart_price }}</span>
+      </div>
+    </div>
+
+    <!-- PAID stamp -->
+    <div class="stamp-container">
+      <div class="stamp">&#10003; PAID / ชำระแล้ว</div>
+    </div>
+
+    <!-- Notice -->
+    <p style="font-size:9pt; color:#64748b; text-align:center; margin-top:10pt; line-height:1.5;">
+      กรุณาแสดงเอกสารฉบับนี้แก่เจ้าหน้าที่ในวันเดินทาง<br>
+      Please present this document to our staff on the day of departure.
+    </p>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    DylanCompany &nbsp;|&nbsp; Generated on {{ booking.departure|date:"d M Y" }}
+    &nbsp;|&nbsp; This is an official ticket &nbsp;|&nbsp; ตั๋วอย่างเป็นทางการ
+  </div>
+
+</div>
+
+</body>
+</html>

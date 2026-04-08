@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Booking - TourCompanyDB{% endblock %}
+{% block title %}Booking - DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/booking.css' %}">
@@ -62,7 +62,7 @@
                     <div>
                       <p class="font-bold text-lg">ผู้ใหญ่ / Adult</p>
                       <!-- FIX: ราคาจาก context (price_adult) แทนค่าฮาร์ดโค้ด -->
-                      <p class="text-sm text-slate-500 font-medium">฿{{ price_adult|default:"1,200" }} / Person</p>
+                      <p class="text-sm text-slate-500 font-medium">฿{{ price_adult|default:1200|floatformat:0 }} / Person</p>
                     </div>
                     <div class="flex items-center space-x-5">
                       <button type="button" onclick="changeCount('adults', -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
@@ -78,7 +78,7 @@
                   <div class="flex items-center justify-between p-5 bg-surface-container-low rounded-xl border border-outline-variant/30">
                     <div>
                       <p class="font-bold text-lg">เด็ก / Children</p>
-                      <p class="text-sm text-slate-500 font-medium">฿{{ price_child|default:"600" }} / Person (50% Off)</p>
+                      <p class="text-sm text-slate-500 font-medium">฿{{ price_child|default:600|floatformat:0 }} / Person (50% Off)</p>
                     </div>
                     <div class="flex items-center space-x-5">
                       <button type="button" onclick="changeCount('children', -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-primary border border-outline-variant/50 hover:bg-primary-container transition-colors">
@@ -147,7 +147,7 @@
                    data-price-child="{{ price_child|default:600 }}">
                 <div class="flex justify-between items-center">
                   <span class="text-slate-600 font-medium" id="summary-adults-label">1x Adult (ผู้ใหญ่)</span>
-                  <span class="font-bold" id="summary-adults-price">฿{{ price_adult|default:1200 }}</span>
+                  <span class="font-bold" id="summary-adults-price">฿{{ price_adult|default:1200|floatformat:0 }}</span>
                 </div>
                 <div class="flex justify-between items-center" id="summary-children-row" style="display:none!important">
                   <span class="text-slate-600 font-medium" id="summary-children-label">0x Child (เด็ก)</span>
@@ -164,7 +164,7 @@
                 <div>
                   <p class="text-[10px] font-extrabold font-headline uppercase tracking-wider text-slate-400">ยอดรวม / Total</p>
                   <p class="text-3xl font-extrabold font-headline text-primary tracking-tighter" id="summary-total">
-                    ฿{{ price_adult|default:1200 }}
+                    ฿{{ price_adult|default:1200|floatformat:0 }}
                   </p>
                 </div>
               </div>

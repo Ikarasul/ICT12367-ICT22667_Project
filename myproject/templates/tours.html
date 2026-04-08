@@ -1,204 +1,287 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
+{% load tour_filters %}
 {% load static %}
-{% block title %}Tours - TourCompanyDB{% endblock %}
-
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/tours.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-
-{% endblock %}
+{% block title %}หน้าแรก - DylanCompany | สัมผัสเสน่ห์สงขลา{% endblock %}
 
 {% block content %}
-<main class="pt-20">
-<!-- Hero Section -->
-<section class="hero-gradient min-h-[716px] flex flex-col items-center justify-center px-6 text-center">
-<h1 class="font-headline text-5xl md:text-7xl font-extrabold text-on-surface tracking-tight max-w-4xl mb-6">
-                Travel experiences <span class="text-primary italic">tailored</span> for you.
+<!-- Use the requested Soft Pinkish White background -->
+<main class="font-sans text-gray-800 pb-16 min-h-screen bg-gradient-to-b from-[#fdf2f8] to-white pt-16">
+
+    <!-- 1. Full-Width Hero Section with Search -->
+    <section class="relative w-full h-[65vh] min-h-[450px] mb-16 shadow-lg">
+        <img src="https://storage.googleapis.com/seagames-2025.firebasestorage.app/content/province/banner-songkhla2.jpg" 
+             alt="Songkhla Coast" class="w-full h-full object-cover">
+        
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/40"></div>
+
+        <!-- Center Content & Search Form -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center p-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-4 text-center drop-shadow-md">
+                ยินดีต้อนรับสู่ <span class="text-[#4ade80]">สงขลา</span>
             </h1>
-<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mb-12">
-                Discover curated local tours and hidden gems with the precision of our Digital Concierge. Breezy, effortless, and premium.
+            <p class="text-white/90 font-bold mb-10 text-lg md:text-xl text-center max-w-2xl drop-shadow-sm">
+                ค้นหาประสบการณ์ท่องเที่ยวที่ดีที่สุดของคุณ คัดสรรแพ็กเกจทัวร์คุณภาพในราคาสุดพิเศษ
             </p>
-<!-- Large Search Bar Component -->
-<div class="w-full max-w-4xl bg-surface-container-lowest p-4 rounded-3xl shadow-2xl shadow-on-surface/5 flex flex-col md:flex-row gap-4 items-center">
-<div class="flex-1 w-full flex items-center px-4 py-3 bg-surface-container-low rounded-2xl">
-<span class="material-symbols-outlined text-primary mr-3" data-icon="location_on">location_on</span>
-<input class="bg-transparent border-none focus:ring-0 w-full font-medium" placeholder="Where do you want to go?" type="text"/>
-</div>
-<div class="flex-1 w-full flex items-center px-4 py-3 bg-surface-container-low rounded-2xl">
-<span class="material-symbols-outlined text-primary mr-3" data-icon="calendar_month">calendar_month</span>
-<input class="bg-transparent border-none focus:ring-0 w-full font-medium" placeholder="Select dates" type="text"/>
-</div>
-<button class="w-full md:w-auto bg-primary-container text-on-primary-container px-10 py-4 rounded-2xl font-headline font-bold hover:brightness-105 transition-all">
-                    Search
+
+            <form method="GET" action="{% url 'tours' %}" class="w-full max-w-3xl bg-white/20 backdrop-blur-md p-3 rounded-[2rem] flex flex-col sm:flex-row gap-2 shadow-2xl border border-white/30">
+                <div class="flex-1 relative">
+                    <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                        <svg class="w-6 h-6 text-[#22c55e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <select name="destination" class="w-full pl-14 pr-6 py-5 bg-white/95 rounded-[1.5rem] border-none text-gray-800 font-bold focus:outline-none focus:ring-4 focus:ring-[#fce7f3] appearance-none cursor-pointer text-lg">
+                        <option value="">เลือกโซนท่องเที่ยว...</option>
+                        {% for d in destinations %}
+                        <option value="{{ d }}" {% if destination_filter == d %}selected{% endif %}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="bg-[#22c55e] hover:bg-[#16a34a] text-white font-extrabold text-lg py-5 px-10 rounded-[1.5rem] transition-all hover:shadow-[0_0_20px_rgba(34,197,94,0.6)] flex items-center justify-center gap-2">
+                    ค้นหาเลย
                 </button>
-</div>
-</section>
-<!-- Discovery Section -->
-<section class="max-w-7xl mx-auto px-8 py-20">
-<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-<div>
-<span class="text-secondary font-headline font-bold tracking-widest uppercase text-sm mb-2 block">Our Collection</span>
-<h2 class="text-4xl font-headline font-extrabold text-on-surface">Curated Tours</h2>
-</div>
-<!-- Filter Pills -->
-<div class="flex flex-wrap gap-3" id="filter-pills">
-<button onclick="filterTours('all')" data-filter="all" class="filter-pill active px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-bold font-headline transition-all">All Tours</button>
-<button onclick="filterTours('tropical')" data-filter="tropical" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏖️ Tropical</button>
-<button onclick="filterTours('adventure')" data-filter="adventure" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏔️ Adventure</button>
-<button onclick="filterTours('cultural')" data-filter="cultural" class="filter-pill px-6 py-2.5 rounded-full bg-surface-container-lowest border border-surface-variant text-on-surface-variant font-medium font-headline hover:bg-surface-container-low transition-all">🏛️ Cultural</button>
-</div>
-</div>
-<!-- Bento-style Tour Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="tour-grid">
-{% for tour in tours %}
-<div class="tour-card bg-surface-container-lowest rounded-[2rem] overflow-hidden group shadow-lg flex flex-col transition-all duration-300" data-category="{{ tour.cat }}">
-<div class="h-64 relative overflow-hidden bg-slate-100">
-<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBut2ECT7KobFH_2LA-yCyc_h7MmLeVxL7rROHrXWfZ_qahuLhID-MVIl4rlMmh9l_ln2IMovnXrcQdPPfzlm-Accu-uRFVkAans0ElJSdbodDOoGtuZqiqFWF4aH0gh9r7JnWduoQsdKt30gq3RgWGvQw3-jQ6dvkmqsSYf4rTEPXyQO_jBpiy3loczADwWcaeXWs0j6wKyv65h7e5FHb86QT0zWUcKUtLidUw7hFVqc7aeT_KAbNBiZjc0ZbJk4Qbkj0npFjMA4k"/>
-<div class="absolute top-4 right-4 bg-secondary-container/90 backdrop-blur text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">
-{% if tour.data.6 <= 5 %}Low Seats: {{ tour.data.6 }}{% else %}{{ tour.data.6 }} Seats Left{% endif %}
-</div>
-<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-slate-700">
-{{ tour.data.2 }}
-</div>
-</div>
-<div class="p-8 flex flex-col flex-grow">
-<h3 class="text-xl font-headline font-bold text-on-surface mb-2">{{ tour.data.1 }}</h3>
-<p class="text-on-surface-variant text-sm mb-6 leading-relaxed flex-grow">
-<span class="block mb-1"><span class="material-symbols-outlined text-[16px] align-middle mr-1">calendar_today</span> {{ tour.data.3|date:"d M Y" }} - {{ tour.data.4|date:"d M Y" }}</span>
-<span class="block"><span class="material-symbols-outlined text-[16px] align-middle mr-1">person</span> Guide: {{ tour.data.9|default:"-" }}</span>
-</p>
-<div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
-<span class="text-2xl font-black text-primary">฿{{ tour.data.7 }}</span>
-<a href="/booking/?schedule_id={{ tour.data.0 }}" class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-xl font-headline font-bold transition-all shadow-md hover:shadow-lg">
-Book Now
-</a>
-</div>
-</div>
-</div>
-{% empty %}
-<div class="col-span-full py-20 text-center">
-<span class="material-symbols-outlined text-6xl text-slate-300 mb-4 block">travel_explore</span>
-<h3 class="text-2xl font-bold text-slate-800 mb-2">ไม่มีตารางทัวร์ในขณะนี้ / No tours available</h3>
-<p class="text-slate-500">กรุณากลับมาตรวจสอบอีกครั้งภายหลัง / Please check back later.</p>
-</div>
-{% endfor %}
-</div>
-<!-- Middle Content Section -->
-<div class="md:col-span-8 bg-surface-container-low rounded-[2rem] p-12 flex flex-col md:flex-row items-center gap-12">
-<div class="flex-1">
-<h3 class="text-3xl font-headline font-extrabold text-on-surface mb-4">Why choose TourCompanyDB?</h3>
-<ul class="space-y-4">
-<li class="flex items-start gap-4">
-<div class="bg-primary/10 p-2 rounded-lg text-primary">
-<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
-</div>
-<div>
-<p class="font-bold font-headline">Verified Local Guides</p>
-<p class="text-sm text-on-surface-variant">We only work with experts who know the hidden corners.</p>
-</div>
-</li>
-<li class="flex items-start gap-4">
-<div class="bg-primary/10 p-2 rounded-lg text-primary">
-<span class="material-symbols-outlined" data-icon="eco">eco</span>
-</div>
-<div>
-<p class="font-bold font-headline">Eco-Conscious Travel</p>
-<p class="text-sm text-on-surface-variant">1% of every booking goes to reef restoration projects.</p>
-</div>
-</li>
-</ul>
-</div>
-<div class="flex-1 relative">
-<div class="aspect-video bg-white rounded-2xl shadow-xl overflow-hidden rotate-2">
-<img class="w-full h-full object-cover" data-alt="POV of someone reading a travel guide while sitting on a balcony overlooking a bright blue ocean with islands" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2Hx9AKGhWA6lkQZqmtU2Mv9vZhz4sc2BiWZ3UCobsjCjt-BlwrT4aGn1Yjh6VS-vNZqYez4RAplozVwKkn5dT7uEpSZhe5UWm6fqU2fAqsjsFr00GfFAiWK4x4130BjoLb9cWitWRQLtcUX0BOgwYxNOuvxKEoX_2JAWJAPVSeAFOjWTg9kz7BZitoU-Na2okYzDkFuB2NlztBGaud-Bm7ImjbmfZ4tI-9FMLHitgwShdTokw1WQU4EVy6HHgf7htUIk1iU0gsgY"/>
-</div>
-<div class="absolute -bottom-6 -left-6 bg-secondary text-white p-6 rounded-2xl shadow-xl -rotate-3 hidden lg:block">
-<p class="font-headline font-black text-4xl">15k+</p>
-<p class="text-xs font-bold uppercase tracking-widest">Happy Travelers</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Signature Component: Destination Overlay -->
-<section class="max-w-7xl mx-auto px-8 py-20 bg-surface-container-low rounded-[3rem] my-20 overflow-hidden relative">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-<div class="order-2 lg:order-1">
-<h2 class="text-4xl font-headline font-extrabold text-on-surface mb-6">Expertise in Every Mile</h2>
-<p class="text-lg text-on-surface-variant leading-relaxed mb-8">
-                        Our digital marketplace doesn't just list tours; it curates memories. Using the Digital Concierge logic, we match your travel style—whether it's high-octane adventure or sunset relaxation—with the perfect itinerary.
-                    </p>
-<div class="flex gap-4">
-<button class="bg-primary text-white px-8 py-4 rounded-2xl font-headline font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all">Start Your Journey</button>
-<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-2xl font-headline font-bold hover:bg-surface-variant transition-all">Explore Map</button>
-</div>
-</div>
-<div class="order-1 lg:order-2 relative flex justify-center">
-<div class="w-full max-w-md aspect-[4/5] bg-white rounded-3xl overflow-hidden shadow-2xl relative">
-<img class="w-full h-full object-cover" data-alt="Young couple smiling and taking a photo on a luxury yacht deck with blue sky and turquoise water background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk3Vnnm_Kw4b-NjT2zR1qcktspwN12WwxUVVR54RDBVKijd83La9JDit7CYDQ5PJnROY_8HbUGq6jKXYDGbRVkFCI8p6nMOkCpvCDj6KUQt5Axn_qbhwgHPm4w7k1MXLjz2G1fplxrMJmNCKkQCP5cV9MeYY4avdT7h35NfuF-TnTI6g6yooyPBRVeBK5cZ0HAKMC8KyF9wGKAXBDAlQhvVPhbmvPu_sFM13-X1EjUbqjC93npZ8qE8dKuIO_rkoVr1kCikhIuwqM"/>
-<!-- Glassmorphic Box Overlay -->
-<div class="absolute -bottom-10 -right-10 md:-right-16 w-64 p-8 bg-white/70 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-white/40">
-<p class="text-primary font-bold text-sm mb-2">Featured Spot</p>
-<h4 class="text-xl font-headline font-extrabold text-on-surface">Private Yacht Charter</h4>
-<p class="text-xs text-on-surface-variant mt-2">Available for groups up to 12. Sunset dining included.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Map Section (Tonal Transition) -->
-<section class="bg-white py-20">
-<div class="max-w-7xl mx-auto px-8">
-<div class="text-center mb-16">
-<h2 class="text-4xl font-headline font-extrabold mb-4">Explore by Region</h2>
-<p class="text-on-surface-variant">Click on a destination to see our local expert offerings.</p>
-</div>
-<div class="w-full h-[500px] rounded-[3rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 shadow-inner bg-surface-container">
-<img class="w-full h-full object-cover" data-alt="Detailed artistic cartography map with vintage paper texture and elegant typography showing coastlines and mountain ranges" data-location="Bangkok" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy2JUjEXVCkSKYDVWCia3iw6KCH9_OhU4atN12qySsIyXTnzV6ATCQkG19o94UNBzsZz__ExolFja9Gpto9p4j39rUxqQ93YvpjL2LKi_gRwQZwZXRPtDKrlNr3Yoz-7dj9WSoezxC9NLjYLuls0MWVSVEwe6IxZCoQZOQAPZJRg5E_Y8C25PkCqR-9YO4crm8f1q0ji6rUJDkgbQ1lKQSnjhxu_fZjJksbY5sb2uPy-2tP5CZ7HTn-BHOK7PlJNYIh8NN_4d47Tg"/>
-</div>
-</div>
-</section>
+            </form>
+        </div>
+    </section>
+
+    <!-- 2. The 3x2 Category Grid (Phuket Travel Style) -->
+    <section class="max-w-7xl mx-auto px-6 mb-20">
+        <div class="text-center mb-10">
+            <p class="text-[#f472b6] font-black tracking-widest uppercase text-sm mb-2">Explore Destinations</p>
+            <h2 class="text-3xl font-extrabold text-[#14532d]">หมวดหมู่ยอดนิยม</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if area_cards %}
+                {% for area in area_cards|slice:":6" %}
+                <a href="{% url 'tours' %}?destination={{ area.filter }}" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_10px_30px_rgba(244,114,182,0.3)] transition-all">
+                    <img src="{{ area.img }}" alt="{{ area.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" onerror="this.src='/static/img/placeholder.jpg'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6">
+                        <h3 class="text-2xl font-black text-white group-hover:text-[#fce7f3] transition-colors mb-1">{{ area.name }}</h3>
+                        <p class="text-white/80 text-sm font-bold flex items-center gap-1 group-hover:text-[#4ade80] transition-colors">
+                            ดูแพ็กเกจ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </p>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <a href="{% url 'tours' %}?destination=เมืองเก่า" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_10px_30px_rgba(22,163,74,0.3)] transition-all">
+                    <img src="https://www.mapsguide.info/wp-content/uploads/2019/05/street-art.jpg" alt="Old Town" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#14532d]/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-black text-white group-hover:text-[#4ade80] transition-colors mb-1">ย่านเมืองเก่า</h3>
+                        <p class="text-white/80 text-sm font-bold flex items-center gap-1">ดูแพ็กเกจ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></p>
+                    </div>
+                </a>
+                <a href="{% url 'tours' %}?destination=หาดสมิหลา" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_10px_30px_rgba(244,114,182,0.3)] transition-all">
+                    <img src="https://img.kapook.com/image/Travel_1/sc.jpg" alt="Sea" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-black text-white group-hover:text-[#f87171] transition-colors mb-1">หาดสมิหลา</h3>
+                        <p class="text-white/80 text-sm font-bold flex items-center gap-1">ดูแพ็กเกจ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></p>
+                    </div>
+                </a>
+                <a href="{% url 'tours' %}?destination=ทะเลสาบสงขลา" class="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_10px_30px_rgba(22,163,74,0.3)] transition-all">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT08p2ZvZ7A-Z3MTV5ijHAenyDO8mkq0hyLUA&s" alt="Lake" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#14532d]/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-black text-white group-hover:text-[#4ade80] transition-colors mb-1">ล่องทะเลสาบ</h3>
+                        <p class="text-white/80 text-sm font-bold flex items-center gap-1">ดูแพ็กเกจ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></p>
+                    </div>
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- 3. Popular Tours Section (No Sidebar) -->
+    <section class="max-w-7xl mx-auto px-6 mb-20">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-[#fbcfe8] pb-4">
+            <div>
+                <h2 class="text-3xl font-extrabold text-[#14532d] mb-2">แพ็กเกจทัวร์แนะนำ</h2>
+                <p class="text-[#f472b6] font-bold text-lg">คัดสรรประสบการณ์ที่ดีที่สุดเพื่อคุณ</p>
+            </div>
+            
+            <!-- Category Filter Toggles -->
+            <form method="GET" action="{% url 'tours' %}" class="flex flex-wrap gap-2">
+                <button type="submit" name="cat" value="" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all {% if not request.GET.cat %}bg-[#22c55e] text-white shadow-md{% else %}bg-white text-gray-500 hover:bg-[#fce7f3] hover:text-[#f472b6] border border-gray-100{% endif %}">
+                    ดูทั้งหมด
+                </button>
+                <button type="submit" name="cat" value="city" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all {% if request.GET.cat == 'city' %}bg-[#22c55e] text-white shadow-md{% else %}bg-white text-gray-500 hover:bg-[#fce7f3] hover:text-[#f472b6] border border-gray-100{% endif %}">
+                    เมืองเก่า
+                </button>
+                <button type="submit" name="cat" value="nature" class="px-5 py-2.5 rounded-xl text-sm font-bold transition-all {% if request.GET.cat == 'nature' %}bg-[#22c55e] text-white shadow-md{% else %}bg-white text-gray-500 hover:bg-[#fce7f3] hover:text-[#f472b6] border border-gray-100{% endif %}">
+                    ธรรมชาติ
+                </button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for t in tours %}
+            {% with pkg=t.pkg sched=t.sched seats=t.seats_left cat=t.cat %}
+            <a href="{% url 'tour_detail' pkg.packageid %}" class="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-[0_15px_30px_-5px_rgba(244,114,182,0.25)] border hover:border-[#fbcfe8] transition-all duration-300 group flex flex-col h-full cursor-pointer">
+                
+                <div class="relative h-56 overflow-hidden bg-gray-100">
+                    <img src="{{ pkg.imageurl|default:'https://images.unsplash.com/photo-1506929562872-bb421503ef21?q=80&w=800' }}" 
+                         alt="{{ pkg.packagename }}" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                    
+                    <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
+                        <div class="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center text-gray-300 hover:text-[#f472b6] transition-colors" onclick="event.preventDefault();">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+
+                    {% if forloop.counter <= 3 %}
+                    <div class="absolute bottom-0 left-0 bg-[#f472b6] text-white px-4 py-1.5 rounded-tr-lg text-[11px] font-black uppercase tracking-widest shadow-md">
+                        Best Seller
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="p-6 flex-1 flex flex-col relative bg-gradient-to-b from-transparent to-[#fce7f3]/10">
+                    <h3 class="text-[19px] font-extrabold text-[#14532d] mb-3 leading-snug group-hover:text-[#22c55e] transition-colors line-clamp-2">
+                        {{ pkg.packagename }}
+                    </h3>
+
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-gray-500 mb-6 mt-auto bg-gray-50 px-3 py-2 rounded-lg inline-flex w-fit">
+                        <svg class="w-4 h-4 text-[#f472b6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span>สงขลา, ประเทศไทย (ไป-กลับ)</span>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-gray-100 pt-5">
+                        <div class="flex flex-col">
+                            <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-0.5">ราคาเริ่มต้น</span>
+                            <p class="text-2xl font-black text-[#22c55e] leading-none">
+                                ฿{{ pkg.priceperperson|smart_price }}
+                            </p>
+                        </div>
+                        
+                        <div class="w-10 h-10 rounded-full bg-[#dcfce7] text-[#22c55e] flex items-center justify-center shadow-sm group-hover:bg-[#22c55e] group-hover:text-white transition-all duration-300">
+                            <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endwith %}
+            {% empty %}
+            <div class="col-span-full py-24 text-center bg-white/70 backdrop-blur-sm rounded-2xl border border-[#fbcfe8]">
+                <div class="w-16 h-16 bg-[#fce7f3] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-[#f472b6]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <p class="text-[#f472b6] font-extrabold text-lg">ไม่พบทัวร์ที่คุณค้นหา</p>
+                <p class="text-gray-500 font-bold mt-1">ลองเปลี่ยนการค้นหาดูใหม่อีกครั้งนะคะ</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 4. Discover Songkhla (The specific block requested) -->
+    <section class="max-w-[1000px] mx-auto px-6 mb-16">
+        <div class="bg-white rounded-[2rem] shadow-xl p-10 md:p-14 border border-[#22c55e]">
+            <div class="text-center mb-10">
+                <p class="text-[#db2777] font-black tracking-widest uppercase text-xs mb-2">Discover Songkhla</p>
+                <h2 class="text-3xl md:text-5xl font-black text-[#064e3b] mb-4">สงขลาไม่ได้มีแค่เงือกทอง!</h2>
+                <p class="text-[#374151] font-semibold">เรื่องราวมากมายรอให้คุณไปสัมผัสด้วยตัวเอง</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                <!-- Col 1 -->
+                <div class="flex flex-col items-center group">
+                    <div class="w-14 h-14 bg-[#fce7f3] rounded-full flex items-center justify-center mb-5 text-[#f472b6] shadow-sm group-hover:bg-[#fbcfe8] transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-extrabold text-[#064e3b] mb-2">ย่านเมืองเก่า 200 ปี</h3>
+                    <p class="text-[#111827] font-medium text-base leading-relaxed">สัมผัสสถาปัตยกรรมชิโนโปรตุกีสที่ยังมีชีวิต และเรื่องราวทางประวัติศาสตร์ที่น่าหลงใหล</p>
+                </div>
+                
+                <!-- Col 2 -->
+                <div class="flex flex-col items-center group">
+                    <div class="w-14 h-14 bg-[#fce7f3] rounded-full flex items-center justify-center mb-5 text-[#f472b6] shadow-sm group-hover:bg-[#fbcfe8] transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-extrabold text-[#064e3b] mb-2">สตรีทอาร์ทสุดชิค</h3>
+                    <p class="text-[#111827] font-medium text-base leading-relaxed">เดินเล่นถ่ายรูปกับภาพวาดฝาผนังที่สะท้อนวิถีชีวิตชาวสงขลาในมุมมองสมัยใหม่</p>
+                </div>
+                
+                <!-- Col 3 -->
+                <div class="flex flex-col items-center group">
+                    <div class="w-14 h-14 bg-[#fce7f3] rounded-full flex items-center justify-center mb-5 text-[#f472b6] shadow-sm group-hover:bg-[#fbcfe8] transition-colors duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-extrabold text-[#064e3b] mb-2">รสเลิศ 3 วัฒนธรรม</h3>
+                    <p class="text-[#111827] font-medium text-base leading-relaxed">อิ่มอร่อยกับอาหารท้องถิ่นที่ผสมผสาน ไทย-จีน-มลายู ได้อย่างลงตัวที่หาชิมที่ไหนไม่ได้</p>
+                </div>
+            </div>
+
+            <!-- Interactive Accordion for More Story -->
+            <div class="mt-12 w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
+                <button id="discoverToggleBtn"
+                    class="inline-flex items-center justify-center px-8 py-3.5 rounded-full font-extrabold text-white text-base
+                           bg-[#16a34a] shadow-lg shadow-green-500/30
+                           hover:bg-[#db2777] hover:shadow-pink-400/40
+                           transition-all duration-300 cursor-pointer
+                           animate-[pulse_2.5s_ease-in-out_infinite] hover:animate-none">
+                    <span id="discoverToggleText">อ่านเรื่องราวเพิ่มเติม</span>
+                    <svg id="discoverToggleIcon" class="w-4 h-4 ml-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                    
+                <!-- Accordion Content — Pure White bg, high-contrast text -->
+                <div id="discoverContent"
+                     class="hidden mt-8 w-full text-left leading-relaxed
+                            bg-white border-2 border-[#22c55e] rounded-[1.5rem]
+                            shadow-lg shadow-green-100/80 overflow-hidden
+                            transition-all duration-300">
+                    <div class="h-1.5 bg-gradient-to-r from-[#22c55e] via-[#4ade80] to-[#f472b6]"></div>
+                    <div class="p-8 space-y-6">
+                        <div>
+                            <h4 class="text-[#065f46] font-extrabold text-xl mb-3 flex items-center gap-2">
+                                <span class="inline-block w-1.5 h-5 bg-[#22c55e] rounded-full"></span>
+                                "เปิดตำนานเมืองสองทะเล"
+                            </h4>
+                            <p class="text-[#1f2937] text-base leading-relaxed">สงขลา หรือชื่อเดิม 'ซิงกอร่า' เป็นเมืองท่าสำคัญมานับพันปี โดดเด่นด้วยภูมิศาสตร์ที่เป็นจุดบรรจบของทะเลสาบสงขลาและอ่าวไทย ทำให้เกิดการผสมผสานทางวัฒนธรรมไทย จีน และมลายู อย่างลงตัว</p>
+                        </div>
+                        <div class="border-t border-gray-100 pt-5">
+                            <h4 class="text-[#065f46] font-extrabold text-xl mb-3 flex items-center gap-2">
+                                <span class="inline-block w-1.5 h-5 bg-[#22c55e] rounded-full"></span>
+                                "จากป้อมปราการสู่ย่านเมืองเก่า"
+                            </h4>
+                            <p class="text-[#1f2937] text-base leading-relaxed">ตั้งแต่ยุคเมืองเขาสีแดง เมืองกำแพงหิน มาจนถึงตึกแถวชิโนโปรตุกีสในปัจจุบัน ทุกหัวมุมถนนคือพิพิธภัณฑ์ที่มีชีวิต</p>
+                        </div>
+                        <div class="border-t border-gray-100 pt-5">
+                            <h4 class="text-[#065f46] font-extrabold text-xl mb-3 flex items-center gap-2">
+                                <span class="inline-block w-1.5 h-5 bg-[#f472b6] rounded-full"></span>
+                                "เอกลักษณ์ที่ต้องสัมผัส"
+                            </h4>
+                            <p class="text-[#1f2937] text-base leading-relaxed">ไม่ว่าจะเป็นไอศกรีมถั่วเขียวสูตรโบราณ หรือวิถีชีวิตชาวประมงพื้นบ้าน ทั้งหมดนี้คือเสน่ห์ที่ทำให้ใครมาก็ต้องหลงรัก</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const btn = document.getElementById('discoverToggleBtn');
+                    const content = document.getElementById('discoverContent');
+                    const text = document.getElementById('discoverToggleText');
+                    const icon = document.getElementById('discoverToggleIcon');
+
+                    if(btn && content){
+                        btn.addEventListener('click', function() {
+                            content.classList.toggle('hidden');
+                            if(content.classList.contains('hidden')){
+                                text.textContent = 'อ่านเรื่องราวเพิ่มเติม';
+                                icon.classList.remove('rotate-180');
+                            } else {
+                                text.textContent = 'ปิดเนื้อหา';
+                                icon.classList.add('rotate-180');
+                                btn.classList.remove('animate-[pulse_2s_ease-in-out_infinite]'); // stop pulse when opened
+                            }
+                        });
+                    }
+                });
+            </script>
+        </div>
+    </section>
+
 </main>
-
-<style>
-.filter-pill.active {
-  background-color: var(--color-primary-container, #d0e8ff);
-  color: var(--color-on-primary-container, #001d36);
-  font-weight: 700;
-}
-.tour-card.hidden-card {
-  display: none;
-}
-</style>
-
-<script>
-function filterTours(category) {
-  // Update active pill
-  document.querySelectorAll('.filter-pill').forEach(btn => {
-    btn.classList.remove('active', 'bg-primary-container', 'text-on-primary-container', 'font-bold');
-    btn.classList.add('bg-surface-container-lowest', 'text-on-surface-variant', 'font-medium');
-  });
-  const activeBtn = document.querySelector(`[data-filter="${category}"]`);
-  if (activeBtn) {
-    activeBtn.classList.add('active', 'bg-primary-container', 'text-on-primary-container', 'font-bold');
-    activeBtn.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant', 'font-medium');
-  }
-
-  // Show/hide cards
-  document.querySelectorAll('.tour-card').forEach(card => {
-    const cardCat = card.dataset.category;
-    if (category === 'all' || cardCat === category || cardCat === 'all') {
-      card.style.display = '';
-      card.style.animation = 'fadeIn 0.3s ease';
-    } else {
-      card.style.display = 'none';
-    }
-  });
-
-  // Show empty state if no results
-  const visible = [...document.querySelectorAll('.tour-card')].filter(c => c.style.display !== 'none');
-  const emptyState = document.getElementById('no-results');
-  if (emptyState) emptyState.style.display = visible.length === 0 ? 'block' : 'none';
-}
-</script>
 {% endblock %}

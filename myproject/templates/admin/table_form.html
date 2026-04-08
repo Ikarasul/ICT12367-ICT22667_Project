@@ -1,132 +1,172 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Admin/{{ table_name }} Form - TourCompanyDB{% endblock %}
+
+{% block title %}{% if is_edit %}Edit #{{ record_id }}{% else %}Add{% endif %} {{ table_name }} — DylanCompany{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/admin_table_form.css' %}">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-<main class="ml-64 flex-1 flex flex-col min-h-screen bg-slate-50">
-  <!-- Top Navigation Bar -->
-  <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md flex justify-between items-center h-16 px-8 border-b border-slate-100">
-    <div class="flex items-center gap-6">
-      <nav class="flex gap-8">
-        <a class="text-slate-500 hover:text-slate-800 font-medium transition-all" href="{% url 'manage_tables' %}">Database</a>
-        <a class="text-slate-500 hover:text-slate-800 font-medium transition-all" href="{% url 'crud_list' table_name %}">{{ table_name }}</a>
-        <span class="text-slate-800 font-bold border-b-2 border-pink-400">
-          {% if is_edit %}Edit{% else %}Add{% endif %}
-        </span>
-      </nav>
-    </div>
-    <div class="flex items-center gap-4">
-      <span class="material-symbols-outlined p-2 text-slate-500 hover:bg-slate-100 rounded-lg cursor-pointer">notifications</span>
-      <span class="material-symbols-outlined p-2 text-slate-500 hover:bg-slate-100 rounded-lg cursor-pointer">help_outline</span>
-    </div>
-  </header>
+<div class="p-8 max-w-4xl mx-auto">
 
-  <!-- Canvas Area -->
-  <section class="p-12 max-w-7xl mx-auto w-full">
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-sm text-slate-400 mb-3 font-medium">
+    <a href="{% url 'manage_tables' %}" class="hover:text-primary transition-colors">Database</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <a href="{% url 'crud_list' table_name %}" class="hover:text-primary transition-colors">{{ table_name }}</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-primary font-bold">
+      {% if is_edit %}Edit #{{ record_id }}{% else %}Add{% endif %}
+    </span>
+  </nav>
 
-    <!-- FIX: Breadcrumb ใช้ {{ table_name }} และ url tag แทน hardcode -->
-    <nav class="flex items-center gap-2 mb-8">
-      <a class="text-slate-400 hover:text-slate-800 transition-colors text-sm font-medium" href="{% url 'manage_tables' %}">Database</a>
-      <span class="material-symbols-outlined text-slate-300 text-sm">chevron_right</span>
-      <a class="text-slate-400 hover:text-slate-800 transition-colors text-sm font-medium" href="{% url 'crud_list' table_name %}">{{ table_name }}</a>
-      <span class="material-symbols-outlined text-slate-300 text-sm">chevron_right</span>
-      <span class="text-slate-800 font-bold text-sm">{% if is_edit %}Edit{% else %}Add{% endif %}</span>
-    </nav>
+  <!-- Page title -->
+  <h2 class="text-3xl font-extrabold text-slate-800 mb-8 tracking-tight">
+    {% if is_edit %}แก้ไข{% else %}เพิ่ม{% endif %} {{ table_name }}
+    <span class="text-slate-400 text-xl font-semibold ml-2">
+      / {% if is_edit %}Edit{% else %}Add{% endif %}
+    </span>
+  </h2>
 
-    <!-- FIX: Page Title ใช้ {{ table_name }} แทน hardcode "TourPackages" -->
-    <h2 class="text-4xl font-extrabold text-slate-800 mb-10 tracking-tight flex flex-col md:flex-row md:items-baseline gap-2">
-      <span>{% if is_edit %}แก้ไข{% else %}เพิ่ม{% endif %} {{ table_name }}</span>
-      <span class="text-slate-400 text-2xl font-semibold">/ {% if is_edit %}Edit{% else %}Add{% endif %} {{ table_name }}</span>
-    </h2>
+  <!-- Form card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden max-w-2xl">
 
-    <!-- Form Card -->
-    <!-- FIX: เปลี่ยน CSS classes ที่ไม่มีใน Tailwind (orchid-pink, mint-green ฯลฯ) → ใช้ pink-400, emerald-500 -->
-    <div class="max-w-[600px] bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
-      <div class="h-1.5 bg-pink-400/30"></div>
-      <div class="p-10">
-        <div class="border-l-4 border-emerald-500 pl-6 mb-10">
-          <h3 class="text-xl font-bold text-slate-800">แบบฟอร์มบันทึกข้อมูล</h3>
-          <p class="text-slate-500 text-sm font-medium">Record Data Form for {{ table_name }}</p>
+    <!-- Top accent bar -->
+    <div class="h-1 bg-gradient-to-r from-primary to-secondary"></div>
+
+    <div class="p-8">
+
+      <!-- Section header -->
+      <div class="border-l-4 border-primary pl-5 mb-8">
+        <h3 class="text-lg font-bold text-slate-800">แบบฟอร์มบันทึกข้อมูล</h3>
+        <p class="text-slate-400 text-sm font-medium">Record Data Form — {{ table_name }}</p>
+      </div>
+
+      <form method="POST" id="tableForm" class="space-y-5">
+        {% csrf_token %}
+
+        {% if error_message %}
+        <div class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-semibold
+                    border border-red-100 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base shrink-0">error</span>
+          {{ error_message }}
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {% for field in fields %}
+          <div class="space-y-1.5 {% if field.choices %}sm:col-span-2{% endif %}">
+
+            <label for="field_{{ field.name }}" class="flex items-center gap-1.5">
+              <span class="text-slate-700 font-bold text-sm">{{ field.name }}</span>
+              {% if field.name|lower|slice:"-2:" == "id" and not field.choices %}
+              <span class="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                text
+              </span>
+              {% elif field.choices and field.name|lower|slice:"-2:" == "id" %}
+              <span class="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                FK
+              </span>
+              {% elif field.choices %}
+              <span class="text-[9px] bg-secondary/10 text-secondary px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                ENUM
+              </span>
+              {% endif %}
+            </label>
+
+            {% if field.choices %}
+            {# ── Dropdown (FK or Enum) ────────────────────────── #}
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2
+                           text-slate-400 text-base pointer-events-none">
+                {% if field.name|lower|slice:"-2:" == "id" %}link{% else %}tune{% endif %}
+              </span>
+              <select id="field_{{ field.name }}"
+                      name="{{ field.name }}"
+                      class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl
+                             text-slate-700 font-medium text-sm appearance-none cursor-pointer
+                             focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white
+                             outline-none transition-all">
+
+                {% if field.nullable %}
+                <option value="">— ไม่ระบุ / None —</option>
+                {% else %}
+                <option value="">— เลือก {{ field.name }} —</option>
+                {% endif %}
+
+                {% for opt in field.choices %}
+                <option value="{{ opt.value }}"
+                  {% if field.value|stringformat:"s" == opt.value|stringformat:"s" %}selected{% endif %}>
+                  {{ opt.label }}
+                </option>
+                {% endfor %}
+              </select>
+              <span class="material-symbols-outlined absolute right-3.5 top-1/2 -translate-y-1/2
+                           text-slate-400 text-base pointer-events-none">expand_more</span>
+            </div>
+
+            {% else %}
+            {# ── Free-text / number / date input ─────────────── #}
+            <input id="field_{{ field.name }}"
+                   name="{{ field.name }}"
+                   value="{{ field.value|default:'' }}"
+                   type="text"
+                   data-fieldname="{{ field.name|lower }}"
+                   placeholder="{{ field.name }}..."
+                   class="form-field w-full px-4 py-2.5 bg-slate-50 border border-slate-200
+                          rounded-xl text-slate-700 font-medium text-sm placeholder:text-slate-300
+                          focus:ring-2 focus:ring-primary/30 focus:border-primary focus:bg-white
+                          outline-none transition-all"/>
+            {% endif %}
+
+          </div>
+          {% endfor %}
         </div>
 
-        <form class="space-y-6" method="POST" id="tableForm">
-          {% csrf_token %}
-
-          {% if error_message %}
-          <div class="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-semibold border border-red-100 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">error</span>
-            {{ error_message }}
-          </div>
-          {% endif %}
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {% for field in fields %}
-            <div class="space-y-1.5">
-              <label for="field_{{ field.name }}" class="flex items-center gap-1.5">
-                <span class="text-slate-700 font-bold text-sm">{{ field.name }}</span>
-                {% if field.name|lower|slice:"-2:" == "id" or field.name|lower == "id" %}
-                <span class="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">FK</span>
-                {% endif %}
-              </label>
-              <div class="relative">
-                <input id="field_{{ field.name }}"
-                       name="{{ field.name }}"
-                       value="{{ field.value|default:'' }}"
-                       type="text"
-                       data-fieldname="{{ field.name|lower }}"
-                       class="form-field w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500 focus:bg-white outline-none transition-all text-slate-700 font-medium placeholder:text-slate-300 text-sm"
-                       placeholder="{{ field.name }}..."/>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex gap-3 pt-4 border-t border-slate-100">
-            <a href="{% url 'crud_list' table_name %}"
-               class="px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold text-sm hover:border-pink-400 hover:text-pink-500 transition-all flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-base">close</span>
-              ยกเลิก
-            </a>
-            <button class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 active:scale-95" type="submit">
-              <span class="material-symbols-outlined text-base">save</span>
-              บันทึก / Save
-            </button>
-          </div>
-        </form>
-
-        <script>
-        // Smart input type detection based on field name
-        document.querySelectorAll('.form-field').forEach(function(input) {
-          var name = input.dataset.fieldname || '';
-          if (/date|dob|birth|expir/i.test(name)) {
-            input.type = 'date';
-          } else if (/email/i.test(name)) {
-            input.type = 'email';
-          } else if (/phone|tel|mobile/i.test(name)) {
-            input.type = 'tel';
-          } else if (/price|amount|cost|salary|fee|tax|total|num|count|qty|quantity|capacity|adult|child|age/i.test(name)) {
-            input.type = 'number';
-            input.min  = '0';
-          } else if (/password|hash/i.test(name)) {
-            input.type = 'password';
-          } else if (/url|image|photo|img/i.test(name)) {
-            input.type = 'url';
-          }
-          // Convert existing date values from DB format (e.g. "2024-01-15 00:00:00") to date input format
-          if (input.type === 'date' && input.value) {
-            input.value = input.value.substring(0, 10);
-          }
-        });
-        </script>
-      </div>
+        <!-- Action buttons -->
+        <div class="flex gap-3 pt-5 border-t border-slate-100">
+          <a href="{% url 'crud_list' table_name %}"
+             class="px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-500
+                    font-bold text-sm hover:border-red-300 hover:text-red-500
+                    transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-base">close</span>
+            ยกเลิก / Cancel
+          </a>
+          <button type="submit"
+                  class="flex-1 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl
+                         font-bold text-sm shadow-lg shadow-primary/20
+                         hover:-translate-y-0.5 transition-all active:scale-95
+                         flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base">
+              {% if is_edit %}save{% else %}add_circle{% endif %}
+            </span>
+            {% if is_edit %}บันทึกการแก้ไข / Save Changes{% else %}บันทึก / Save{% endif %}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-  </section>
-</main>
+</div>
+
+<script>
+// Smart input type detection for plain text inputs only
+document.querySelectorAll('.form-field').forEach(function(input) {
+  var name = input.dataset.fieldname || '';
+  if (/date|dob|birth|expir/i.test(name))            { input.type = 'date'; }
+  else if (/email/i.test(name))                       { input.type = 'email'; }
+  else if (/phone|tel|mobile/i.test(name))            { input.type = 'tel'; }
+  else if (/price|amount|cost|num|count|qty|capacity|adult|child|age|seats|days/i.test(name)) {
+    input.type = 'number'; input.min = '0';
+  }
+  else if (/password|hash/i.test(name))               { input.type = 'password'; }
+  else if (/url|image|photo|img/i.test(name))         { input.type = 'url'; }
+
+  // Strip time from datetime values for date inputs
+  if (input.type === 'date' && input.value && input.value.length > 10) {
+    input.value = input.value.substring(0, 10);
+  }
+});
+</script>
 {% endblock %}

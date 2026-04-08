@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ยืนยันการจอง — DylanCompany</title>
+<style>
+  /* ── Reset ───────────────────────────────── */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f0fdf4; font-family:'Segoe UI',Arial,sans-serif;
+         color:#1e293b; -webkit-text-size-adjust:100%; }
+
+  /* ── Wrapper ─────────────────────────────── */
+  .wrapper { max-width:600px; margin:32px auto; background:#ffffff;
+             border-radius:20px; overflow:hidden;
+             box-shadow:0 4px 32px rgba(0,0,0,0.08); }
+
+  /* ── Header ──────────────────────────────── */
+  .header { background:linear-gradient(135deg,#0d9488 0%,#0f766e 100%);
+            padding:36px 40px; text-align:center; }
+  .header-logo { font-size:22px; font-weight:900; color:#ffffff;
+                 letter-spacing:-0.5px; margin-bottom:4px; }
+  .header-logo span { color:#99f6e4; }
+  .header-tagline { color:#ccfbf1; font-size:12px; }
+
+  /* ── Hero ────────────────────────────────── */
+  .hero { background:#f0fdf4; border-bottom:1px solid #d1fae5;
+          padding:28px 40px; text-align:center; }
+  .hero-icon { font-size:48px; margin-bottom:8px; }
+  .hero-title { font-size:22px; font-weight:800; color:#0d9488; margin-bottom:6px; }
+  .hero-sub { font-size:14px; color:#64748b; line-height:1.6; }
+
+  /* ── Body ────────────────────────────────── */
+  .body { padding:32px 40px; }
+
+  /* ── Booking card ────────────────────────── */
+  .card { background:#f8fafc; border:1px solid #e2e8f0;
+          border-radius:14px; overflow:hidden; margin-bottom:24px; }
+  .card-header { background:#0d9488; color:#ffffff; padding:14px 20px;
+                 font-size:11px; font-weight:800; text-transform:uppercase;
+                 letter-spacing:1.5px; display:flex; justify-content:space-between;
+                 align-items:center; }
+  .card-header .booking-id { font-size:18px; font-weight:900;
+                              letter-spacing:0; text-transform:none; }
+  .card-body { padding:0; }
+  .info-row { display:flex; align-items:flex-start; padding:14px 20px;
+              border-bottom:1px solid #f1f5f9; }
+  .info-row:last-child { border-bottom:none; }
+  .info-label { font-size:11px; color:#94a3b8; font-weight:700;
+                text-transform:uppercase; letter-spacing:0.08em;
+                width:120px; flex-shrink:0; padding-top:1px; }
+  .info-value { font-size:14px; font-weight:600; color:#1e293b; flex:1; }
+  .info-value.tour-name { font-size:16px; font-weight:800; color:#0d9488; }
+  .info-value.price { font-size:20px; font-weight:900; color:#0d9488; }
+
+  /* ── Status badge ────────────────────────── */
+  .status-badge { display:inline-block; background:#dcfce7; color:#16a34a;
+                  font-size:11px; font-weight:800; text-transform:uppercase;
+                  letter-spacing:0.1em; padding:4px 12px; border-radius:99px; }
+
+  /* ── CTA Button ──────────────────────────── */
+  .cta-wrap { text-align:center; margin:28px 0 24px; }
+  .cta-btn { display:inline-block; background:linear-gradient(135deg,#0d9488,#0f766e);
+             color:#ffffff !important; text-decoration:none;
+             font-size:15px; font-weight:800; padding:16px 40px;
+             border-radius:99px; letter-spacing:0.3px;
+             box-shadow:0 6px 20px rgba(13,148,136,0.35); }
+  .cta-sub { font-size:12px; color:#94a3b8; margin-top:10px; }
+
+  /* ── Notice box ──────────────────────────── */
+  .notice { background:#fffbeb; border:1px solid #fde68a; border-radius:12px;
+            padding:16px 20px; margin-bottom:24px; }
+  .notice p { font-size:13px; color:#92400e; line-height:1.7; }
+  .notice strong { color:#78350f; }
+
+  /* ── Footer ──────────────────────────────── */
+  .footer { background:#f8fafc; border-top:1px solid #e2e8f0;
+            padding:24px 40px; text-align:center; }
+  .footer p { font-size:12px; color:#94a3b8; line-height:1.8; }
+  .footer a { color:#0d9488; text-decoration:none; font-weight:600; }
+  .footer .divider { margin:8px 0; border:none; border-top:1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">🧭 Tour<span>Songkhla</span></div>
+    <div class="header-tagline">ประสบการณ์การเดินทางที่ดีที่สุดในภาคใต้</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon">🎉</div>
+    <div class="hero-title">การชำระเงินสำเร็จแล้ว!</div>
+    <div class="hero-sub">
+      เรียนคุณ <strong>{{ booking.customer_name }}</strong>,<br>
+      ขอบคุณที่เลือกใช้บริการ DylanCompany การจองของคุณได้รับการยืนยันเรียบร้อยแล้ว
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Booking Info Card -->
+    <div class="card">
+      <div class="card-header">
+        รายละเอียดการจอง
+        <span class="booking-id">#TC-{{ booking.booking_id|stringformat:"06d" }}</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">ทัวร์</span>
+          <span class="info-value tour-name">{{ booking.tour_name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ปลายทาง</span>
+          <span class="info-value">{{ booking.destination }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">วันเดินทาง</span>
+          <span class="info-value">{{ booking.departure|date:"d F Y" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">วันกลับ</span>
+          <span class="info-value">{{ booking.return_date|date:"d F Y" }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ผู้โดยสาร</span>
+          <span class="info-value">
+            ผู้ใหญ่ {{ booking.adults }} ท่าน
+            {% if booking.children > 0 %} + เด็ก {{ booking.children }} ท่าน{% endif %}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ยอดชำระ</span>
+          <span class="info-value price">฿{{ booking.total_price|smart_price }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">สถานะ</span>
+          <span class="info-value">
+            <span class="status-badge">✓ ยืนยันแล้ว / Confirmed</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <a href="{{ ticket_url }}" class="cta-btn">
+        📄 ดาวน์โหลดตั๋ว / Download Ticket (PDF)
+      </a>
+      <p class="cta-sub">
+        กรุณาแสดงตั๋วนี้แก่เจ้าหน้าที่ในวันเดินทาง<br>
+        Please show this ticket to our staff on departure day.
+      </p>
+    </div>
+
+    <!-- Notice -->
+    <div class="notice">
+      <p>
+        <strong>📎 หมายเหตุ / Note:</strong><br>
+        ไฟล์ PDF ตั๋วของคุณแนบมาพร้อมกับอีเมลนี้แล้ว
+        หากไม่สามารถดาวน์โหลดได้ กรุณาคลิกปุ่มด้านบนหรือติดต่อเจ้าหน้าที่<br><br>
+        Your PDF ticket is also attached to this email.
+        If you cannot download it, please click the button above or contact our staff.
+      </p>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      DylanCompany — บริการทัวร์ภาคใต้คุณภาพสูง<br>
+      <a href="{{ site_url }}">{{ site_url }}</a>
+    </p>
+    <hr class="divider">
+    <p>
+      อีเมลนี้ถูกส่งโดยอัตโนมัติ กรุณาอย่าตอบกลับ<br>
+      This is an automated email, please do not reply.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

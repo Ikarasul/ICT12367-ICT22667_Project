@@ -20,12 +20,14 @@ def get_connection():
         f"DRIVER={{{cfg['DRIVER']}}};"
         f"SERVER={cfg['SERVER']};"
         f"DATABASE={cfg['DATABASE']};"
+        f"TrustServerCertificate=yes;"
+        f"Connection Timeout=30;"
     )
     if cfg.get('TRUSTED_CONNECTION') == 'yes':
         conn_str += "Trusted_Connection=yes;"
     else:
         conn_str += f"UID={cfg['UID']};PWD={cfg['PWD']};"
-    return pyodbc.connect(conn_str)
+    return pyodbc.connect(conn_str, timeout=30)
 
 def check_sp_exists(cursor, sp_name):
     """ตรวจสอบว่ามี Stored Procedure นี้ใน DB หรือไม่"""
